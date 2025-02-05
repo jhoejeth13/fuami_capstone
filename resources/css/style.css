@@ -1,0 +1,6 @@
+.graduate-photo {
+    max-width: 40%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 0.5rem; /* Matches Tailwind's rounded-lg */
+}
