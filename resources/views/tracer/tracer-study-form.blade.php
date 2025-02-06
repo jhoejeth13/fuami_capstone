@@ -80,10 +80,10 @@
             <label>Civil Status:
             <select name="civil_status" required>
                 <option disabled selected hidden value="">--Select Civil Status--</option>
-                <option value="Male" {{ old('civil_status') == 'Single' ? 'selected' : '' }}>Single</option>
-                    <option value="Female" {{ old('civil_status') == 'Married' ? 'selected' : '' }}>Married</option>
-                    <option value="Female" {{ old('civil_status') == 'Divorced' ? 'selected' : '' }}>Divorced</option>
-                    <option value="Female" {{ old('civil_status') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
+                <option value="Single" {{ old('civil_status') == 'Single' ? 'selected' : '' }}>Single</option>
+                    <option value="Married" {{ old('civil_status') == 'Married' ? 'selected' : '' }}>Married</option>
+                    <option value="Divorced" {{ old('civil_status') == 'Divorced' ? 'selected' : '' }}>Divorced</option>
+                    <option value="Widowed" {{ old('civil_status') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
                 </select>      
                   </label>
 

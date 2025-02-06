@@ -10,9 +10,22 @@
         </div>
     @endif
 
+    <!-- Filter Section -->
+    <div class="flex justify-between mb-6">
+        <div class="flex items-center">
+            <label for="employment-filter" class="mr-2 text-sm font-medium text-gray-700">Filter by Employment Status:</label>
+            <select id="employment-filter" class="p-2 border border-gray-300 rounded">
+                <option value="all">All</option>
+                <option value="Employed">Employed</option>
+                <option value="Self-employed">Self-employed</option>
+                <option value="Unemployed">Unemployed</option>
+            </select>
+        </div>
+    </div>
+
     <!-- Table Section -->
     <div class="overflow-x-auto bg-white rounded-lg shadow-md mb-8">
-        <table class="min-w-full divide-y divide-gray-200">
+        <table class="min-w-full divide-y divide-gray-200" id="responses-table">
             <thead class="bg-gray-50">
                 <tr>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
@@ -25,7 +38,7 @@
             </thead>
             <tbody class="divide-y divide-gray-200">
                 @foreach($responses as $index => $response)
-                <tr class="hover:bg-gray-50 transition-colors">
+                <tr class="hover:bg-gray-50 transition-colors employment-row" data-employment-status="{{ $response->employment_status }}">
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <strong>{{ $response->fullname }}</strong><br>
@@ -98,4 +111,27 @@
         width: 20px;
     }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Filter function for employment status
+        document.getElementById('employment-filter').addEventListener('change', function() {
+            var filterValue = this.value.toLowerCase(); // Get the selected filter value
+            var rows = document.querySelectorAll('.employment-row'); // Select all rows
+            
+            rows.forEach(function(row) {
+                var employmentStatus = row.getAttribute('data-employment-status').toLowerCase(); // Get the employment status for the row
+                
+                // Check if the row's status matches the filter value
+                if (filterValue === 'all' || employmentStatus === filterValue) {
+                    row.style.display = ''; // Show the row
+                } else {
+                    row.style.display = 'none'; // Hide the row
+                }
+            });
+        });
+    });
+</script>
 @endpush
