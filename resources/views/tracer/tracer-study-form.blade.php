@@ -67,8 +67,8 @@
 
             <label>Gender:
                 <select name="gender" required>
-                    <option value="">Select Gender</option>
-                    <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+                <option disabled selected hidden value="">--Select Gender--</option>
+                <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
                     <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
                 </select>
             </label>
@@ -78,8 +78,14 @@
             </label>
 
             <label>Civil Status:
-                <input type="text" name="civil_status" value="{{ old('civil_status') }}" required>
-            </label>
+            <select name="civil_status" required>
+                <option disabled selected hidden value="">--Select Civil Status--</option>
+                <option value="Male" {{ old('civil_status') == 'Single' ? 'selected' : '' }}>Single</option>
+                    <option value="Female" {{ old('civil_status') == 'Married' ? 'selected' : '' }}>Married</option>
+                    <option value="Female" {{ old('civil_status') == 'Divorced' ? 'selected' : '' }}>Divorced</option>
+                    <option value="Female" {{ old('civil_status') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
+                </select>      
+                  </label>
 
             <label>Religion:
                 <input type="text" name="religion" value="{{ old('religion') }}" required>
@@ -162,8 +168,8 @@
 
             <label>Employment Status:
                 <select name="employment_status" id="employment_status" required onchange="toggleEmploymentFields()">
-                    <option value="">Select Status</option>
-                    <option value="Employed" {{ old('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
+                <option disabled selected hidden value="">--Select Status--</option>
+                <option value="Employed" {{ old('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
                     <option value="Self-employed" {{ old('employment_status') == 'Self-employed' ? 'selected' : '' }}>Self-employed</option>
                     <option value="Unemployed" {{ old('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
                 </select>
@@ -183,8 +189,8 @@
 
                 <label>Employment Type:
                     <select name="employment_type">
-                        <option value="">Select Type</option>
-                        <option value="Working Full-time" {{ old('employment_type') == 'Working Full-time' ? 'selected' : '' }}>Full-time</option>
+                    <option disabled selected hidden value="">--Select Type--</option>
+                    <option value="Working Full-time" {{ old('employment_type') == 'Working Full-time' ? 'selected' : '' }}>Full-time</option>
                         <option value="Working Part-time" {{ old('employment_type') == 'Working Part-time' ? 'selected' : '' }}>Part-time</option>
                         <option value="Others" {{ old('employment_type') == 'Others' ? 'selected' : '' }}>Others</option>
                     </select>
@@ -200,8 +206,8 @@
 
                 <label>Job Situation:
                     <select name="job_situation">
-                        <option value="">Select Situation</option>
-                        <option value="Permanent" {{ old('job_situation') == 'Permanent' ? 'selected' : '' }}>Permanent</option>
+                    <option disabled selected hidden value="">--Select Situation--</option>
+                    <option value="Permanent" {{ old('job_situation') == 'Permanent' ? 'selected' : '' }}>Permanent</option>
                         <option value="Contractual" {{ old('job_situation') == 'Contractual' ? 'selected' : '' }}>Contractual</option>
                         <option value="Casual" {{ old('job_situation') == 'Casual' ? 'selected' : '' }}>Casual</option>
                         <option value="Others" {{ old('job_situation') == 'Others' ? 'selected' : '' }}>Others</option>
@@ -210,8 +216,8 @@
 
                 <label>Years in Company:
                     <select name="years_in_company">
-                        <option value="">Select Years</option>
-                        <option value="1-5" {{ old('years_in_company') == '1-5' ? 'selected' : '' }}>1-5 years</option>
+                    <option disabled selected hidden value="">--Select Years--</option>
+                    <option value="1-5" {{ old('years_in_company') == '1-5' ? 'selected' : '' }}>1-5 years</option>
                         <option value="6-10" {{ old('years_in_company') == '6-10' ? 'selected' : '' }}>6-10 years</option>
                         <option value="10-15" {{ old('years_in_company') == '10-15' ? 'selected' : '' }}>10-15 years</option>
                         <option value="16-20" {{ old('years_in_company') == '16-20' ? 'selected' : '' }}>16-20 years</option>
@@ -226,6 +232,7 @@
 
                 <label>Job Related to SHS Track?
                     <select name="job_related_to_shs">
+                    <option disabled selected hidden value="">--Select--</option>
                         <option value="Yes" {{ old('job_related_to_shs') == 'Yes' ? 'selected' : '' }}>Yes</option>
                         <option value="No" {{ old('job_related_to_shs') == 'No' ? 'selected' : '' }}>No</option>
                     </select>
@@ -250,8 +257,8 @@
 
                 <label>Years in Business:
                     <select name="years_in_business">
-                        <option value="">Select Years</option>
-                        <option value="0-5" {{ old('years_in_business') == '0-5' ? 'selected' : '' }}>0-5 years</option>
+                    <option disabled selected hidden value="">--Select Years--</option>
+                    <option value="0-5" {{ old('years_in_business') == '0-5' ? 'selected' : '' }}>0-5 years</option>
                         <option value="6-10" {{ old('years_in_business') == '6-10' ? 'selected' : '' }}>6-10 years</option>
                         <option value="10-15" {{ old('years_in_business') == '10-15' ? 'selected' : '' }}>10-15 years</option>
                         <option value="16 Above" {{ old('years_in_business') == '16 Above' ? 'selected' : '' }}>16+ years</option>
@@ -273,7 +280,8 @@
 
                 <label>Is FUAMI a Factor?
                     <select name="fuami_factor">
-                        <option value="Yes" {{ old('fuami_factor') == 'Yes' ? 'selected' : '' }}>Yes</option>
+                    <option disabled selected hidden value="">--Select--</option>
+                    <option value="Yes" {{ old('fuami_factor') == 'Yes' ? 'selected' : '' }}>Yes</option>
                         <option value="No" {{ old('fuami_factor') == 'No' ? 'selected' : '' }}>No</option>
                     </select>
                 </label>
