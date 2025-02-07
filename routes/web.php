@@ -31,4 +31,6 @@ Route::get('/tracer-study', [TracerStudyController::class, 'showForm'])->name('t
 Route::post('/tracer-study', [TracerStudyController::class, 'submitForm'])->name('tracer.submit');
 Route::get('/tracer-responses', [TracerStudyController::class, 'index'])->name('tracer-responses.index');
 
+Route::post('/add-year', [GraduateController::class, 'addYear'])->name('addYear');
+
 require __DIR__.'/auth.php';

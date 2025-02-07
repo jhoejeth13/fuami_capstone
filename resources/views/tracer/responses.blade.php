@@ -10,6 +10,30 @@
         </div>
     @endif
 
+    <!-- Filter Form -->
+    <div class="mb-6">
+        <form method="GET" action="{{ url()->current() }}">
+            <div class="flex items-center gap-4">
+                <select name="employment_status" onchange="this.form.submit()" 
+                        class="block w-64 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="">All Employment Statuses</option>
+                    <option value="Employed" {{ request('employment_status') == 'Employed' ? 'selected' : '' }}>
+                        Employed
+                    </option>
+                    <option value="Self-employed" {{ request('employment_status') == 'Self-employed' ? 'selected' : '' }}>
+                        Self-employed
+                    </option>
+                    <option value="Unemployed" {{ request('employment_status') == 'Unemployed' ? 'selected' : '' }}>
+                        Unemployed
+                    </option>
+                </select>
+                <div class="text-sm text-gray-500">
+                    Showing {{ $responses->firstItem() }} - {{ $responses->lastItem() }} of {{ $responses->total() }} results
+                </div>
+            </div>
+        </form>
+    </div>
+
     <!-- Table Section -->
     <div class="overflow-x-auto bg-white rounded-lg shadow-md mb-8">
         <table class="min-w-full divide-y divide-gray-200">
@@ -89,6 +113,11 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination -->
+    <div class="mt-4">
+        {{ $responses->appends(request()->query())->links() }}
+    </div>
 </div>
 @endsection
 
@@ -96,6 +125,25 @@
 <style>
     .fab {
         width: 20px;
+    }
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    .page-item {
+        margin: 0 0.25rem;
+    }
+    .page-link {
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        border: 1px solid #d1d5db;
+        color: #374151;
+    }
+    .page-item.active .page-link {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
     }
 </style>
 @endpush

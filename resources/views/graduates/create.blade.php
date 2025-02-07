@@ -77,13 +77,18 @@
 
         <!-- Year Graduated -->
         <div class="mb-4">
-            <label for="year_graduated" class="block text-sm font-medium text-gray-700">Year Graduated</label>
-            <input type="number" name="year_graduated" id="year_graduated" value="{{ old('year_graduated') }}" required
-                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-            @error('year_graduated')
-                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
+    <label for="year_graduated" class="block text-sm font-medium text-gray-700">Year Graduated</label>
+    <select name="year_graduated" id="year_graduated" required
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+        <option value="">-- Select Year --</option>
+        @foreach($years as $year)
+            <option value="{{ $year }}" {{ old('year_graduated') == $year ? 'selected' : '' }}>{{ $year }}</option>
+        @endforeach
+    </select>
+    @error('year_graduated')
+        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+    @enderror
+</div>
 
         <!-- SHS Program -->
         <div class="mb-4">

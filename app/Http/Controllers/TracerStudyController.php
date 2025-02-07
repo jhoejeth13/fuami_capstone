@@ -61,9 +61,20 @@ class TracerStudyController extends Controller
         }
     }
 
-    public function index()
+
+
+    public function index(Request $request)
     {
-        $responses = TracerStudyResponse::all();
+        $query = TracerStudyResponse::query();
+    
+        // Apply filter only if employment_status is set and not empty
+        if ($request->filled('employment_status')) {
+            $query->where('employment_status', $request->employment_status);
+        }
+    
+        $responses = $query->paginate(10); // Keeps filtering and pagination
+    
         return view('tracer.responses', compact('responses'));
     }
+    
 }

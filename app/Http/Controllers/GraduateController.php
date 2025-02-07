@@ -8,15 +8,41 @@ use Illuminate\Support\Facades\Storage;
 
 class GraduateController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $graduates = Graduate::all();
-        return view('graduates.index', compact('graduates'));
+        $query = Graduate::query();
+    
+        // Apply search filter if provided
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('ID_student', 'like', "%{$search}%")
+                  ->orWhere('first_name', 'like', "%{$search}%")
+                  ->orWhere('middle_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%");
+            });
+        }
+    
+        // Apply year filter if provided
+        if ($request->has('year') && $request->year != '') {
+            $query->where('year_graduated', $request->year);
+        }
+    
+        // Paginate results
+        $graduates = $query->paginate(10);
+        $years = Graduate::select('year_graduated')->distinct()->pluck('year_graduated');
+    
+        return view('graduates.index', compact('graduates', 'years'));
     }
+    
+    
+    
 
     public function create()
     {
-        return view('graduates.create');
+        $years = Graduate::selectRaw('year_graduated')->distinct()->orderBy('year_graduated', 'desc')->pluck('year_graduated');
+
+        return view('graduates.create', compact('years'));
     }
 
     public function store(Request $request)
@@ -54,6 +80,7 @@ class GraduateController extends Controller
         return redirect()->route('graduates.index')->with('success', 'Graduate added successfully!');
     }
 
+        
     public function show(Graduate $graduate)
     {
         return view('graduates.show', compact('graduate'));
@@ -104,6 +131,7 @@ class GraduateController extends Controller
         return redirect()->route('graduates.index')->with('success', 'Graduate updated successfully!');
     }
 
+    
     public function destroy(Graduate $graduate)
     {
         if ($graduate->picture) {

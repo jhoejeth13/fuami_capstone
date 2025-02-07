@@ -21,7 +21,12 @@
             width: 64px;
         }
         
-        
+            /* Hide sidebar and top bar during print */
+    @media print {
+        #sidebar, header {
+            display: none !important;
+        }
+    }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -64,7 +69,7 @@
         <div class="flex-1 flex flex-col bg-white min-h-screen">
             <!-- Top Bar -->
             <header class="bg-white shadow flex justify-between items-center px-6 py-4">
-                <div class="flex items-center">
+                <div class="flex items-center print:hidden">
                 <img src="{{ asset('images/icon.jpg') }}" alt="Logo" class="h-10 w-10 ml-3">
                 <span class="text-lg font-semibold text-gray-900 ml-3">FR. Urios Academy of Magallanes Inc.</span>
                 </div>
@@ -77,8 +82,8 @@
                     </button>
                     
                     <!-- Dropdown Menu -->
-                    <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md overflow-hidden">
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 hover:bg-gray-100 flex items-center">
+                    <div id="profileDropdown" class=" hidden absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md overflow-hidden ">
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 hover:bg-gray-100 flex items-center ">
                             <i class="fas fa-user mr-2"></i> Profile
                         </a>
                         <form method="POST" action="{{ route('logout') }}">
