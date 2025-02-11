@@ -72,7 +72,8 @@ class TracerStudyController extends Controller
             $query->where('employment_status', $request->employment_status);
         }
     
-        $responses = $query->paginate(10); // Keeps filtering and pagination
+        $perPage = $request->input('perPage',5); // Keeps filtering and pagination
+        $responses = TracerStudyResponse::paginate($perPage);
     
         return view('tracer.responses', compact('responses'));
     }

@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Graduate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-
+use App\Models\Year;  // Add this line
 class GraduateController extends Controller
 {
     public function index(Request $request)
     {
+        
         $query = Graduate::query();
     
         // Apply search filter if provided
@@ -29,8 +30,12 @@ class GraduateController extends Controller
         }
     
         // Paginate results
-        $graduates = $query->paginate(10);
-        $years = Graduate::select('year_graduated')->distinct()->pluck('year_graduated');
+        $perPage = $request->input('perPage', 5); // Default to 5 rows per page
+        $graduates = Graduate::paginate($perPage);
+
+    
+        // Fetch years from the Year model
+        $years = Year::pluck('year');
     
         return view('graduates.index', compact('graduates', 'years'));
     }
@@ -40,8 +45,9 @@ class GraduateController extends Controller
 
     public function create()
     {
-        $years = Graduate::selectRaw('year_graduated')->distinct()->orderBy('year_graduated', 'desc')->pluck('year_graduated');
-
+        // Fetch years from the Year model
+        $years = Year::pluck('year');
+    
         return view('graduates.create', compact('years'));
     }
 
@@ -140,4 +146,18 @@ class GraduateController extends Controller
         $graduate->delete();
         return redirect()->route('graduates.index')->with('success', 'Graduate deleted successfully!');
     }
+
+    public function addYear(Request $request)
+    {
+        $request->validate([
+            'year' => 'required|integer|unique:years,year',
+        ]);
+    
+        $year = Year::create([
+            'year' => $request->input('year'),
+        ]);
+    
+        return response()->json(['year' => $year->year]);
+    }
+
 }

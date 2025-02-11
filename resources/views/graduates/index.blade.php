@@ -1,8 +1,54 @@
 @extends('layouts.app')
 
 @section('content')
-<br>
-<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<style>
+    .px-4 {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    .px-2 {
+        padding-left: 1rem;
+        padding-right: 2rem;
+    }
+
+    .pagination {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 8px; /* Adds spacing between items */
+        padding-left: 0; /* Removes default padding */
+        margin: 0; /* Removes default margin */
+    }
+
+    .page-item {
+        list-style: none; /* Removes list bullets */
+    }
+
+    .page-link {
+        padding: 8px 12px; /* Adds padding to links */
+        border: 1px solid #dee2e6; /* Adds a border */
+        border-radius: 4px; /* Rounded corners */
+        color: #007bff; /* Blue text color */
+        text-decoration: none; /* Removes underline */
+    }
+
+    .page-item.active .page-link {
+        background-color: #007bff; /* Blue background for active page */
+        border-color: #007bff; /* Blue border for active page */
+        color: white; /* White text for active page */
+    }
+
+    .page-item.disabled .page-link {
+        color: #6c757d; /* Gray text for disabled items */
+        pointer-events: none; /* Disables clicks */
+    }
+
+    .page-link:hover {
+        background-color: #f8f9fa; /* Light background on hover */
+    }
+</style>
+
+<div class="container flex-1 p-6">
     <!-- Page Heading -->
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold text-black">List of SHS Graduates</h1>
@@ -32,6 +78,17 @@
                 @endforeach
             </select>
         </div>
+    </div>
+
+    <!-- Rows Per Page Filter -->
+    <div class="mb-4">
+        <label for="rowsPerPage" class="text-sm font-medium text-gray-700">Rows per page:</label>
+        <select id="rowsPerPage" class="px-2 py-1 border border-gray-300 rounded-md">
+            <option value="5" {{ request('perPage') == 5 ? 'selected' : '' }}>5</option>
+            <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
+            <option value="15" {{ request('perPage') == 15 ? 'selected' : '' }}>15</option>
+            <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25</option>
+        </select>
     </div>
 
     <!-- Table -->
@@ -78,10 +135,55 @@
         </div>
     </div>
 
-    <!-- Pagination -->
-    <div class="mt-4">
-        {{ $graduates->links() }}
-    </div>
+<!-- Bootstrap Pagination -->
+<!-- Bootstrap Pagination -->
+<div class="mt-4">
+    <nav aria-label="Page navigation">
+        <ul class="pagination d-flex flex-nowrap justify-content-center align-items-center list-unstyled" style="gap: 8px;">
+            {{-- Previous Page Link --}}
+            @if ($graduates->onFirstPage())
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="fas fa-chevron-left"></i> Previous</span>
+                </li>
+            @else
+                <li class="page-item">
+                    <a class="page-link" href="{{ $graduates->previousPageUrl() }}&perPage={{ request('perPage', 5) }}" rel="prev"><i class="fas fa-chevron-left"></i> Previous</a>
+                </li>
+            @endif
+
+            {{-- Pagination Numbers --}}
+            @php
+                $currentPage = $graduates->currentPage();
+                $lastPage = $graduates->lastPage();
+                $start = max(1, $currentPage - 1);
+                $end = min($lastPage, $currentPage + 1);
+            @endphp
+
+            @foreach (range($start, $end) as $page)
+                @if ($page == $graduates->currentPage())
+                    <li class="page-item active">
+                        <span class="page-link">{{ $page }}</span>
+                    </li>
+                @else
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $graduates->url($page) }}&perPage={{ request('perPage', 5) }}">{{ $page }}</a>
+                    </li>
+                @endif
+            @endforeach
+
+            {{-- Next Page Link --}}
+            @if ($graduates->hasMorePages())
+                <li class="page-item">
+                    <a class="page-link" href="{{ $graduates->nextPageUrl() }}&perPage={{ request('perPage', 5) }}" rel="next">Next <i class="fas fa-chevron-right"></i></a>
+                </li>
+            @else
+                <li class="page-item disabled">
+                    <span class="page-link">Next <i class="fas fa-chevron-right"></i></span>
+                </li>
+            @endif
+        </ul>
+    </nav>
+</div>
 </div>
 
 <script>
@@ -90,9 +192,11 @@
         const yearFilter = document.getElementById('yearFilter');
         const addYearButton = document.getElementById('addYearButton');
         const newYearInput = document.getElementById('newYearInput');
+        const rowsPerPage = document.getElementById('rowsPerPage');
         const table = document.getElementById('graduatesTable');
         const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
 
+        // Function to filter rows based on search and year
         function filterRows() {
             const searchTerm = searchInput.value.toLowerCase();
             const selectedYear = yearFilter.value;
@@ -100,7 +204,7 @@
             Array.from(rows).forEach(row => {
                 const id = row.getElementsByTagName('td')[0].textContent.toLowerCase();
                 const name = row.getElementsByTagName('td')[1].textContent.toLowerCase();
-                const year = row.getElementsByTagName('td')[3].textContent.trim(); // Trim whitespace
+                const year = row.getElementsByTagName('td')[3].textContent.trim();
 
                 const matchesSearch = name.includes(searchTerm) || id.includes(searchTerm);
                 const matchesYear = selectedYear === '' || parseInt(year) === parseInt(selectedYear);
@@ -109,22 +213,53 @@
             });
         }
 
+        // Function to update rows per page
+        function updateRowsPerPage() {
+            const selectedRowsPerPage = rowsPerPage.value;
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('perPage', selectedRowsPerPage);
+            window.location.href = currentUrl.toString();
+        }
+
+        // Event Listeners
         searchInput.addEventListener('input', filterRows);
         yearFilter.addEventListener('change', filterRows);
+        rowsPerPage.addEventListener('change', updateRowsPerPage);
 
+        // Add Year Functionality
         addYearButton.addEventListener('click', function() {
             const newYear = newYearInput.value.trim();
-            if (newYear && !Array.from(yearFilter.options).some(option => option.value === newYear)) {
-                const newOption = document.createElement('option');
-                newOption.value = newYear;
-                newOption.textContent = newYear;
-                yearFilter.appendChild(newOption);
-                newYearInput.value = ''; // Clear input field
-                filterRows(); // Apply filter with the newly added year
+
+            if (newYear) {
+                fetch('{{ route("add.year") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ year: newYear })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw err; });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.year) {
+                        const newOption = document.createElement('option');
+                        newOption.value = data.year;
+                        newOption.textContent = data.year;
+                        yearFilter.appendChild(newOption);
+                        newYearInput.value = ''; // Clear input field
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(error.message || 'Failed to add year.');
+                });
             }
         });
-
-        
     });
 </script>
 @endsection

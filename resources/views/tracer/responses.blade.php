@@ -14,6 +14,7 @@
     <div class="mb-6">
         <form method="GET" action="{{ url()->current() }}">
             <div class="flex items-center gap-4">
+                <!-- Employment Status Filter -->
                 <select name="employment_status" onchange="this.form.submit()" 
                         class="block w-64 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                     <option value="">All Employment Statuses</option>
@@ -27,6 +28,17 @@
                         Unemployed
                     </option>
                 </select>
+
+                <!-- Rows Per Page Filter -->
+                <select name="perPage" onchange="this.form.submit()" 
+                        class="block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="5" {{ request('perPage') == 5 ? 'selected' : '' }}>5 </option>
+                    <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10 </option>
+                    <option value="15" {{ request('perPage') == 15 ? 'selected' : '' }}>15 </option>
+                    <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25 </option>
+                </select>
+
+                <!-- Results Count -->
                 <div class="text-sm text-gray-500">
                     Showing {{ $responses->firstItem() }} - {{ $responses->lastItem() }} of {{ $responses->total() }} results
                 </div>
