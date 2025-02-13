@@ -9,24 +9,22 @@
     <style>
         .sidebar-icon-only .sidebar-text {
             display: none;
-            height: 100vh;
-        z-index: 1000; /* Ensure it's above other content */
-        transition: transform 0.3s ease-in-out;
         }
         .sidebar-icon-only .sidebar-header-text {
             display: none;
-            
         }
         .sidebar-icon-only {
             width: 64px;
         }
-        
-            /* Hide sidebar and top bar during print */
-    @media print {
-        #sidebar, header {
-            display: none !important;
+        @media print {
+            #sidebar, header {
+                display: none !important;
+            }
         }
-    }
+        .text-xl {
+    font-size: 2rem;
+    line-height: 1.75rem;
+}
     </style>
 </head>
 <body class="bg-gray-100">
@@ -70,8 +68,8 @@
             <!-- Top Bar -->
             <header class="bg-white shadow flex justify-between items-center px-6 py-4">
                 <div class="flex items-center print:hidden">
-                <img src="{{ asset('images/icon.jpg') }}" alt="Logo" class="h-10 w-10 ml-3">
-                <span class="text-lg font-semibold text-gray-900 ml-3">FR. Urios Academy of Magallanes Inc.</span>
+                    <img src="{{ asset('images/icon.jpg') }}" alt="Logo" class="h-10 w-10 ml-3">
+                    <span class="text-lg font-semibold text-gray-900 ml-3">FR. Urios Academy of Magallanes Inc.</span>
                 </div>
                 
                 <!-- Profile Dropdown -->
@@ -82,8 +80,8 @@
                     </button>
                     
                     <!-- Dropdown Menu -->
-                    <div id="profileDropdown" class=" hidden absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md overflow-hidden ">
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 hover:bg-gray-100 flex items-center ">
+                    <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md overflow-hidden z-50">
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 hover:bg-gray-100 flex items-center">
                             <i class="fas fa-user mr-2"></i> Profile
                         </a>
                         <form method="POST" action="{{ route('logout') }}">
@@ -95,6 +93,13 @@
                     </div>
                 </div>
             </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 p-6 overflow-y-auto">
+                @yield('content')
+            </main>
+        </div>
+    </div>
 
     <script>
         function toggleDropdown() {

@@ -61,21 +61,18 @@ class TracerStudyController extends Controller
         }
     }
 
-
-
     public function index(Request $request)
     {
         $query = TracerStudyResponse::query();
-    
+
         // Apply filter only if employment_status is set and not empty
         if ($request->filled('employment_status')) {
             $query->where('employment_status', $request->employment_status);
         }
-    
-        $perPage = $request->input('perPage',5); // Keeps filtering and pagination
-        $responses = TracerStudyResponse::paginate($perPage);
-    
+
+        $perPage = $request->input('perPage', 5); // Default to 5 items per page
+        $responses = $query->paginate($perPage);
+
         return view('tracer.responses', compact('responses'));
     }
-    
 }
