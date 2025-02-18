@@ -52,12 +52,15 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<!-- Include Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 <div class="container flex-1 p-6">
     <!-- Page Heading -->
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold text-black">List of SHS Graduates</h1>
         <a href="{{ route('graduates.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-black rounded-md font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
-            Add Graduate
+            <i class="fas fa-plus mr-2"></i> Add Graduate
         </a>
     </div>
 
@@ -72,7 +75,9 @@
             <!-- Input for adding new year -->
             <input type="number" id="newYearInput" placeholder="Add Year..." 
                 class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <button id="addYearButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Year</button>
+            <button id="addYearButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                <i class="fas fa-plus mr-2"></i> Add Year
+            </button>
 
             <!-- Year Filter Dropdown -->
             <select id="yearFilter" class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -123,12 +128,18 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             <div class="flex space-x-2">
-                                <a href="{{ route('graduates.show', $graduate->id) }}" class="inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700">View</a>
-                                <a href="{{ route('graduates.edit', $graduate->id) }}" class="inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded text-gray bg-yellow-500 hover:bg-yellow-600">Edit</a>
+                                <a href="{{ route('graduates.show', $graduate->id) }}" class="inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700">
+                                    <i class="fas fa-eye mr-1"></i> View
+                                </a>
+                                <a href="{{ route('graduates.edit', $graduate->id) }}" class="inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded text-gray bg-yellow-500 hover:bg-yellow-600">
+                                    <i class="fas fa-edit mr-1"></i> Edit
+                                </a>
                                 <form action="{{ route('graduates.destroy', $graduate->id) }}" method="POST" class="delete-form">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700">Delete</button>
+                                    <button type="submit" class="inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700">
+                                        <i class="fas fa-trash mr-1"></i> Delete
+                                    </button>
                                 </form>
                             </div>
                         </td>
@@ -277,7 +288,7 @@
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
+                    confirmButtonText: 'Delete'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit(); // Submit the form if confirmed

@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Page Heading -->
-   <br> <h1 class="text-2xl font-semibold text-black mb-6">Add New Graduate</h1>
+<h1 class="text-2xl font-semibold text-black mb-6">Add New Graduate</h1>
 
     <!-- Form -->
     <form action="{{ route('graduates.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-sm sm:rounded-lg p-6">
@@ -133,7 +133,7 @@
 
         <!-- Buttons -->
         <div class="flex space-x-2">
-            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-white rounded-md font-semibold text-gray hover:bg-blue focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-white rounded-md font-semibold text-white hover:bg-blue focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 Submit
             </button>
             <a href="{{ route('graduates.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-500 border border-transparent rounded-md font-semibold text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">

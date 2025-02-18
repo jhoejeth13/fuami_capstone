@@ -48,11 +48,11 @@
                 </a>
                 <h1 class="px-6 py-3 text-sm uppercase text-gray-400 sidebar-text">Personal Information</h1>
                 <a href="{{ route('graduates.create') }}" class="block py-3 px-6 hover:bg-blue-700 flex items-center">
-                    <i class="fas fa-user-plus mr-3"></i>
+                    <i class="fas fa-graduation-cap mr-2"></i>
                     <span class="sidebar-text">Add New Graduate</span>
                 </a>
                 <a href="{{ route('graduates.index') }}" class="block py-3 px-6 hover:bg-blue-700 flex items-center">
-                    <i class="fas fa-users mr-3"></i>
+                    <i class="fas fa-user-graduate mr-3"></i>
                     <span class="sidebar-text">Manage SHS Graduates</span>
                 </a>
                 <h1 class="px-6 py-3 text-sm uppercase text-gray-400 sidebar-text">SHS Alumni Track</h1>
