@@ -60,7 +60,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
                     <td class="px-6 py-4 text-sm text-gray-900">
                         <strong>{{ $response->fullname }}</strong><br>
-                        Age: {{ $response->age }}<br>
+                        Age: {{ $response->age }} Years Old<br>
                         Gender: {{ $response->gender }}<br>
                         DOB: {{ date('M d, Y', strtotime($response->birthdate)) }}<br>
                         Civil Status: {{ $response->civil_status }}<br>

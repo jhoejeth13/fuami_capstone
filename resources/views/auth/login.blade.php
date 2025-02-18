@@ -31,7 +31,7 @@
             background-image: url('{{ asset("images/f.jpg") }}'); /* Corrected URL */
             background-size: cover;
             background-position: center;
-            filter: blur(8px); /* Adjust the blur intensity */
+            filter: blur(5px); /* Adjust the blur intensity */
             z-index: -1;
         }
 
@@ -114,7 +114,7 @@
 
         <!-- Right Side: Login Form Section -->
         <div class="form-section">
-            <h2>FUAMI Senior Highschool Graduates Repository and Alumni Tracer System</h2>
+            <h2>FUAMI Senior High Graduates Repository and Alumni Tracer System</h2>
             <form method="POST" action="{{ route('login') }}">
                 @csrf
 

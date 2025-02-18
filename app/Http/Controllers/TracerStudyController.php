@@ -1,15 +1,20 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\TracerStudyResponse;
+use Illuminate\Support\Facades\DB; // Add this for database queries
 
 class TracerStudyController extends Controller
 {
     public function showForm()
     {
-        return view('tracer.tracer-study-form');
+        // Fetch unique graduation years from the database
+        $years = DB::table('years')->pluck('year')->sort();
+
+        // Pass the years to the view
+        return view('tracer.tracer-study-form', compact('years'));
     }
 
     public function submitForm(Request $request)
@@ -28,7 +33,7 @@ class TracerStudyController extends Controller
             'postal_code' => 'required|string',
             'country' => 'required|string',
             'shs_track' => 'required|string',
-            'year_graduated' => 'required|string',
+            'year_graduated' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
             'phone' => 'required|string',
             'email' => 'required|email',
             'employment_status' => 'required|string',

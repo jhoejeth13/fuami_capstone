@@ -48,6 +48,10 @@
     }
 </style>
 
+<!-- Include SweetAlert2 CSS and JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <div class="container flex-1 p-6">
     <!-- Page Heading -->
     <div class="flex justify-between items-center mb-6">
@@ -121,7 +125,7 @@
                             <div class="flex space-x-2">
                                 <a href="{{ route('graduates.show', $graduate->id) }}" class="inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700">View</a>
                                 <a href="{{ route('graduates.edit', $graduate->id) }}" class="inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded text-gray bg-yellow-500 hover:bg-yellow-600">Edit</a>
-                                <form action="{{ route('graduates.destroy', $graduate->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this graduate?');">
+                                <form action="{{ route('graduates.destroy', $graduate->id) }}" method="POST" class="delete-form">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700">Delete</button>
@@ -135,55 +139,54 @@
         </div>
     </div>
 
-<!-- Bootstrap Pagination -->
-<!-- Bootstrap Pagination -->
-<div class="mt-4">
-    <nav aria-label="Page navigation">
-        <ul class="pagination d-flex flex-nowrap justify-content-center align-items-center list-unstyled" style="gap: 8px;">
-            {{-- Previous Page Link --}}
-            @if ($graduates->onFirstPage())
-                <li class="page-item disabled">
-                    <span class="page-link"><i class="fas fa-chevron-left"></i> Previous</span>
-                </li>
-            @else
-                <li class="page-item">
-                    <a class="page-link" href="{{ $graduates->previousPageUrl() }}&perPage={{ request('perPage', 5) }}" rel="prev"><i class="fas fa-chevron-left"></i> Previous</a>
-                </li>
-            @endif
-
-            {{-- Pagination Numbers --}}
-            @php
-                $currentPage = $graduates->currentPage();
-                $lastPage = $graduates->lastPage();
-                $start = max(1, $currentPage - 1);
-                $end = min($lastPage, $currentPage + 1);
-            @endphp
-
-            @foreach (range($start, $end) as $page)
-                @if ($page == $graduates->currentPage())
-                    <li class="page-item active">
-                        <span class="page-link">{{ $page }}</span>
+    <!-- Bootstrap Pagination -->
+    <div class="mt-4">
+        <nav aria-label="Page navigation">
+            <ul class="pagination d-flex flex-nowrap justify-content-center align-items-center list-unstyled" style="gap: 8px;">
+                {{-- Previous Page Link --}}
+                @if ($graduates->onFirstPage())
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fas fa-chevron-left"></i> Previous</span>
                     </li>
                 @else
                     <li class="page-item">
-                        <a class="page-link" href="{{ $graduates->url($page) }}&perPage={{ request('perPage', 5) }}">{{ $page }}</a>
+                        <a class="page-link" href="{{ $graduates->previousPageUrl() }}&perPage={{ request('perPage', 5) }}" rel="prev"><i class="fas fa-chevron-left"></i> Previous</a>
                     </li>
                 @endif
-            @endforeach
 
-            {{-- Next Page Link --}}
-            @if ($graduates->hasMorePages())
-                <li class="page-item">
-                    <a class="page-link" href="{{ $graduates->nextPageUrl() }}&perPage={{ request('perPage', 5) }}" rel="next">Next <i class="fas fa-chevron-right"></i></a>
-                </li>
-            @else
-                <li class="page-item disabled">
-                    <span class="page-link">Next <i class="fas fa-chevron-right"></i></span>
-                </li>
-            @endif
-        </ul>
-    </nav>
-</div>
+                {{-- Pagination Numbers --}}
+                @php
+                    $currentPage = $graduates->currentPage();
+                    $lastPage = $graduates->lastPage();
+                    $start = max(1, $currentPage - 1);
+                    $end = min($lastPage, $currentPage + 1);
+                @endphp
+
+                @foreach (range($start, $end) as $page)
+                    @if ($page == $graduates->currentPage())
+                        <li class="page-item active">
+                            <span class="page-link">{{ $page }}</span>
+                        </li>
+                    @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $graduates->url($page) }}&perPage={{ request('perPage', 5) }}">{{ $page }}</a>
+                        </li>
+                    @endif
+                @endforeach
+
+                {{-- Next Page Link --}}
+                @if ($graduates->hasMorePages())
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $graduates->nextPageUrl() }}&perPage={{ request('perPage', 5) }}" rel="next">Next <i class="fas fa-chevron-right"></i></a>
+                    </li>
+                @else
+                    <li class="page-item disabled">
+                        <span class="page-link">Next <i class="fas fa-chevron-right"></i></span>
+                    </li>
+                @endif
+            </ul>
+        </nav>
+    </div>
 </div>
 
 <script>
@@ -259,6 +262,33 @@
                     alert(error.message || 'Failed to add year.');
                 });
             }
+        });
+
+        // SweetAlert2 for Delete Confirmation
+        const deleteForms = document.querySelectorAll('.delete-form');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // Submit the form if confirmed
+                        Swal.fire(
+                            'Deleted!',
+                            'The graduate has been deleted.',
+                            'success'
+                        );
+                    }
+                });
+            });
         });
     });
 </script>

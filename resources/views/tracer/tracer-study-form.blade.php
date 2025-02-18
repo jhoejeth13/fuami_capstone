@@ -438,7 +438,7 @@
                     <h2>Education Information</h2>
                     <label>SHS Track/Strand Completed:
                         <select name="shs_track" required>
-                            <option disabled selected hidden value="">--Select Program--</option>
+                            <option disabled selected hidden value="">Select Program</option>
                             <optgroup label="--Academic Strand--">
                                 <option value="STEM" {{ old('shs_track') == 'STEM' ? 'selected' : '' }}>STEM</option>
                                 <option value="ABM" {{ old('shs_track') == 'ABM' ? 'selected' : '' }}>ABM</option>
@@ -452,9 +452,12 @@
                             </optgroup>
                         </select>
                     </label>
-                    <label>Year Graduated:
-                        <input type="text" name="year_graduated" value="{{ old('year_graduated') }}" required>
-                    </label>
+                    <select name="year_graduated">
+    <option value="">Select Year</option>
+    @foreach ($years as $year)
+        <option value="{{ $year }}" {{ old('year_graduated') == $year ? 'selected' : '' }}>{{ $year }}</option>
+    @endforeach
+</select>
                 </div>
 
                 <!-- Contact Information -->
