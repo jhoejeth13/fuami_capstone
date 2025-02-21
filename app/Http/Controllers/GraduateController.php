@@ -54,7 +54,7 @@ class GraduateController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'ID_student' => 'required|string|max:255',
+            'ID_student' => 'required|string|max:255', 
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',

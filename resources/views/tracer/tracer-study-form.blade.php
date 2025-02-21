@@ -265,14 +265,14 @@
     <div class="intro-section">
         <h1>FUAMI Senior High Graduates Tracer System</h1>
         <p>
-            The FUAMI Senior High Graduates Tracer System is an essential tool for tracking the post-graduation pathways of FUAMI's senior high school alumni. Through this comprehensive software platform, FUAMI can monitor the progress and outcomes of its graduates as they transition into higher education, employment, or other endeavors.
+            The FUAMI Senior High Graduates Tracer System is an essential tool for tracking the post-graduation pathways of FUAMI's Senior High School alumni. Through this comprehensive software platform, FUAMI can monitor the progress and outcomes of its graduates as they transition into higher education, employment, or other endeavors.
         </p>
         <button onclick="openForm()">Fill-In the Form as SHS Graduate</button>
     </div>
 
     <!-- Content Section -->
     <div class="content-section">
-        <h2 style="text-align: center;">FR. URIOS ACADEMY OF MAGALLANES INCORPORATED</h2>
+        <h2 style="text-align: center;">Fr. Urios Academy Of Magallanes, Inc.</h2>
 
         <!-- Card Container -->
         <div class="card-container">
@@ -358,7 +358,7 @@
             <div style="background: #f0f8ff; border: 1px solid #007bff; padding: 20px; margin: 20px 0; border-radius: 5px;">
                 <p style="margin: 0; line-height: 1.6; color: #004085;">
                     <strong>Dear graduates of FUAMI SHS,</strong><br><br>
-                    Please take the time to complete the Tracer Study Form accurately and honestly. 
+                    Please take time to complete the Tracer Study Form accurately and honestly. 
                     Your participation is crucial for research purposes, as it will help evaluate your 
                     employability status and contribute to the enhancement of the curriculum offered 
                     at Senior High of FR. URIOS ACADEMY OF MAGALLANES INCORPORATED. 

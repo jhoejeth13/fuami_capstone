@@ -11,7 +11,7 @@
 
 <!-- ID Number -->
 <div class="mb-4">
-    <label for="ID_student" class="block text-sm font-medium text-gray-700">ID Number:</label>
+    <label for="ID_student" class="block text-sm font-medium text-gray-700">LRN Number:</label>
     <input type="text" name="ID_student" id="ID_student" value="{{ old('ID_student') }}" required
            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
     @error('ID_student')
@@ -58,7 +58,6 @@
                 <option value="">-- Select Gender --</option>
                 <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
                 <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
-                <option value="Other" {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
             </select>
             @error('gender')
                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>

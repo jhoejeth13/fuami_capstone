@@ -69,7 +69,7 @@
             <header class="bg-white shadow flex justify-between items-center px-6 py-4">
                 <div class="flex items-center print:hidden">
                     <img src="{{ asset('images/icon.jpg') }}" alt="Logo" class="h-10 w-10 ml-3">
-                    <span class="text-lg font-semibold text-gray-900 ml-3">FR. Urios Academy of Magallanes Inc.</span>
+                    <span class="text-lg font-semibold text-gray-900 ml-3">Fr. Urios Academy of Magallanes, Inc.</span>
                 </div>
                 
                 <!-- Profile Dropdown -->
