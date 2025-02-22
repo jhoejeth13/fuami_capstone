@@ -5,14 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Graduate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Year;  // Add this line
+use App\Models\Year;
+
 class GraduateController extends Controller
 {
     public function index(Request $request)
     {
-        
         $query = Graduate::query();
-    
+
         // Apply search filter if provided
         if ($request->has('search')) {
             $search = $request->input('search');
@@ -23,38 +23,34 @@ class GraduateController extends Controller
                   ->orWhere('last_name', 'like', "%{$search}%");
             });
         }
-    
+
         // Apply year filter if provided
         if ($request->has('year') && $request->year != '') {
             $query->where('year_graduated', $request->year);
         }
-    
+
         // Paginate results
         $perPage = $request->input('perPage', 5); // Default to 5 rows per page
-        $graduates = Graduate::paginate($perPage);
+        $graduates = $query->paginate($perPage);
 
-    
         // Fetch years from the Year model
         $years = Year::pluck('year');
-    
+
         return view('graduates.index', compact('graduates', 'years'));
     }
-    
-    
-    
 
     public function create()
     {
         // Fetch years from the Year model
         $years = Year::pluck('year');
-    
+
         return view('graduates.create', compact('years'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'ID_student' => 'required|string|max:255', 
+            'ID_student' => 'nullable|string|max:255', // Changed to nullable
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -86,7 +82,6 @@ class GraduateController extends Controller
         return redirect()->route('graduates.index')->with('success', 'Graduate added successfully!');
     }
 
-        
     public function show(Graduate $graduate)
     {
         return view('graduates.show', compact('graduate'));
@@ -94,13 +89,14 @@ class GraduateController extends Controller
 
     public function edit(Graduate $graduate)
     {
-        return view('graduates.edit', compact('graduate'));
+        $years = Year::pluck('year');
+        return view('graduates.edit', compact('graduate', 'years'));
     }
 
     public function update(Request $request, Graduate $graduate)
     {
         $request->validate([
-            'ID_student' => 'required|string|max:255',
+            'ID_student' => 'nullable|string|max:255', // Changed to nullable
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -137,7 +133,6 @@ class GraduateController extends Controller
         return redirect()->route('graduates.index')->with('success', 'Graduate updated successfully!');
     }
 
-    
     public function destroy(Graduate $graduate)
     {
         if ($graduate->picture) {
@@ -152,12 +147,11 @@ class GraduateController extends Controller
         $request->validate([
             'year' => 'required|integer|unique:years,year',
         ]);
-    
+
         $year = Year::create([
             'year' => $request->input('year'),
         ]);
-    
+
         return response()->json(['year' => $year->year]);
     }
-
 }

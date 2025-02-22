@@ -1,177 +1,170 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="py-12">
+    <!-- Link the external CSS file -->
+    <link href="{{ asset('css/dashboard.css') }}" rel="stylesheet">
+
+    <div class="py-12 bg-gray-50">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Welcome Card -->
+            <div class="mb-8 no-print">
+                <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+            </div>
+
+            <!-- Filter Type Dropdown -->
+            <div class="mb-8 no-print">
+                <form action="{{ route('dashboard') }}" method="GET">
+                    <label for="filter_type" class="block text-sm font-medium text-gray-700">Filter By:</label>
+                    <select name="filter_type" id="filter_type" onchange="this.form.submit()" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
+                        <option value="both" {{ $selectedFilterType === 'both' ? 'selected' : '' }}>Both Graduates and Alumni</option>
+                        <option value="graduates" {{ $selectedFilterType === 'graduates' ? 'selected' : '' }}>Graduates Only</option>
+                        <option value="alumni" {{ $selectedFilterType === 'alumni' ? 'selected' : '' }}>Alumni Only</option>
+                    </select>
+                    <input type="hidden" name="graduate_year" value="{{ $selectedGraduateYear }}">
+                    <input type="hidden" name="employment_year" value="{{ $selectedEmploymentYear }}">
+                </form>
+            </div>
+
             <!-- Filters Section -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <!-- Graduate Year Filter -->
-                <div>
-                    <form action="{{ route('dashboard') }}" method="GET">
-                        <label for="graduate_year" class="block text-sm font-medium text-gray-700">Filter by Graduate Year:</label>
-                        <select name="graduate_year" id="graduate_year" onchange="this.form.submit()" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                            <option value="all" {{ $selectedGraduateYear === 'all' ? 'selected' : '' }}>All Years</option>
-                            @foreach ($availableGraduateYears as $year)
-                                <option value="{{ $year }}" {{ $selectedGraduateYear == $year ? 'selected' : '' }}>{{ $year }}</option>
-                            @endforeach
-                        </select>
-                        <input type="hidden" name="employment_year" value="{{ $selectedEmploymentYear }}">
-                    </form>
-                </div>
-
-                <!-- Employment Year Filter -->
-                <div>
-                    <form action="{{ route('dashboard') }}" method="GET">
-                        <label for="employment_year" class="block text-sm font-medium text-gray-700">Filter by Employment Year:</label>
-                        <select name="employment_year" id="employment_year" onchange="this.form.submit()" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                            <option value="all" {{ $selectedEmploymentYear === 'all' ? 'selected' : '' }}>All Years</option>
-                            @foreach ($availableEmploymentYears as $year)
-                                <option value="{{ $year }}" {{ $selectedEmploymentYear == $year ? 'selected' : '' }}>{{ $year }}</option>
-                            @endforeach
-                        </select>
-                        <input type="hidden" name="graduate_year" value="{{ $selectedGraduateYear }}">
-                    </form>
-                </div>
-            </div>
-
-            <!-- Clear Filters Button -->
-            <div class="mb-8">
-                <a href="{{ route('dashboard') }}" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-md">Clear Filters</a>
-            </div>
-
-            <!-- Cards Section -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <!-- Total Graduates Card -->
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 overflow-hidden shadow-sm sm:rounded-lg transform transition duration-500 hover:scale-105 relative">
-                    <div class="p-6 text-white">
-                        <div class="text-sm font-medium text-blue-100">
-                            Total of FUAMI SHS Graduates
-                            @if ($selectedGraduateYear !== 'all')
-                                ({{ $selectedGraduateYear }})
-                            @endif
-                        </div>
-                        <div class="mt-2 text-3xl font-semibold">
-                            {{ $totalGraduates }}
-                        </div>
-                        <div class="mt-4">
-                            <span class="text-sm text-blue-100"><br>Last updated: {{ $lastUpdated->format('M d, Y') }}</span>
-                        </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 no-print">
+                <!-- Graduate Year Filter (Conditional) -->
+                @if ($selectedFilterType === 'both' || $selectedFilterType === 'graduates')
+                    <div>
+                        <form action="{{ route('dashboard') }}" method="GET">
+                            <label for="graduate_year" class="block text-sm font-medium text-gray-700">Filter by Graduate Year:</label>
+                            <select name="graduate_year" id="graduate_year" onchange="this.form.submit()" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
+                                <option value="all" {{ $selectedGraduateYear === 'all' ? 'selected' : '' }}>All Years</option>
+                                @foreach ($availableGraduateYears as $year)
+                                    <option value="{{ $year }}" {{ $selectedGraduateYear == $year ? 'selected' : '' }}>{{ $year }}</option>
+                                @endforeach
+                            </select>
+                            <input type="hidden" name="filter_type" value="{{ $selectedFilterType }}">
+                            <input type="hidden" name="employment_year" value="{{ $selectedEmploymentYear }}">
+                        </form>
                     </div>
-                    <!-- Icon Background -->
-                    <i class="fas fa-graduation-cap absolute bottom-4 right-4 text-white opacity-20 text-6xl"></i>
-                </div>
+                @endif
 
-                <!-- Total Employment Card -->
-                <div class="bg-gradient-to-r from-green-500 to-green-600 overflow-hidden shadow-sm sm:rounded-lg transform transition duration-500 hover:scale-105 relative">
-                    <div class="p-6 text-white">
-                        <div class="text-sm font-medium text-green-100">
-                            Total of SHS Alumni 
-                            @if ( $selectedEmploymentYear !== 'all')
-                                ({{  $selectedEmploymentYear }})
-                            @endif
-                        </div>
-                        <div class="mt-2 text-3xl font-semibold">
-                            {{ $totalEmployed }}
-                        </div>
-                        <div class="mt-4">
-                            <span class="text-sm text-green-100"><br>Last updated: {{ $lastUpdated->format('M d, Y') }}</span>
-                        </div>
+                <!-- Employment Year Filter (Conditional) -->
+                @if ($selectedFilterType === 'both' || $selectedFilterType === 'alumni')
+                    <div>
+                        <form action="{{ route('dashboard') }}" method="GET">
+                            <label for="employment_year" class="block text-sm font-medium text-gray-700">Filter by Employment Year:</label>
+                            <select name="employment_year" id="employment_year" onchange="this.form.submit()" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
+                                <option value="all" {{ $selectedEmploymentYear === 'all' ? 'selected' : '' }}>All Years</option>
+                                @foreach ($availableEmploymentYears as $year)
+                                    <option value="{{ $year }}" {{ $selectedEmploymentYear == $year ? 'selected' : '' }}>{{ $year }}</option>
+                                @endforeach
+                            </select>
+                            <input type="hidden" name="filter_type" value="{{ $selectedFilterType }}">
+                            <input type="hidden" name="graduate_year" value="{{ $selectedGraduateYear }}">
+                        </form>
                     </div>
-                    <!-- Icon Background -->
-                    <i class="fas fa-briefcase absolute bottom-4 right-4 text-white opacity-20 text-6xl"></i>
-                </div>
+                @endif
             </div>
 
-            <!-- Charts Section -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Gender Distribution Chart -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-4">Gender Distribution
-                        @if ($selectedGraduateYear !== 'all')
-                            ({{ $selectedGraduateYear }})
-                        @endif
-                    </h2>
-                    <canvas id="genderChart" width="400" height="200"></canvas>
+            <!-- Clear Filters and Print Buttons -->
+            <div class="mb-8 flex items-center gap-4 no-print">
+                <a href="{{ route('dashboard') }}" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-md shadow-sm transition duration-300 ease-in-out">Clear Filters</a>
+                <button onclick="printCharts()" class="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition duration-300 flex items-center gap-2">
+                    <i class="fas fa-print"></i> Print
+                </button>
+            </div>
+
+            <!-- Print Content Container -->
+            <div class="print-content">
+                <h1 class="text-3xl font-bold text-gray-800">Summary Report</h1> <br>
+
+                <!-- Cards Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <!-- Total Graduates Card (Conditional) -->
+                    @if ($selectedFilterType === 'both' || $selectedFilterType === 'graduates')
+                        <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg transform transition duration-500 hover:scale-105 relative">
+                            <div class="p-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-500">
+                                            Total of FUAMI SHS Graduates
+                                            @if ($selectedGraduateYear !== 'all')
+                                                ({{ $selectedGraduateYear }})
+                                            @endif
+                                        </div>
+                                        <div class="mt-2 text-3xl font-semibold text-gray-900">
+                                            {{ $totalGraduates }}
+                                        </div>
+                                    </div>
+                                    <div class="text-blue-500">
+                                        <i class="fas fa-graduation-cap text-4xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Total Employment Card (Conditional) -->
+                    @if ($selectedFilterType === 'both' || $selectedFilterType === 'alumni')
+                        <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg transform transition duration-500 hover:scale-105 relative">
+                            <div class="p-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-500">
+                                            Total of SHS Alumni
+                                            @if ($selectedEmploymentYear !== 'all')
+                                                ({{ $selectedEmploymentYear }})
+                                            @endif
+                                        </div>
+                                        <div class="mt-2 text-3xl font-semibold text-gray-900">
+                                            {{ $totalAlumni }}
+                                        </div>
+                                    </div>
+                                    <div class="text-green-500">
+                                        <i class="fas fa-briefcase text-4xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
-                <!-- Employment Status Chart -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h2 class="text-xl font-semibold mb-4">Employment Status
-                        @if ($selectedEmploymentYear !== 'all')
-                            ({{ $selectedEmploymentYear }})
-                        @endif
-                    </h2>
-                    <canvas id="employmentChart" width="400" height="200"></canvas>
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Gender Distribution Chart (Conditional) -->
+                    @if ($selectedFilterType === 'both' || $selectedFilterType === 'graduates')
+                        <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg p-6">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4">SHS Graduates Gender
+                                @if ($selectedGraduateYear !== 'all')
+                                    ({{ $selectedGraduateYear }})
+                                @endif
+                            </h2>
+                            <canvas id="genderChart" width="400" height="200"></canvas>
+                        </div>
+                    @endif
+
+                    <!-- Employment Status Chart (Conditional) -->
+                    @if ($selectedFilterType === 'both' || $selectedFilterType === 'alumni')
+                        <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg p-6">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4">Employment Status
+                                @if ($selectedEmploymentYear !== 'all')
+                                    ({{ $selectedEmploymentYear }})
+                                @endif
+                            </h2>
+                            <canvas id="employmentChart" width="400" height="200"></canvas>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Include Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Gender Distribution Chart
-        const genderCtx = document.getElementById('genderChart').getContext('2d');
-        const genderChart = new Chart(genderCtx, {
-            type: 'pie',
-            data: {
-                labels: ['Male', 'Female'],
-                datasets: [{
-                    label: 'Gender Distribution',
-                    data: [{{ $genderData['male'] }}, {{ $genderData['female'] }}],
-                    backgroundColor: [
-                        'rgba(54, 162, 235, 0.8)', // Blue for Male
-                        'rgba(255, 99, 132, 0.8)', // Red for Female
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        enabled: true
-                    }
-                }
-            }
-        });
+    <!-- Pass data to JavaScript using data attributes -->
+    <div id="chart-data"
+         data-gender='@json($genderData)'
+         data-employment='@json($employmentData)'>
+    </div>
 
-        // Employment Status Chart
-        const employmentCtx = document.getElementById('employmentChart').getContext('2d');
-        const employmentChart = new Chart(employmentCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Employed', 'Self-Employed', 'Unemployed'],
-                datasets: [{
-                    label: 'Employment Status',
-                    data: [{{ $employmentData['employed'] }}, {{ $employmentData['self_employed'] }}, {{ $employmentData['unemployed'] }}],
-                    backgroundColor: [
-                        'rgba(75, 192, 192, 0.8)', // Green for Employed
-                        'rgba(153, 102, 255, 0.8)', // Purple for Self-Employed
-                        'rgba(255, 159, 64, 0.8)', // Orange for Unemployed
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        enabled: true
-                    }
-                }
-            }
-        });
-    </script>
+    <!-- Include Chart.js and chartjs-plugin-datalabels -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+    <!-- Include external JavaScript file -->
+    <script src="{{ asset('js/dashboard.js') }}"></script>
 @endsection

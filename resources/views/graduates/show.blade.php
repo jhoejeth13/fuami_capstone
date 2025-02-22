@@ -57,7 +57,7 @@
                 <!-- Details -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 print:grid-cols-2 print:gap-x-6 print:gap-y-3">
                     <div>
-                        <p class="text-sm text-gray-600 print:text-black font-bold">Student ID</p>
+                        <p class="text-sm text-gray-600 print:text-black font-bold">LRN Number</p>
                         <p class="text-base font-medium text-gray-900 print:text-black">{{ $graduate->ID_student }}</p>
                     </div>
                     <div>

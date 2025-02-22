@@ -34,3 +34,4 @@ Route::get('/tracer-responses', [TracerStudyController::class, 'index'])->name('
 Route::post('/add-year', [GraduateController::class, 'addYear'])->name('addYear');
 Route::post('/add-year', [GraduateController::class, 'addYear'])->name('add.year');
 require __DIR__.'/auth.php';
+

@@ -10,6 +10,9 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        // Get the selected filter type (default to 'both')
+        $selectedFilterType = $request->input('filter_type', 'both');
+
         // Get the selected year for graduates from the request (default to 'all' if not provided)
         $selectedGraduateYear = $request->input('graduate_year', 'all');
 
@@ -48,6 +51,13 @@ class DashboardController extends Controller
 
         // Calculate total employed (employed + self-employed)
         $totalEmployed = $employed + $selfEmployed;
+
+        // Fetch total alumni based on year_graduated in tracer_study_responses
+        $totalAlumniQuery = TracerStudyResponse::query();
+        if ($selectedEmploymentYear !== 'all') {
+            $totalAlumniQuery->where('year_graduated', $selectedEmploymentYear);
+        }
+        $totalAlumni = $totalAlumniQuery->count();
 
         // Fetch the latest created_at timestamp from both tables
         $lastAddedGraduate = Graduate::latest('created_at')->value('created_at');
@@ -90,14 +100,17 @@ class DashboardController extends Controller
 
         return view('dashboard', compact(
             'totalGraduates',
-            'totalEmployed', // Pass the total employed count to the view
+            'totalEmployed',
+            'totalAlumni',
             'genderData',
             'employmentData',
             'lastUpdated',
             'selectedGraduateYear',
             'selectedEmploymentYear',
+            'selectedFilterType',
             'availableGraduateYears',
             'availableEmploymentYears'
         ));
     }
+    
 }

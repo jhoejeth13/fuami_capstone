@@ -3,22 +3,21 @@
 @section('content')
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Page Heading -->
-<h1 class="text-2xl font-semibold text-black mb-6">Add New Graduate</h1>
+    <h1 class="text-2xl font-semibold text-black mb-6">Add New Graduate</h1>
 
     <!-- Form -->
     <form action="{{ route('graduates.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-sm sm:rounded-lg p-6">
         @csrf
 
-<!-- ID Number -->
-<div class="mb-4">
-    <label for="ID_student" class="block text-sm font-medium text-gray-700">LRN Number:</label>
-    <input type="text" name="ID_student" id="ID_student" value="{{ old('ID_student') }}" required
-           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-    @error('ID_student')
-        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-    @enderror
-</div>
-
+        <!-- LRN Number -->
+        <div class="mb-4">
+            <label for="ID_student" class="block text-sm font-medium text-gray-700">LRN Number (Optional):</label>
+            <input type="text" name="ID_student" id="ID_student" value="{{ old('ID_student') }}"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+            @error('ID_student')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
 
         <!-- First Name -->
         <div class="mb-4">
@@ -76,18 +75,18 @@
 
         <!-- Year Graduated -->
         <div class="mb-4">
-    <label for="year_graduated" class="block text-sm font-medium text-gray-700">Year Graduated</label>
-    <select name="year_graduated" id="year_graduated" required
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
-        <option value="">-- Select Year --</option>
-        @foreach($years as $year)
-            <option value="{{ $year }}" {{ old('year_graduated') == $year ? 'selected' : '' }}>{{ $year }}</option>
-        @endforeach
-    </select>
-    @error('year_graduated')
-        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-    @enderror
-</div>
+            <label for="year_graduated" class="block text-sm font-medium text-gray-700">Year Graduated</label>
+            <select name="year_graduated" id="year_graduated" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                <option value="">-- Select Year --</option>
+                @foreach($years as $year)
+                    <option value="{{ $year }}" {{ old('year_graduated') == $year ? 'selected' : '' }}>{{ $year }}</option>
+                @endforeach
+            </select>
+            @error('year_graduated')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
 
         <!-- SHS Program -->
         <div class="mb-4">
@@ -101,7 +100,7 @@
                 <option value="Humanities and Social Sciences(HUMSS)" {{ old('strand') == 'Humanities and Social Sciences(HUMSS)' ? 'selected' : '' }}>HUMSS: Humanities and Social Sciences</option>
                 <option value="General Academic(GA)" {{ old('strand') == 'General Academic(GA)' ? 'selected' : '' }}>GA: General Academic</option>
                 <optgroup label="--TVL Strand--" disabled></optgroup>
-                <option value="ICT: Computer System Servicing" {{ old('strand') == 'ICT: Computer System Servicing' ? 'selected' : '' }}>ICT</option>
+                <option value="ICT: Computer System Servicing" {{ old('strand') == 'ICT: Computer System Servicing' ? 'selected' : '' }}>ICT: Information Communication and Technology</option>
                 <option value="HE: Food and Beverages Services, Bread and Pastry Production" {{ old('strand') == 'HE: Food and Beverages Services, Bread and Pastry Production' ? 'selected' : '' }}>HE: Food and Beverages Services, Bread and Pastry Production</option>
                 <option value="IA: Shielded Metal Arc Welding, Electrical Installation and Maintenance" {{ old('strand') == 'IA: Shielded Metal Arc Welding, Electrical Installation and Maintenance' ? 'selected' : '' }}>IA: Shielded Metal Arc Welding, Electrical Installation and Maintenance</option>
             </select>

@@ -1,0 +1,43 @@
+/* public/css/dashboard.css */
+
+@media print {
+    .print-content {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .grid > div, .bg-white {
+        page-break-inside: avoid;
+    }
+
+    canvas {
+        max-width: 100% !important;
+        height: auto !important;
+        page-break-inside: avoid;
+    }
+
+    .no-print {
+        display: none;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    h1.text-3xl {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .bg-white {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        margin-bottom: 10px;
+    }
+
+    .p-6 {
+        padding: 10px !important;
+    }
+}
