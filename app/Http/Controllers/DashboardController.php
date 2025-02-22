@@ -46,6 +46,9 @@ class DashboardController extends Controller
         $selfEmployed = $selfEmployedQuery->count();
         $unemployed = $unemployedQuery->count();
 
+        // Calculate total employed (employed + self-employed)
+        $totalEmployed = $employed + $selfEmployed;
+
         // Fetch the latest created_at timestamp from both tables
         $lastAddedGraduate = Graduate::latest('created_at')->value('created_at');
         $lastAddedTracer = TracerStudyResponse::latest('created_at')->value('created_at');
@@ -87,6 +90,7 @@ class DashboardController extends Controller
 
         return view('dashboard', compact(
             'totalGraduates',
+            'totalEmployed', // Pass the total employed count to the view
             'genderData',
             'employmentData',
             'lastUpdated',
