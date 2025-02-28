@@ -12,7 +12,7 @@
             padding: 0;
             color: #333;
             line-height: 1.6;
-            background-image: url('{{ asset("images/_n.jpg") }}'); /* Add your background image */
+            background-image: url('{{ asset("images/_n.jpg") }}');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -27,7 +27,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); /* Dark overlay */
+            background-color: rgba(0, 0, 0, 0.6);
             z-index: -1;
         }
 
@@ -57,12 +57,15 @@
             font-size: 2.5rem;
             margin-bottom: 20px;
             font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .intro-section p {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             max-width: 800px;
             margin: 0 auto 30px;
+            line-height: 1.8;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .intro-section button {
@@ -73,12 +76,15 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            color:white
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
         .intro-section button:hover {
             background-color: #079cffb8;
             transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
         }
 
         /* Content Section */
@@ -88,25 +94,33 @@
             margin: 0 auto;
             position: relative;
             z-index: 1;
-            background-color: white; /* White background for content */
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .content-section h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #007bff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .card-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
         }
 
         .card {
-            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+            background-color: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            height: 400px; /* Fixed height for all cards */
-            overflow-y: auto; /* Scrollable content */
+            height: auto; /* Adjusted to fit content */
+            overflow-y: auto;
         }
 
         .card:hover {
@@ -115,28 +129,40 @@
         }
 
         .card h2 {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             margin-bottom: 15px;
             color: #007bff;
         }
 
-        .card p {
-            font-size: 1rem;
+        .card p, .card ul, .card ol {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .card ul, .card ol {
+            padding-left: 20px;
+        }
+
+        .card ul li, .card ol li {
+            margin-bottom: 8px;
         }
 
         /* Footer */
         .footer {
             text-align: center;
             padding: 20px;
-            background-color: rgba(0, 123, 255, 0.8); /* Semi-transparent blue */
+            background-color: rgba(0, 123, 255, 0.9);
             color: white;
             margin-top: 40px;
             position: relative;
             z-index: 1;
+            font-size: 0.95rem;
         }
 
         .footer p {
             margin: 0;
+            font-weight: 500;
         }
 
         /* Form Modal */
@@ -191,7 +217,7 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 1rem;
-            box-sizing: border-box; /* Ensures consistent sizing */
+            box-sizing: border-box;
         }
 
         input:focus, select:focus, textarea:focus {
@@ -256,8 +282,28 @@
             document.getElementById('formModal').style.display = 'none';
         }
 
+        // Calculate age based on date of birth
+        function calculateAge() {
+            const dob = document.getElementById('birthdate').value;
+            if (dob) {
+                const today = new Date();
+                const birthDate = new Date(dob);
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                document.getElementById('age').value = age;
+            }
+        }
+
         // Dynamically update the year in the footer
         document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Show complimentary message after form submission
+        function showComplimentaryMessage() {
+            alert("Thank you for filling out the form! Your response has been recorded.");
+        }
     </script>
 </head>
 <body>
@@ -265,14 +311,14 @@
     <div class="intro-section">
         <h1>FUAMI Senior High Graduates Tracer System</h1>
         <p>
-            The FUAMI Senior High Graduates Tracer System is an essential tool for tracking the post-graduation pathways of FUAMI's Senior High School alumni. Through this comprehensive software platform, FUAMI can monitor the progress and outcomes of its graduates as they transition into higher education, employment, or other endeavors.
+            The Fr. Urios Academy Of Magallanes, Inc. Senior High Graduates Tracer System is an essential tool for tracking the post-graduation pathways of FUAMI's Senior High School alumni. Through this comprehensive software platform, FUAMI can monitor the progress and outcomes of its graduates as they transition into higher education, employment, or other endeavors.
         </p>
         <button onclick="openForm()">Fill-In the Form as SHS Graduate</button>
     </div>
 
     <!-- Content Section -->
     <div class="content-section">
-        <h2 style="text-align: center;">Fr. Urios Academy Of Magallanes, Inc.</h2>
+        <h2>Fr. Urios Academy Of Magallanes, Inc.</h2>
 
         <!-- Card Container -->
         <div class="card-container">
@@ -347,21 +393,21 @@
 
     <!-- Footer -->
     <div class="footer">
-        <p>© <span id="currentYear"></span> FUAMI. All Rights Reserved.</p>
+        <p>© <span id="currentYear"></span> Fr. Urios Academy Of Magallanes, Inc. All Rights Reserved.</p>
     </div>
 
     <!-- Form Modal -->
     <div id="formModal" class="form-modal">
         <div class="form-content">
             <span class="close-btn" onclick="closeForm()">&times;</span>
-            <h1>Fuami SHS Graduate Tracer Form</h1>
+            <h1>FUAMI SHS Graduate Tracer Form</h1>
             <div style="background: #f0f8ff; border: 1px solid #007bff; padding: 20px; margin: 20px 0; border-radius: 5px;">
                 <p style="margin: 0; line-height: 1.6; color: #004085;">
                     <strong>Dear graduates of FUAMI SHS,</strong><br><br>
                     Please take time to complete the Tracer Study Form accurately and honestly. 
                     Your participation is crucial for research purposes, as it will help evaluate your 
                     employability status and contribute to the enhancement of the curriculum offered 
-                    at Senior High of FR. URIOS ACADEMY OF MAGALLANES INCORPORATED. 
+                    at Senior High of FR. URIOS ACADEMY OF MAGALLANES, INC. 
                     Rest assured that your responses will be kept confidential.<br><br>
                     Thank you for your cooperation.
                 </p>
@@ -373,7 +419,7 @@
                 </div>
             @endif
 
-            @if($errors->any())
+            @if($errors->any()))
                 <div style="color: red; padding: 10px; border: 1px solid red;">
                     <h3>Errors:</h3>
                     <ul>
@@ -384,7 +430,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('tracer.submit') }}" method="POST">
+            <form action="{{ route('tracer.submit') }}" method="POST" onsubmit="showComplimentaryMessage()">
                 @csrf
 
                 <!-- Personal Information -->
@@ -394,7 +440,7 @@
                         <input type="text" name="fullname" value="{{ old('fullname') }}" required>
                     </label>
                     <label>Age:
-                        <input type="number" name="age" value="{{ old('age') }}" required>
+                        <input type="number" name="age" id="age" value="{{ old('age') }}" required readonly>
                     </label>
                     <label>Gender:
                         <select name="gender" required>
@@ -404,10 +450,17 @@
                         </select>
                     </label>
                     <label>Date of Birth:
-                        <input type="date" name="birthdate" value="{{ old('birthdate') }}" required>
+                        <input type="date" name="birthdate" id="birthdate" value="{{ old('birthdate') }}" required onchange="calculateAge()">
                     </label>
                     <label>Civil Status:
-                        <input type="text" name="civil_status" value="{{ old('civil_status') }}" required>
+                        <select name="civil_status" required>
+                            <option value="">Select Civil Status</option>
+                            <option value="Single" {{ old('civil_status') == 'Single' ? 'selected' : '' }}>Single</option>
+                            <option value="Married" {{ old('civil_status') == 'Married' ? 'selected' : '' }}>Married</option>
+                            <option value="Divorced" {{ old('civil_status') == 'Divorced' ? 'selected' : '' }}>Divorced</option>
+                            <option value="Widowed" {{ old('civil_status') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
+                            <option value="Separated" {{ old('civil_status') == 'Separated' ? 'selected' : '' }}>Separated</option>
+                        </select>
                     </label>
                     <label>Religion:
                         <input type="text" name="religion" value="{{ old('religion') }}" required>
@@ -453,11 +506,11 @@
                         </select>
                     </label>
                     <select name="year_graduated">
-    <option value="">Select Year</option>
-    @foreach ($years as $year)
-        <option value="{{ $year }}" {{ old('year_graduated') == $year ? 'selected' : '' }}>{{ $year }}</option>
-    @endforeach
-</select>
+                        <option value="">Select Year</option>
+                        @foreach ($years as $year)
+                            <option value="{{ $year }}" {{ old('year_graduated') == $year ? 'selected' : '' }}>{{ $year }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <!-- Contact Information -->
@@ -533,17 +586,11 @@
                                 <option value="25 above" {{ old('years_in_company') == '25 above' ? 'selected' : '' }}>25+ years</option>
                             </select>
                         </label>
-                        <label>Monthly Income (PHP):
-                            <input type="number" name="monthly_income" value="{{ old('monthly_income') }}">
-                        </label>
                         <label>Job Related to SHS Track?
                             <select name="job_related_to_shs">
                                 <option value="Yes" {{ old('job_related_to_shs') == 'Yes' ? 'selected' : '' }}>Yes</option>
                                 <option value="No" {{ old('job_related_to_shs') == 'No' ? 'selected' : '' }}>No</option>
                             </select>
-                        </label>
-                        <label>Reasons for Staying:
-                            <textarea name="reason_staying_job">{{ old('reason_staying_job') }}</textarea>
                         </label>
                     </div>
 
@@ -565,9 +612,6 @@
                                 <option value="16 Above" {{ old('years_in_business') == '16 Above' ? 'selected' : '' }}>16+ years</option>
                             </select>
                         </label>
-                        <label>Monthly Income (PHP):
-                            <input type="number" name="self_employed_income" value="{{ old('self_employed_income') }}">
-                        </label>
                     </div>
 
                     <!-- Unemployed Fields -->
@@ -575,12 +619,6 @@
                         <h3>Unemployment Details</h3>
                         <label>Reasons for Unemployment:
                             <textarea name="unemployment_reason">{{ old('unemployment_reason') }}</textarea>
-                        </label>
-                        <label>Is FUAMI a Factor?
-                            <select name="fuami_factor">
-                                <option value="Yes" {{ old('fuami_factor') == 'Yes' ? 'selected' : '' }}>Yes</option>
-                                <option value="No" {{ old('fuami_factor') == 'No' ? 'selected' : '' }}>No</option>
-                            </select>
                         </label>
                     </div>
                 </div>
