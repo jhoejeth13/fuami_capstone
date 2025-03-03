@@ -41,6 +41,11 @@
                 </button>
             </div>
             <nav class="mt-5 flex-1">
+            <h1 class="px-6 py-3 text-sm uppercase text-gray-400 sidebar-text">Manage Users</h1>
+                <a href="{{ route('users.index') }}" class="block py-3 px-6 hover:bg-blue-700 flex items-center">
+                    <i class="fas fa-users mr-3"></i>
+                    <span class="sidebar-text">Manage Users</span>
+                </a>
                 <h1 class="px-6 py-3 text-sm uppercase text-gray-400 sidebar-text">Dashboard</h1>
                 <a href="{{ route('dashboard') }}" class="block py-3 px-6 hover:bg-blue-700 flex items-center">
                     <i class="fas fa-home mr-3"></i>
