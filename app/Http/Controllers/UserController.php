@@ -44,34 +44,29 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // Only allow users with the 'create-user' permission to access this page
         $this->authorize('create-user');
-
-        // Validate the request
+    
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'exists:roles,name'], // Validate the role
-            'permissions' => ['nullable', 'array'], // Validate permissions
-            'permissions.*' => ['exists:permissions,name'], // Validate each permission
+            'role' => ['required', 'exists:roles,name'],
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['exists:permissions,name'],
         ]);
-
-        // Create the user
+    
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-
-        // Assign the selected role to the user
+    
         $user->assignRole($request->role);
-
-        // Assign permissions to the user
+    
         if ($request->has('permissions')) {
             $user->givePermissionTo($request->permissions);
         }
-
+    
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 

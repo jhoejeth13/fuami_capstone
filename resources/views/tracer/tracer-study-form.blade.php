@@ -442,9 +442,9 @@
                     <label>Age:
                         <input type="number" name="age" id="age" value="{{ old('age') }}" required readonly>
                     </label>
-                    <label>Gender:
+                    <label>Sex:
                         <select name="gender" required>
-                            <option value="">Select Gender</option>
+                            <option value="">Select Sex</option>
                             <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
                             <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
                         </select>
@@ -490,21 +490,21 @@
                 <div class="form-section">
                     <h2>Education Information</h2>
                     <label>SHS Track/Strand Completed:
-                        <select name="shs_track" required>
-                            <option disabled selected hidden value="">Select Program</option>
-                            <optgroup label="--Academic Strand--">
-                                <option value="STEM" {{ old('shs_track') == 'STEM' ? 'selected' : '' }}>STEM</option>
-                                <option value="ABM" {{ old('shs_track') == 'ABM' ? 'selected' : '' }}>ABM</option>
-                                <option value="HUMSS" {{ old('shs_track') == 'HUMSS' ? 'selected' : '' }}>HUMSS</option>
-                                <option value="GAS" {{ old('shs_track') == 'GAS' ? 'selected' : '' }}>GAS</option>
-                            </optgroup>
-                            <optgroup label="--TVL Strand--">
-                                <option value="ICT" {{ old('shs_track') == 'ICT' ? 'selected' : '' }}>ICT</option>
-                                <option value="HE" {{ old('shs_track') == 'HE' ? 'selected' : '' }}>HE</option>
-                                <option value="IA" {{ old('shs_track') == 'IA' ? 'selected' : '' }}>IA</option>
-                            </optgroup>
-                        </select>
-                    </label>
+    <select name="shs_track" required>
+        <option disabled selected hidden value="">Select Program</option>
+        <optgroup label="--Academic Strand--">
+            <option value="STEM" {{ old('shs_track') == 'STEM' ? 'selected' : '' }}>STEM - Science, Technology, Engineering, and Mathematics</option>
+            <option value="ABM" {{ old('shs_track') == 'ABM' ? 'selected' : '' }}>ABM - Accountancy, Business, and Management</option>
+            <option value="HUMSS" {{ old('shs_track') == 'HUMSS' ? 'selected' : '' }}>HUMSS - Humanities and Social Sciences</option>
+            <option value="GAS" {{ old('shs_track') == 'GAS' ? 'selected' : '' }}>GAS - General Academic Strand</option>
+        </optgroup>
+        <optgroup label="--TVL Strand--">
+            <option value="ICT" {{ old('shs_track') == 'ICT' ? 'selected' : '' }}>ICT - Information and Communications Technology</option>
+            <option value="HE" {{ old('shs_track') == 'HE' ? 'selected' : '' }}>HE - Home Economics</option>
+            <option value="IA" {{ old('shs_track') == 'IA' ? 'selected' : '' }}>IA - Industrial Arts</option>
+        </optgroup>
+    </select>
+</label>
                     <select name="year_graduated">
                         <option value="">Select Year</option>
                         @foreach ($years as $year)
