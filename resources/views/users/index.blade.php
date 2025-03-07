@@ -24,9 +24,8 @@
     }
 
     .btn-sm {
-        padding: 10px 10px;
+        padding: 5px 10px;
         font-size: 14px;
-        color:white;
     }
 
     /* Table Styles */
@@ -113,11 +112,37 @@
     .btn i {
         margin-right: 5px;
     }
+
+    /* Flash Message Styles */
+    .alert {
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
 </style>
 
 <div class="container">
+    <!-- Flash Message -->
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Users</h1><br>
+        <h1>Users</h1>
         <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">
             <i class="fas fa-plus"></i> Create User
         </a>
@@ -148,7 +173,7 @@
                             <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this user?')">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
                             </form>

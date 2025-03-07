@@ -1,191 +1,81 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    /* General Styles */
-    .container {
-        padding: 20px;
-    }
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Page Heading -->
+    <h1 class="text-2xl font-semibold text-gray-800 mb-6">Edit User</h1>
 
-    h1 {
-        font-size: 24px;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #004085;
-    }
-
-    .btn-sm {
-        padding: 5px 10px;
-        font-size: 14px;
-    }
-
-    /* Table Styles */
-    .table-responsive {
-        overflow-x: auto;
-    }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-    }
-
-    .table th,
-    .table td {
-        padding: 12px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-    }
-
-    .table th {
-        background-color: #f8f9fa;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .table tbody tr:hover {
-        background-color: #f1f1f1;
-    }
-
-    .table .text-end {
-        text-align: right;
-    }
-
-    .btn-outline-secondary {
-        border-color: #6c757d;
-        color: #6c757d;
-    }
-
-    .btn-outline-secondary:hover {
-        background-color: #6c757d;
-        color: #fff;
-    }
-
-    .btn-outline-danger {
-        border-color: #dc3545;
-        color: #dc3545;
-    }
-
-    .btn-outline-danger:hover {
-        background-color: #dc3545;
-        color: #fff;
-    }
-
-    /* Pagination Styles */
-    .pagination {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-
-    .pagination .page-item {
-        margin: 0 5px;
-    }
-
-    .pagination .page-link {
-        color: #007bff;
-        border: 1px solid #ddd;
-        padding: 5px 10px;
-        border-radius: 4px;
-    }
-
-    .pagination .page-link:hover {
-        background-color: #f1f1f1;
-    }
-
-    .pagination .page-item.active .page-link {
-        background-color: #007bff;
-        border-color: #007bff;
-        color: #fff;
-    }
-
-    /* Icon Styles */
-    .btn i {
-        margin-right: 5px;
-    }
-
-    /* Flash Message Styles */
-    .alert {
-        padding: 10px;
-        margin-bottom: 20px;
-        border-radius: 4px;
-    }
-
-    .alert-success {
-        background-color: #d4edda;
-        border-color: #c3e6cb;
-        color: #155724;
-    }
-
-    .alert-danger {
-        background-color: #f8d7da;
-        border-color: #f5c6cb;
-        color: #721c24;
-    }
-</style>
-
-<div class="container">
-    <!-- Flash Message -->
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
+    <!-- Validation Errors -->
+    @if ($errors->any())
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-6">
+            <h2 class="font-semibold">Whoops! Something went wrong.</h2>
+            <ul class="mt-2 list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Users</h1>
-        <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">
-            <i class="fas fa-plus"></i> Create User
-        </a>
-    </div>
+    <!-- Form -->
+    <form action="{{ route('users.update', $user->id) }}" method="POST" class="bg-white shadow-sm sm:rounded-lg p-6">
+        @csrf
+        @method('PUT')
 
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Role</th>
-                    <th scope="col" class="text-end">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($users as $user)
-                    <tr>
-                        <td>{{ $user->id }}</td>
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->email }}</td>
-                        <td>{{ $user->getRoleNames()->implode(', ') }}</td>
-                        <td class="text-end">
-                            <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-outline-secondary">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this user?')">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
+        <!-- Name -->
+        <div class="mb-4">
+            <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+            <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" required
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                   placeholder="Enter user's full name">
+        </div>
+
+        <!-- Email -->
+        <div class="mb-4">
+            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" required
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                   placeholder="Enter user's email address">
+        </div>
+
+        <!-- Password -->
+        <div class="mb-4">
+            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <input type="password" name="password" id="password"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                   placeholder="Leave blank to keep current password">
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mb-4">
+            <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+            <input type="password" name="password_confirmation" id="password_confirmation"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                   placeholder="Confirm the new password">
+        </div>
+
+        <!-- Role -->
+        <div class="mb-6">
+            <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+            <select name="role" id="role" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                @foreach ($roles as $role)
+                    <option value="{{ $role->name }}" {{ $user->hasRole($role->name) ? 'selected' : '' }}>
+                        {{ $role->name }}
+                    </option>
                 @endforeach
-            </tbody>
-        </table>
-    </div>
+            </select>
+        </div>
 
-    <div class="d-flex justify-content-center mt-4">
-        {{ $users->links() }}
-    </div>
+        <!-- Buttons -->
+        <div class="flex space-x-2">
+            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                Update User
+            </button>
+            <a href="{{ route('users.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-500 border border-transparent rounded-md font-semibold text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                Cancel
+            </a>
+        </div>
+    </form>
 </div>
 @endsection
