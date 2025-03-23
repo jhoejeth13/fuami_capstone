@@ -27,7 +27,7 @@
 
             <!-- Rows Per Page Filter -->
             <select name="perPage" onchange="this.form.submit()"
-                    class="w-full sm:w-32 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    class="w-full sm:w-32 px-3 py-2 border border-gray-1-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <option value="5" {{ request('perPage') == 5 ? 'selected' : '' }}>5</option>
                 <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
                 <option value="15" {{ request('perPage') == 15 ? 'selected' : '' }}>15</option>
@@ -43,21 +43,21 @@
 
     <!-- Table Section -->
     <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
+        <table class="min-w-full divide-y divide-gray-200 border border-gray-300">
             <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Personal Information</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Education</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employment Details</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Info</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">#</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">Personal Information</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">Education</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">Employment Details</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">Contact Info</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
                 @foreach($responses as $index => $response)
                 <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $index + 1 }}</td>
-                    <td class="px-6 py-4 text-sm text-gray-900">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border border-gray-300">{{ $index + 1 }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900 border border-gray-300">
                         <div class="space-y-2">
                             <div class="flex items-center space-x-2">
                                 <i class="fas fa-user text-gray-500"></i>
@@ -89,7 +89,7 @@
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-900">
+                    <td class="px-6 py-4 text-sm text-gray-900 border border-gray-300">
                         <div class="space-y-2">
                             <div class="flex items-center space-x-2">
                                 <i class="fas fa-graduation-cap text-gray-500"></i>
@@ -101,7 +101,7 @@
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-900">
+                    <td class="px-6 py-4 text-sm text-gray-900 border border-gray-300">
                         <div class="space-y-2">
                             <div class="flex items-center space-x-2">
                                 <i class="fas fa-briefcase text-gray-500"></i>
@@ -153,7 +153,7 @@
                             @endif
                         </div>
                     </td>
-                    <td class="px-6 py-4 text-sm text-gray-900">
+                    <td class="px-6 py-4 text-sm text-gray-900 border border-gray-300">
                         <div class="space-y-2">
                             <div class="flex items-center space-x-2">
                                 <i class="fas fa-phone text-gray-500"></i>
@@ -214,6 +214,13 @@
         background-color: #3b82f6;
         border-color: #3b82f6;
         color: white;
+    }
+    /* Add border to table cells */
+    table {
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid #d1d5db; /* Light gray border */
     }
 </style>
 @endpush

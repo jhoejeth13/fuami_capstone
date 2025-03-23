@@ -439,6 +439,9 @@
                     <label>Full Name:
                         <input type="text" name="fullname" value="{{ old('fullname') }}" required>
                     </label>
+                    <label>Date of Birth:
+                        <input type="date" name="birthdate" id="birthdate" value="{{ old('birthdate') }}" required onchange="calculateAge()">
+                    </label>
                     <label>Age:
                         <input type="number" name="age" id="age" value="{{ old('age') }}" required readonly>
                     </label>
@@ -448,9 +451,6 @@
                             <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
                             <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
                         </select>
-                    </label>
-                    <label>Date of Birth:
-                        <input type="date" name="birthdate" id="birthdate" value="{{ old('birthdate') }}" required onchange="calculateAge()">
                     </label>
                     <label>Civil Status:
                         <select name="civil_status" required>
@@ -516,12 +516,12 @@
                 <!-- Contact Information -->
                 <div class="form-section">
                     <h2>Contact Information</h2>
-                    <label>Facebook:
+                    <!-- <label>Facebook:
                         <input type="text" name="facebook" value="{{ old('facebook') }}">
                     </label>
                     <label>Twitter/X:
                         <input type="text" name="twitter" value="{{ old('twitter') }}">
-                    </label>
+                    </label> -->
                     <label>Phone Number:
                         <input type="text" name="phone" value="{{ old('phone') }}" required>
                     </label>

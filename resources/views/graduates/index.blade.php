@@ -67,8 +67,9 @@
     <!-- Search and Filter Form -->
     <div class="mb-6 flex justify-between items-center">
         <!-- Search Bar -->
-        <input type="text" id="searchInput" placeholder="Search by name or ID..."
-            class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <input type="text" id="searchInput" name="search" placeholder="Search by name or ID..."
+            class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value="{{ request('search') }}">
 
         <!-- Year Input and Year Filter Dropdown -->
         <div class="flex space-x-2">
@@ -80,10 +81,10 @@
             </button>
 
             <!-- Year Filter Dropdown -->
-            <select id="yearFilter" class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select id="yearFilter" name="year" class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">All Years</option>
                 @foreach ($years as $year)
-                    <option value="{{ $year }}">{{ $year }}</option>
+                    <option value="{{ $year }}" {{ request('year') == $year ? 'selected' : '' }}>{{ $year }}</option>
                 @endforeach
             </select>
         </div>
@@ -92,7 +93,7 @@
     <!-- Rows Per Page Filter -->
     <div class="mb-4">
         <label for="rowsPerPage" class="text-sm font-medium text-gray-700">Rows per page:</label>
-        <select id="rowsPerPage" class="px-2 py-1 border border-gray-300 rounded-md">
+        <select id="rowsPerPage" name="perPage" class="px-2 py-1 border border-gray-300 rounded-md">
             <option value="5" {{ request('perPage') == 5 ? 'selected' : '' }}>5</option>
             <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
             <option value="15" {{ request('perPage') == 15 ? 'selected' : '' }}>15</option>
@@ -150,157 +151,100 @@
         </div>
     </div>
 
-    <!-- Bootstrap Pagination -->
+    <!-- Pagination Links -->
     <div class="mt-4">
-        <nav aria-label="Page navigation">
-            <ul class="pagination d-flex flex-nowrap justify-content-center align-items-center list-unstyled" style="gap: 8px;">
-                {{-- Previous Page Link --}}
-                @if ($graduates->onFirstPage())
-                    <li class="page-item disabled">
-                        <span class="page-link"><i class="fas fa-chevron-left"></i> Previous</span>
-                    </li>
-                @else
-                    <li class="page-item">
-                        <a class="page-link" href="{{ $graduates->previousPageUrl() }}&perPage={{ request('perPage', 5) }}" rel="prev"><i class="fas fa-chevron-left"></i> Previous</a>
-                    </li>
-                @endif
-
-                {{-- Pagination Numbers --}}
-                @php
-                    $currentPage = $graduates->currentPage();
-                    $lastPage = $graduates->lastPage();
-                    $start = max(1, $currentPage - 1);
-                    $end = min($lastPage, $currentPage + 1);
-                @endphp
-
-                @foreach (range($start, $end) as $page)
-                    @if ($page == $graduates->currentPage())
-                        <li class="page-item active">
-                            <span class="page-link">{{ $page }}</span>
-                        </li>
-                    @else
-                        <li class="page-item">
-                            <a class="page-link" href="{{ $graduates->url($page) }}&perPage={{ request('perPage', 5) }}">{{ $page }}</a>
-                        </li>
-                    @endif
-                @endforeach
-
-                {{-- Next Page Link --}}
-                @if ($graduates->hasMorePages())
-                    <li class="page-item">
-                        <a class="page-link" href="{{ $graduates->nextPageUrl() }}&perPage={{ request('perPage', 5) }}" rel="next">Next <i class="fas fa-chevron-right"></i></a>
-                    </li>
-                @else
-                    <li class="page-item disabled">
-                        <span class="page-link">Next <i class="fas fa-chevron-right"></i></span>
-                    </li>
-                @endif
-            </ul>
-        </nav>
+        {{ $graduates->appends(['search' => request('search'), 'year' => request('year'), 'perPage' => request('perPage')])->links() }}
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('searchInput');
-        const yearFilter = document.getElementById('yearFilter');
-        const addYearButton = document.getElementById('addYearButton');
-        const newYearInput = document.getElementById('newYearInput');
-        const rowsPerPage = document.getElementById('rowsPerPage');
-        const table = document.getElementById('graduatesTable');
-        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const yearFilter = document.getElementById('yearFilter');
+    const addYearButton = document.getElementById('addYearButton');
+    const newYearInput = document.getElementById('newYearInput');
+    const rowsPerPage = document.getElementById('rowsPerPage');
 
-        // Function to filter rows based on search and year
-        function filterRows() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const selectedYear = yearFilter.value;
+    // Function to update the URL with filters
+    function updateFilters() {
+        const search = searchInput.value;
+        const year = yearFilter.value;
+        const perPage = rowsPerPage.value;
 
-            Array.from(rows).forEach(row => {
-                const id = row.getElementsByTagName('td')[0].textContent.toLowerCase();
-                const name = row.getElementsByTagName('td')[1].textContent.toLowerCase();
-                const year = row.getElementsByTagName('td')[3].textContent.trim();
+        const url = new URL(window.location.href);
+        url.searchParams.set('search', search);
+        url.searchParams.set('year', year);
+        url.searchParams.set('perPage', perPage);
 
-                const matchesSearch = name.includes(searchTerm) || id.includes(searchTerm);
-                const matchesYear = selectedYear === '' || parseInt(year) === parseInt(selectedYear);
+        window.location.href = url.toString();
+    }
 
-                row.style.display = matchesSearch && matchesYear ? '' : 'none';
+    // Event Listeners
+    searchInput.addEventListener('input', updateFilters);
+    yearFilter.addEventListener('change', updateFilters);
+    rowsPerPage.addEventListener('change', updateFilters);
+
+    // Add Year Functionality
+    addYearButton.addEventListener('click', function() {
+        const newYear = newYearInput.value.trim();
+
+        if (newYear) {
+            fetch('{{ route("add.year") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ year: newYear })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.year) {
+                    const newOption = document.createElement('option');
+                    newOption.value = data.year;
+                    newOption.textContent = data.year;
+                    yearFilter.appendChild(newOption);
+                    newYearInput.value = ''; // Clear input field
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error.message || 'Failed to add year.');
             });
         }
+    });
 
-        // Function to update rows per page
-        function updateRowsPerPage() {
-            const selectedRowsPerPage = rowsPerPage.value;
-            const currentUrl = new URL(window.location.href);
-            currentUrl.searchParams.set('perPage', selectedRowsPerPage);
-            window.location.href = currentUrl.toString();
-        }
+    // SweetAlert2 for Delete Confirmation
+    const deleteForms = document.querySelectorAll('.delete-form');
+    deleteForms.forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
 
-        // Event Listeners
-        searchInput.addEventListener('input', filterRows);
-        yearFilter.addEventListener('change', filterRows);
-        rowsPerPage.addEventListener('change', updateRowsPerPage);
-
-        // Add Year Functionality
-        addYearButton.addEventListener('click', function() {
-            const newYear = newYearInput.value.trim();
-
-            if (newYear) {
-                fetch('{{ route("add.year") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ year: newYear })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => { throw err; });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.year) {
-                        const newOption = document.createElement('option');
-                        newOption.value = data.year;
-                        newOption.textContent = data.year;
-                        yearFilter.appendChild(newOption);
-                        newYearInput.value = ''; // Clear input field
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert(error.message || 'Failed to add year.');
-                });
-            }
-        });
-
-        // SweetAlert2 for Delete Confirmation
-        const deleteForms = document.querySelectorAll('.delete-form');
-        deleteForms.forEach(form => {
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Delete'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit(); // Submit the form if confirmed
-                        Swal.fire(
-                            'Deleted!',
-                            'The graduate has been deleted.',
-                            'success'
-                        );
-                    }
-                });
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // Submit the form if confirmed
+                    Swal.fire(
+                        'Deleted!',
+                        'The graduate has been deleted.',
+                        'success'
+                    );
+                }
             });
         });
     });
+});
 </script>
 @endsection

@@ -12,7 +12,7 @@ class GraduateController extends Controller
     public function index(Request $request)
     {
         $query = Graduate::query();
-
+    
         // Apply search filter if provided
         if ($request->has('search')) {
             $search = $request->input('search');
@@ -23,19 +23,26 @@ class GraduateController extends Controller
                   ->orWhere('last_name', 'like', "%{$search}%");
             });
         }
-
+    
         // Apply year filter if provided
         if ($request->has('year') && $request->year != '') {
             $query->where('year_graduated', $request->year);
         }
-
+    
         // Paginate results
         $perPage = $request->input('perPage', 5); // Default to 5 rows per page
         $graduates = $query->paginate($perPage);
-
+    
+        // Append query parameters to pagination links
+        $graduates->appends([
+            'search' => $request->search,
+            'year' => $request->year,
+            'perPage' => $perPage,
+        ]);
+    
         // Fetch years from the Year model
         $years = Year::pluck('year');
-
+    
         return view('graduates.index', compact('graduates', 'years'));
     }
 
