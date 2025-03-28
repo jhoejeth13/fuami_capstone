@@ -27,7 +27,7 @@
 
             <!-- Rows Per Page Filter -->
             <select name="perPage" onchange="this.form.submit()"
-                    class="w-full sm:w-32 px-3 py-2 border border-gray-1-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    class="w-full sm:w-32 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <option value="5" {{ request('perPage') == 5 ? 'selected' : '' }}>5</option>
                 <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
                 <option value="15" {{ request('perPage') == 15 ? 'selected' : '' }}>15</option>
@@ -184,8 +184,59 @@
     </div>
 
     <!-- Pagination -->
-    <div class="mt-6">
-        {{ $responses->appends(request()->query())->links() }}
+    <div class="mt-6 flex items-center justify-center">
+        <nav class="flex items-center space-x-1">
+            {{-- Previous Page Link --}}
+            @if ($responses->onFirstPage())
+                <span class="px-3 py-1 rounded border border-gray-300 text-gray-400 cursor-not-allowed">
+                    Previous
+                </span>
+            @else
+                <a href="{{ $responses->previousPageUrl() }}" class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">
+                    Previous
+                </a>
+            @endif
+
+            {{-- Pagination Elements --}}
+            @php
+                // Show max 4 page numbers around current page
+                $start = max(1, $responses->currentPage() - 1);
+                $end = min($responses->lastPage(), $responses->currentPage() + 2);
+                
+                // Adjust if we're near the start
+                if ($responses->currentPage() <= 2) {
+                    $end = min(4, $responses->lastPage());
+                }
+                
+                // Adjust if we're near the end
+                if ($responses->currentPage() >= $responses->lastPage() - 1) {
+                    $start = max(1, $responses->lastPage() - 3);
+                }
+            @endphp
+
+            @foreach ($responses->getUrlRange($start, $end) as $page => $url)
+                @if ($page == $responses->currentPage())
+                    <span class="px-3 py-1 rounded border border-blue-500 bg-blue-500 text-white">
+                        {{ $page }}
+                    </span>
+                @else
+                    <a href="{{ $url }}" class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">
+                        {{ $page }}
+                    </a>
+                @endif
+            @endforeach
+
+            {{-- Next Page Link --}}
+            @if ($responses->hasMorePages())
+                <a href="{{ $responses->nextPageUrl() }}" class="px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50">
+                    Next
+                </a>
+            @else
+                <span class="px-3 py-1 rounded border border-gray-300 text-gray-400 cursor-not-allowed">
+                    Next
+                </span>
+            @endif
+        </nav>
     </div>
 </div>
 @endsection
@@ -196,31 +247,25 @@
         width: 16px;
         text-align: center;
     }
-    .pagination {
-        display: flex;
-        justify-content: center;
-        margin-top: 1rem;
-    }
-    .page-item {
-        margin: 0 0.25rem;
-    }
-    .page-link {
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        border: 1px solid #d1d5db;
-        color: #374151;
-    }
-    .page-item.active .page-link {
-        background-color: #3b82f6;
-        border-color: #3b82f6;
-        color: white;
-    }
     /* Add border to table cells */
     table {
         border-collapse: collapse;
     }
     th, td {
         border: 1px solid #d1d5db; /* Light gray border */
+    }
+    /* Pagination styling */
+    nav a, nav span {
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-size: 0.875rem; /* 14px */
+        line-height: 1.25rem; /* 20px */
+    }
+    nav a:hover {
+        background-color: #f3f4f6;
+    }
+    .cursor-not-allowed {
+        cursor: not-allowed;
     }
 </style>
 @endpush

@@ -4,10 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FUAMI SHS Tracer System</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Global Styles */
+        :root {
+            --primary: #1d4ed8;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e40af;
+            --accent: #079cff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+        }
+        
         body {
-            font-family: 'Inter', Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
             color: #333;
@@ -27,137 +42,178 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.7);
             z-index: -1;
-        }
-
-        h1, h2, h3 {
-            color: #007bff;
-        }
-
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
         }
 
         /* Introduction Section */
         .intro-section {
             text-align: center;
-            padding: 80px 20px;
+            padding: 6rem 1.5rem;
             color: white;
             position: relative;
             z-index: 1;
+            background: linear-gradient(135deg, rgba(29, 78, 216, 0.8) 0%, rgba(7, 156, 255, 0.8) 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+            margin-bottom: 3rem;
         }
 
         .intro-section h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            font-size: 2.75rem;
+            margin-bottom: 1.5rem;
             font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .intro-section p {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             max-width: 800px;
-            margin: 0 auto 30px;
+            margin: 0 auto 2.5rem;
             line-height: 1.8;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            opacity: 0.9;
         }
 
-        .intro-section button {
-            padding: 12px 24px;
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
             font-size: 1rem;
-            background-color: #079cffb8;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            color: white;
             font-weight: 600;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            text-decoration: none;
+            border-radius: 0.375rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .intro-section button:hover {
-            background-color: #079cffb8;
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            border: 2px solid var(--accent);
+        }
+
+        .btn-primary:hover {
+            background-color: rgba(7, 156, 255, 0.9);
             transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         /* Content Section */
         .content-section {
-            padding: 40px 20px;
+            padding: 3rem 1.5rem;
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 0 auto 4rem;
             position: relative;
             z-index: 1;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
-        .content-section h2 {
+        .section-title {
             text-align: center;
             font-size: 2rem;
-            margin-bottom: 30px;
-            color: #007bff;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2.5rem;
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: var(--accent);
         }
 
         .card-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
 
         .card {
             background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            height: auto; /* Adjusted to fit content */
-            overflow-y: auto;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+            height: 100%;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
         }
 
         .card h2 {
             font-size: 1.4rem;
-            margin-bottom: 15px;
-            color: #007bff;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .card h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--accent);
         }
 
         .card p, .card ul, .card ol {
             font-size: 0.95rem;
-            line-height: 1.6;
-            margin: 0;
+            line-height: 1.7;
+            color: #4b5563;
         }
 
         .card ul, .card ol {
-            padding-left: 20px;
+            padding-left: 1.25rem;
         }
 
         .card ul li, .card ol li {
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .card ul li:before {
+            content: '•';
+            color: var(--accent);
+            font-weight: bold;
+            display: inline-block; 
+            width: 1em;
+            margin-left: -1em;
         }
 
         /* Footer */
         .footer {
             text-align: center;
-            padding: 20px;
-            background-color: rgba(0, 123, 255, 0.9);
+            padding: 2rem 1rem;
+            background-color: var(--primary);
             color: white;
-            margin-top: 40px;
             position: relative;
             z-index: 1;
             font-size: 0.95rem;
+            clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 100%);
+            margin-top: 4rem;
         }
 
         .footer p {
@@ -173,68 +229,107 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.7);
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            backdrop-filter: blur(5px);
         }
 
         .form-content {
             background-color: white;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 2rem;
+            border-radius: 0.5rem;
             width: 90%;
             max-width: 800px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .form-title {
+            font-size: 1.75rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-note {
+            background: #f0f8ff;
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.25rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
 
         .form-section {
-            margin: 20px 0;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            background-color: #f8fafc;
         }
 
         .form-section h2 {
             font-size: 1.25rem;
-            margin-bottom: 15px;
-            color: #007bff;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .form-section h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--accent);
         }
 
         label {
             display: block;
-            margin: 10px 0 5px;
+            margin: 1rem 0 0.5rem;
             font-weight: 500;
+            color: #334155;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 10px;
-            margin: 5px 0 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 0.75rem;
+            margin: 0.25rem 0 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
             font-size: 1rem;
             box-sizing: border-box;
+            transition: all 0.2s ease;
         }
 
         input:focus, select:focus, textarea:focus {
-            border-color: #007bff;
+            border-color: var(--accent);
             outline: none;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            box-shadow: 0 0 0 3px rgba(7, 156, 255, 0.2);
         }
 
         .close-btn {
-            float: right;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
             font-size: 1.5rem;
             cursor: pointer;
-            color: #333;
+            color: #64748b;
+            transition: color 0.2s ease;
+            background: none;
+            border: none;
+            padding: 0.25rem;
         }
 
         .close-btn:hover {
-            color: #007bff;
+            color: var(--danger);
         }
 
         .hidden {
@@ -242,13 +337,42 @@
         }
 
         .error {
-            color: red;
+            color: var(--danger);
             font-size: 0.875rem;
-            margin-top: 5px;
+            margin-top: -0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .success-message {
+            color: var(--success);
+            padding: 1rem;
+            border: 1px solid var(--success);
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+
+        .error-message {
+            color: var(--danger);
+            padding: 1rem;
+            border: 1px solid var(--danger);
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .error-message ul {
+            margin: 0.5rem 0 0;
+            padding-left: 1.25rem;
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .intro-section {
+                padding: 4rem 1rem;
+                clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+            }
+            
             .intro-section h1 {
                 font-size: 2rem;
             }
@@ -257,82 +381,92 @@
                 font-size: 1rem;
             }
 
-            .form-content {
-                padding: 20px;
+            .content-section {
+                padding: 2rem 1rem;
+            }
+
+            .section-title {
+                font-size: 1.75rem;
             }
 
             .card-container {
                 grid-template-columns: 1fr;
             }
-        }
-    </style>
-    <script>
-        function toggleEmploymentFields() {
-            const status = document.getElementById('employment_status').value;
-            document.getElementById('employed_fields').style.display = status === 'Employed' ? 'block' : 'none';
-            document.getElementById('self_employed_fields').style.display = status === 'Self-employed' ? 'block' : 'none';
-            document.getElementById('unemployed_fields').style.display = status === 'Unemployed' ? 'block' : 'none';
-        }
 
-        function openForm() {
-            document.getElementById('formModal').style.display = 'flex';
-        }
-
-        function closeForm() {
-            document.getElementById('formModal').style.display = 'none';
-        }
-
-        // Calculate age based on date of birth
-        function calculateAge() {
-            const dob = document.getElementById('birthdate').value;
-            if (dob) {
-                const today = new Date();
-                const birthDate = new Date(dob);
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const monthDiff = today.getMonth() - birthDate.getMonth();
-                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                    age--;
-                }
-                document.getElementById('age').value = age;
+            .form-content {
+                padding: 1.5rem;
             }
         }
 
-        // Dynamically update the year in the footer
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        @media (max-width: 480px) {
+            .intro-section {
+                padding: 3rem 1rem;
+            }
+            
+            .intro-section h1 {
+                font-size: 1.75rem;
+            }
 
-        // Show complimentary message after form submission
-        function showComplimentaryMessage() {
-            alert("Thank you for filling out the form! Your response has been recorded.");
+            .btn {
+                padding: 0.7rem 1.5rem;
+                font-size: 0.95rem;
+            }
         }
-    </script>
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        .delay-100 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-200 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-300 {
+            animation-delay: 0.3s;
+        }
+    </style>
 </head>
 <body>
     <!-- Introduction Section -->
-    <div class="intro-section">
-        <h1>FUAMI Senior High Graduates Tracer System</h1>
-        <p>
-            The Fr. Urios Academy Of Magallanes, Inc. Senior High Graduates Tracer System is an essential tool for tracking the post-graduation pathways of FUAMI's Senior High School alumni. Through this comprehensive software platform, FUAMI can monitor the progress and outcomes of its graduates as they transition into higher education, employment, or other endeavors.
-        </p>
-        <button onclick="openForm()">Fill-In the Form as SHS Graduate</button>
+    <div class="intro-section animate-fade">
+        <div class="animate-fade delay-100">
+            <h1>FUAMI Senior High Graduates Tracer System</h1>
+            <p>
+                The Fr. Urios Academy Of Magallanes, Inc. Senior High Graduates Tracer System is an essential tool for tracking the post-graduation pathways of FUAMI's Senior High School alumni. Through this comprehensive software platform, FUAMI can monitor the progress and outcomes of its graduates as they transition into higher education, employment, or other endeavors.
+            </p>
+            <button class="btn btn-primary" onclick="openForm()">
+                <i class="fas fa-edit mr-2"></i> Fill Out Tracer Form
+            </button>
+        </div>
     </div>
 
     <!-- Content Section -->
-    <div class="content-section">
-        <h2>Fr. Urios Academy Of Magallanes, Inc.</h2>
+    <div class="content-section animate-fade delay-200">
+        <h2 class="section-title">Fr. Urios Academy Of Magallanes, Inc.</h2>
 
         <!-- Card Container -->
         <div class="card-container">
             <!-- Philosophy Card -->
-            <div class="card">
-                <h2>PHILOSOPHY</h2>
+            <div class="card animate-fade delay-300">
+                <h2><i class="fas fa-lightbulb mr-2 text-accent"></i> PHILOSOPHY</h2>
                 <p>
                     The manifold of the students are recognized and honed. The students become SALUTAY to their family, society and the church. As such the students are watchful (vigilant) servant. Teachers who are committed servants of God. (MASAWA).
                 </p>
             </div>
 
             <!-- Core Values Card -->
-            <div class="card">
-                <h2>CORE VALUES</h2>
+            <div class="card animate-fade delay-300">
+                <h2><i class="fas fa-star mr-2 text-accent"></i> CORE VALUES</h2>
                 <ul>
                     <li>CARITAS (Care for Others)</li>
                     <li>STEWARDSHIP</li>
@@ -342,16 +476,16 @@
             </div>
 
             <!-- Vision Card -->
-            <div class="card">
-                <h2>VISION</h2>
+            <div class="card animate-fade delay-300">
+                <h2><i class="fas fa-eye mr-2 text-accent"></i> VISION</h2>
                 <p>
                     Christ-centered persons who care for the earth and fellow human beings.
                 </p>
             </div>
 
             <!-- Mission Card -->
-            <div class="card">
-                <h2>MISSION</h2>
+            <div class="card animate-fade delay-300">
+                <h2><i class="fas fa-bullseye mr-2 text-accent"></i> MISSION</h2>
                 <ol>
                     <li><strong>CATHECHISM</strong> - to know Christ better and the teachings of the church.</li>
                     <li><strong>STEWARDSHIP</strong> - to become humble and obedient servants of God.</li>
@@ -361,16 +495,16 @@
             </div>
 
             <!-- Hallmark Card -->
-            <div class="card">
-                <h2>HALL MARK</h2>
+            <div class="card animate-fade delay-300">
+                <h2><i class="fas fa-award mr-2 text-accent"></i> HALL MARK</h2>
                 <p>
                     MAGDADASIG (BERNABE)
                 </p>
             </div>
 
             <!-- FUAMINIAN Prayer Card -->
-            <div class="card">
-                <h2>THE FUAMINIAN PRAYER</h2>
+            <div class="card animate-fade delay-300">
+                <h2><i class="fas fa-pray mr-2 text-accent"></i> THE FUAMINIAN PRAYER</h2>
                 <p>
                     Oh light and life, our Risen Christ,<br>
                     May your children shine so bright<br>
@@ -399,10 +533,11 @@
     <!-- Form Modal -->
     <div id="formModal" class="form-modal">
         <div class="form-content">
-            <span class="close-btn" onclick="closeForm()">&times;</span>
-            <h1>FUAMI SHS Graduate Tracer Form</h1>
-            <div style="background: #f0f8ff; border: 1px solid #007bff; padding: 20px; margin: 20px 0; border-radius: 5px;">
-                <p style="margin: 0; line-height: 1.6; color: #004085;">
+            <button class="close-btn" onclick="closeForm()">&times;</button>
+            <h1 class="form-title">FUAMI SHS Graduate Tracer Form</h1>
+            
+            <div class="form-note">
+                <p>
                     <strong>Dear graduates of FUAMI SHS,</strong><br><br>
                     Please take time to complete the Tracer Study Form accurately and honestly. 
                     Your participation is crucial for research purposes, as it will help evaluate your 
@@ -414,14 +549,14 @@
             </div>
 
             @if(session('success'))
-                <div style="color: green; padding: 10px; border: 1px solid green;">
-                    {{ session('success') }}
+                <div class="success-message">
+                    <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
                 </div>
             @endif
 
             @if($errors->any()))
-                <div style="color: red; padding: 10px; border: 1px solid red;">
-                    <h3>Errors:</h3>
+                <div class="error-message">
+                    <h3><i class="fas fa-exclamation-circle mr-2"></i> Errors:</h3>
                     <ul>
                         @foreach($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -435,7 +570,7 @@
 
                 <!-- Personal Information -->
                 <div class="form-section">
-                    <h2>Personal Information</h2>
+                    <h2><i class="fas fa-user mr-2"></i> Personal Information</h2>
                     <label>Full Name:
                         <input type="text" name="fullname" value="{{ old('fullname') }}" required>
                     </label>
@@ -465,7 +600,7 @@
                     <label>Religion:
                         <input type="text" name="religion" value="{{ old('religion') }}" required>
                     </label>
-                    <h2>Address</h2>
+                    <h2><i class="fas fa-map-marker-alt mr-2"></i> Address</h2>
                     <label>Purok/Barangay/Street:
                         <input type="text" name="address" value="{{ old('address') }}" required>
                     </label>
@@ -488,40 +623,36 @@
 
                 <!-- Education Information -->
                 <div class="form-section">
-                    <h2>Education Information</h2>
+                    <h2><i class="fas fa-graduation-cap mr-2"></i> Education Information</h2>
                     <label>SHS Track/Strand Completed:
-    <select name="shs_track" required>
-        <option disabled selected hidden value="">Select Program</option>
-        <optgroup label="--Academic Strand--">
-            <option value="STEM" {{ old('shs_track') == 'STEM' ? 'selected' : '' }}>STEM - Science, Technology, Engineering, and Mathematics</option>
-            <option value="ABM" {{ old('shs_track') == 'ABM' ? 'selected' : '' }}>ABM - Accountancy, Business, and Management</option>
-            <option value="HUMSS" {{ old('shs_track') == 'HUMSS' ? 'selected' : '' }}>HUMSS - Humanities and Social Sciences</option>
-            <option value="GAS" {{ old('shs_track') == 'GAS' ? 'selected' : '' }}>GAS - General Academic Strand</option>
-        </optgroup>
-        <optgroup label="--TVL Strand--">
-            <option value="ICT" {{ old('shs_track') == 'ICT' ? 'selected' : '' }}>ICT - Information and Communications Technology</option>
-            <option value="HE" {{ old('shs_track') == 'HE' ? 'selected' : '' }}>HE - Home Economics</option>
-            <option value="IA" {{ old('shs_track') == 'IA' ? 'selected' : '' }}>IA - Industrial Arts</option>
-        </optgroup>
-    </select>
-</label>
-                    <select name="year_graduated">
-                        <option value="">Select Year</option>
-                        @foreach ($years as $year)
-                            <option value="{{ $year }}" {{ old('year_graduated') == $year ? 'selected' : '' }}>{{ $year }}</option>
-                        @endforeach
-                    </select>
+                        <select name="shs_track" required>
+                            <option disabled selected hidden value="">Select Program</option>
+                            <optgroup label="Academic Strand">
+                                <option value="STEM" {{ old('shs_track') == 'STEM' ? 'selected' : '' }}>STEM - Science, Technology, Engineering, and Mathematics</option>
+                                <option value="ABM" {{ old('shs_track') == 'ABM' ? 'selected' : '' }}>ABM - Accountancy, Business, and Management</option>
+                                <option value="HUMSS" {{ old('shs_track') == 'HUMSS' ? 'selected' : '' }}>HUMSS - Humanities and Social Sciences</option>
+                                <option value="GAS" {{ old('shs_track') == 'GAS' ? 'selected' : '' }}>GAS - General Academic Strand</option>
+                            </optgroup>
+                            <optgroup label="TVL Strand">
+                                <option value="ICT" {{ old('shs_track') == 'ICT' ? 'selected' : '' }}>ICT - Information and Communications Technology</option>
+                                <option value="HE" {{ old('shs_track') == 'HE' ? 'selected' : '' }}>HE - Home Economics</option>
+                                <option value="IA" {{ old('shs_track') == 'IA' ? 'selected' : '' }}>IA - Industrial Arts</option>
+                            </optgroup>
+                        </select>
+                    </label>
+                    <label>Year Graduated:
+                        <select name="year_graduated" required>
+                            <option value="">Select Year</option>
+                            @foreach ($years as $year)
+                                <option value="{{ $year }}" {{ old('year_graduated') == $year ? 'selected' : '' }}>{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </label>
                 </div>
 
                 <!-- Contact Information -->
                 <div class="form-section">
-                    <h2>Contact Information</h2>
-                    <!-- <label>Facebook:
-                        <input type="text" name="facebook" value="{{ old('facebook') }}">
-                    </label>
-                    <label>Twitter/X:
-                        <input type="text" name="twitter" value="{{ old('twitter') }}">
-                    </label> -->
+                    <h2><i class="fas fa-address-book mr-2"></i> Contact Information</h2>
                     <label>Phone Number:
                         <input type="text" name="phone" value="{{ old('phone') }}" required>
                     </label>
@@ -532,7 +663,7 @@
 
                 <!-- Employment Information -->
                 <div class="form-section">
-                    <h2>Employment Information</h2>
+                    <h2><i class="fas fa-briefcase mr-2"></i> Employment Information</h2>
                     <label>Employment Status:
                         <select name="employment_status" id="employment_status" required onchange="toggleEmploymentFields()">
                             <option value="">Select Status</option>
@@ -544,7 +675,7 @@
 
                     <!-- Employed Fields -->
                     <div id="employed_fields" class="hidden">
-                        <h3>Employment Details</h3>
+                        <h3><i class="fas fa-building mr-2"></i> Employment Details</h3>
                         <label>Organization Type:
                             <input type="text" name="organization_type" value="{{ old('organization_type') }}">
                         </label>
@@ -596,7 +727,7 @@
 
                     <!-- Self-Employed Fields -->
                     <div id="self_employed_fields" class="hidden">
-                        <h3>Self-Employment Details</h3>
+                        <h3><i class="fas fa-user-tie mr-2"></i> Self-Employment Details</h3>
                         <label>Nature of Employment:
                             <input type="text" name="nature_of_employment" value="{{ old('nature_of_employment') }}">
                         </label>
@@ -616,23 +747,85 @@
 
                     <!-- Unemployed Fields -->
                     <div id="unemployed_fields" class="hidden">
-                        <h3>Unemployment Details</h3>
+                        <h3><i class="fas fa-user-clock mr-2"></i> Unemployment Details</h3>
                         <label>Reasons for Unemployment:
-                            <textarea name="unemployment_reason">{{ old('unemployment_reason') }}</textarea>
+                            <textarea name="unemployment_reason" rows="4">{{ old('unemployment_reason') }}</textarea>
                         </label>
                     </div>
                 </div>
 
-                <button type="submit" style="padding: 12px 24px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease;">
-                    Submit Form
-                </button>
+                <div class="flex justify-between mt-6">
+                <button type="button" class="btn border border-gray-300 text-gray-800 hover:bg-gray-100" onclick="closeForm()">
+    <i class="fas fa-times mr-2"></i> Cancel
+</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane mr-2"></i> Submit Form
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 
     <script>
         // Initialize visibility on page load
-        toggleEmploymentFields();
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleEmploymentFields();
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        });
+
+        function toggleEmploymentFields() {
+            const status = document.getElementById('employment_status').value;
+            document.getElementById('employed_fields').style.display = status === 'Employed' ? 'block' : 'none';
+            document.getElementById('self_employed_fields').style.display = status === 'Self-employed' ? 'block' : 'none';
+            document.getElementById('unemployed_fields').style.display = status === 'Unemployed' ? 'block' : 'none';
+        }
+
+        function openForm() {
+            document.getElementById('formModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent scrolling when form is open
+        }
+
+        function closeForm() {
+            document.getElementById('formModal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Re-enable scrolling
+        }
+
+        // Calculate age based on date of birth
+        function calculateAge() {
+            const dob = document.getElementById('birthdate').value;
+            if (dob) {
+                const today = new Date();
+                const birthDate = new Date(dob);
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                document.getElementById('age').value = age;
+            }
+        }
+
+        // Show complimentary message after form submission
+        function showComplimentaryMessage() {
+            Swal.fire({
+                title: 'Thank You!',
+                text: 'Your response has been successfully recorded.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#1d4ed8'
+            });
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('formModal');
+            if (event.target == modal) {
+                closeForm();
+            }
+        }
     </script>
+    
+    <!-- SweetAlert2 for better alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

@@ -3,134 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUAMI SHS Dashboard</title>
+    <!-- CDN Links -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
-    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        .sidebar-icon-only .sidebar-text {
+        :root {
+            --primary: #1d4ed8;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e40af;
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 80px;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        /* Sidebar transitions */
+        .sidebar {
+            width: var(--sidebar-width);
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+        
+        .sidebar.collapsed .sidebar-text,
+        .sidebar.collapsed .sidebar-header-text,
+        .sidebar.collapsed .sidebar-section,
+        .sidebar.collapsed .sidebar-logo {
             display: none;
         }
-        .sidebar-icon-only .sidebar-header-text {
-            display: none;
+        
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
         }
-        .sidebar-icon-only {
-            width: 64px;
+        
+        /* Main content adjustment */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
         }
+        
+        .sidebar.collapsed ~ .main-content {
+            margin-left: var(--sidebar-collapsed);
+        }
+        
+        /* Active nav item */
+        .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid white;
+        }
+        
+        /* Dropdown animation */
+        .dropdown-enter {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        
+        .dropdown-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.2s ease;
+        }
+        
+        .dropdown-exit {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .dropdown-exit-active {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+        }
+        
+        /* Print styles */
         @media print {
             #sidebar, header {
                 display: none !important;
             }
+            
+            .main-content {
+                margin-left: 0 !important;
+            }
         }
-        .text-xl {
-    font-size: 2rem;
-    line-height: 1.75rem;
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        .sidebar.collapsed #toggleSidebar {
+    margin-left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
     </style>
 </head>
-<body class="bg-gray-100">
-    <div class="flex h-screen">
+<body class="bg-gray-50">
+    <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside id="sidebar" class="w-64 bg-blue-900 text-white flex flex-col fixed h-full transition-all duration-300 ease-in-out transform -translate-x-full md:translate-x-0 md:relative">
-            <div class="flex items-center justify-between p-4 border-b border-blue-700">
-                <span class="text-lg font-semibold sidebar-header-text">FUAMI SHS REPO</span>
-                <button id="burgerMenu" class="text-white">
+        <aside id="sidebar" class="sidebar fixed h-full bg-gradient-to-b from-blue-900 to-blue-800 text-white shadow-lg z-20">
+            <div class="flex items-center justify-between p-5 border-b border-blue-700">
+                <div class="flex items-center">
+                    <img src="{{ asset('images/icon.jpg') }}" alt="Logo" class="sidebar-logo h-10 w-10 rounded-lg">
+                    <span class="sidebar-header-text ml-3 text-lg font-semibold">FUAMI SHS</span>
+                </div>
+                <button id="toggleSidebar" class="text-blue-200 hover:text-white focus:outline-none">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
-                <button id="closeSidebar" class="text-white md:hidden">
-                    <i class="fas fa-times"></i>
-                </button>
             </div>
-            <nav class="mt-5 flex-1">
-            <h1 class="px-6 py-3 text-sm uppercase text-gray-400 sidebar-text">Manage Users</h1>
-                <a href="{{ route('users.index') }}" class="block py-3 px-6 hover:bg-blue-700 flex items-center">
-                    <i class="fas fa-users mr-3"></i>
-                    <span class="sidebar-text">Manage Users</span>
-                </a>
-                <h1 class="px-6 py-3 text-sm uppercase text-gray-400 sidebar-text">Dashboard</h1>
-                <a href="{{ route('dashboard') }}" class="block py-3 px-6 hover:bg-blue-700 flex items-center">
-                    <i class="fas fa-home mr-3"></i>
-                    <span class="sidebar-text">Dashboard</span>
-                </a>
-                <h1 class="px-6 py-3 text-sm uppercase text-gray-400 sidebar-text">Personal Information</h1>
-                <a href="{{ route('graduates.create') }}" class="block py-3 px-6 hover:bg-blue-700 flex items-center">
-                    <i class="fas fa-graduation-cap mr-2"></i>
-                    <span class="sidebar-text">Add New Graduate</span>
-                </a>
-                <a href="{{ route('graduates.index') }}" class="block py-3 px-6 hover:bg-blue-700 flex items-center">
-                    <i class="fas fa-user-graduate mr-3"></i>
-                    <span class="sidebar-text">Manage SHS Graduates</span>
-                </a>
-                <h1 class="px-6 py-3 text-sm uppercase text-gray-400 sidebar-text">SHS Alumni Track</h1>
-                <a href="{{ route('tracer-responses.index') }}" class="block py-3 px-6 hover:bg-blue-700 flex items-center">
-                    <i class="fas fa-search mr-3"></i>
-                    <span class="sidebar-text">SHS Alumni Tracer</span>
-                </a>
+            
+            <nav class="mt-2 flex-1 overflow-y-auto">
+                <!-- Dashboard Section -->
+                <div class="px-4 py-3">
+                    <h3 class="sidebar-section uppercase text-xs font-semibold text-blue-300 tracking-wider sidebar-text">Dashboard</h3>
+                    <a href="{{ route('dashboard') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-home text-lg w-6 text-center"></i>
+                        <span class="sidebar-text ml-3">Dashboard</span>
+                    </a>
+                </div>
+                
+                <!-- User Management Section -->
+                <div class="px-4 py-3">
+                    <h3 class="sidebar-section uppercase text-xs font-semibold text-blue-300 tracking-wider sidebar-text">User Management</h3>
+                    <a href="{{ route('users.index') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-users text-lg w-6 text-center"></i>
+                        <span class="sidebar-text ml-3">Manage Users</span>
+                    </a>
+                </div>
+                
+                <!-- Graduate Management Section -->
+                <div class="px-4 py-3">
+                    <h3 class="sidebar-section uppercase text-xs font-semibold text-blue-300 tracking-wider sidebar-text">Graduate Records</h3>
+                    <a href="{{ route('graduates.create') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-user-plus text-lg w-6 text-center"></i>
+                        <span class="sidebar-text ml-3">Add Graduate</span>
+                    </a>
+                    <a href="{{ route('graduates.index') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-user-graduate text-lg w-6 text-center"></i>
+                        <span class="sidebar-text ml-3">Manage Graduates</span>
+                    </a>
+                </div>
+                
+                <!-- Tracer Section -->
+                <div class="px-4 py-3">
+                    <h3 class="sidebar-section uppercase text-xs font-semibold text-blue-300 tracking-wider sidebar-text">Alumni Tracking</h3>
+                    <a href="{{ route('tracer-responses.index') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-search text-lg w-6 text-center"></i>
+                        <span class="sidebar-text ml-3">Alumni Tracer</span>
+                    </a>
+                </div>
             </nav>
+            
+            <!-- Sidebar Footer -->
+            <div class="p-4 border-t border-blue-700 text-center text-blue-300 text-sm sidebar-text">
+                FUAMI SHS &copy; {{ date('Y') }}
+            </div>
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col bg-white min-h-screen">
-            <!-- Top Bar -->
-            <header class="bg-white shadow flex justify-between items-center px-6 py-4">
-                <div class="flex items-center print:hidden">
-                    <img src="{{ asset('images/icon.jpg') }}" alt="Logo" class="h-10 w-10 ml-3">
-                    <span class="text-lg font-semibold text-gray-900 ml-3">Fr. Urios Academy of Magallanes, Inc.</span>
-                </div>
-                
-                <!-- Profile Dropdown -->
-                <div class="relative">
-                    <button onclick="toggleDropdown()" class="flex items-center text-gray-900 focus:outline-none">
-                        <span>{{ Auth::user()->name }}</span>
-                        <i class="fas fa-chevron-down ml-2"></i>
-                    </button>
+        <div class="main-content flex-1 flex flex-col min-h-screen">
+            <!-- Top Navigation -->
+            <header class="bg-white shadow-sm sticky top-0 z-10">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <!-- Breadcrumbs would go here -->
+                    <div class="flex items-center">
+                        <button id="mobileToggle" class="mr-4 text-gray-600 hover:text-blue-600 md:hidden">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-gray-800">@yield('title', 'Senior High Graduates Repository and Alumni Tracer System')</h1>
+                    </div>
                     
-                    <!-- Dropdown Menu -->
-                    <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md overflow-hidden z-50">
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 hover:bg-gray-100 flex items-center">
-                            <i class="fas fa-user mr-2"></i> Profile
-                        </a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="block w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center">
-                                <i class="fas fa-sign-out-alt mr-2"></i> Log Out
+                    <!-- User Profile -->
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button onclick="toggleProfileDropdown()" class="flex items-center space-x-2 focus:outline-none">
+                                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-800 font-semibold">
+                                    {{ substr(Auth::user()->name, 0, 1) }}
+                                </div>
+                                <span class="hidden md:inline text-gray-700">{{ Auth::user()->name }}</span>
+                                <i class="fas fa-chevron-down text-gray-500 text-xs hidden md:inline"></i>
                             </button>
-                        </form>
+                            
+                            <!-- Dropdown Menu -->
+                            <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 border border-gray-100">
+                                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center">
+                                    <i class="fas fa-user-cog mr-2 text-blue-500"></i> Profile Settings
+                                </a>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 flex items-center">
+                                        <i class="fas fa-sign-out-alt mr-2 text-blue-500"></i> Logout
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </header>
 
-            <!-- Main Content Area -->
-            <main class="flex-1 p-6 overflow-y-auto">
+            <!-- Page Content -->
+            <main class="flex-1 p-6 bg-gray-50">
                 @yield('content')
             </main>
+            
+            <!-- Footer -->
+            <footer class="bg-white border-t px-6 py-4 text-center text-sm text-gray-500">
+                <p>Fr. Urios Academy of Magallanes, Inc. - Senior High School Department</p>
+            </footer>
         </div>
     </div>
 
     <script>
-        function toggleDropdown() {
+        // Toggle sidebar collapse
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const mobileToggle = document.getElementById('mobileToggle');
+        
+        function toggleSidebarCollapse() {
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+        }
+        
+        // Mobile sidebar toggle
+        function toggleMobileSidebar() {
+            sidebar.classList.toggle('-translate-x-full');
+        }
+        
+        // Initialize sidebar state
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+        
+        // Event listeners
+        toggleSidebar.addEventListener('click', toggleSidebarCollapse);
+        mobileToggle.addEventListener('click', toggleMobileSidebar);
+        
+        // Profile dropdown toggle
+        function toggleProfileDropdown() {
             document.getElementById('profileDropdown').classList.toggle('hidden');
         }
-
-        const sidebar = document.getElementById('sidebar');
-        const burgerMenu = document.getElementById('burgerMenu');
-
-        burgerMenu.addEventListener('click', function () {
-            sidebar.classList.toggle('-translate-x-full');
-            sidebar.classList.toggle('sidebar-icon-only');
-        });
-
-        document.getElementById('closeSidebar').addEventListener('click', function () {
-            sidebar.classList.add('-translate-x-full');
-            sidebar.classList.remove('sidebar-icon-only');
-        });
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function (event) {
-            if (!sidebar.contains(event.target) && !burgerMenu.contains(event.target)) {
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileButton = document.querySelector('[onclick="toggleProfileDropdown()"]');
+            
+            if (!profileButton.contains(event.target) && !profileDropdown.contains(event.target)) {
+                profileDropdown.classList.add('hidden');
+            }
+            
+            // Close mobile sidebar when clicking outside
+            if (window.innerWidth < 768 && !sidebar.contains(event.target) && !mobileToggle.contains(event.target)) {
                 sidebar.classList.add('-translate-x-full');
-                sidebar.classList.remove('sidebar-icon-only');
             }
         });
+        
+        // Update active nav item
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Set active nav item based on current URL
+        function setActiveNavItem() {
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.nav-item').forEach(item => {
+                const linkPath = item.getAttribute('href');
+                if (currentPath === linkPath || 
+                    (linkPath !== '/' && currentPath.startsWith(linkPath))) {
+                    item.classList.add('active');
+                }
+            });
+        }
+        
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', setActiveNavItem);
     </script>
 </body>
 </html>

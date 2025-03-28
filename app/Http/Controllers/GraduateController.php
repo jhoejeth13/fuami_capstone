@@ -20,13 +20,22 @@ class GraduateController extends Controller
                 $q->where('ID_student', 'like', "%{$search}%")
                   ->orWhere('first_name', 'like', "%{$search}%")
                   ->orWhere('middle_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%");
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('strand', 'like', "%{$search}%");
+
             });
         }
     
         // Apply year filter if provided
         if ($request->has('year') && $request->year != '') {
             $query->where('year_graduated', $request->year);
+        }
+    
+        // Handle print request
+        if ($request->has('print')) {
+            $graduates = $query->get();
+            $year = $request->input('year');
+            return view('graduates.print', compact('graduates', 'year'));
         }
     
         // Paginate results

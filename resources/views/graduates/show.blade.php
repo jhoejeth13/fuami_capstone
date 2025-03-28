@@ -29,18 +29,18 @@
         <div class="flex items-start gap-6 print:flex-row print:items-start relative z-10">
             <!-- Photo Section -->
             <div class="w-32 h-32 flex-shrink-0 print:w-32 print:h-32 print:mb-0">
-                <div class="p-1 rounded-xl border border-gray-200">
-                    @if ($graduate->picture)
-                        <img src="{{ asset('storage/' . $graduate->picture) }}" 
-                             alt="Graduate Picture"
-                             class="w-full h-full object-cover rounded-lg">
-                    @else
-                        <div class="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center">
-                            <span class="text-gray-500 text-xs">No Photo</span>
-                        </div>
-                    @endif
-                </div>
-            </div>
+    <div class="p-1 rounded-xl border border-gray-200">
+        @if ($graduate->picture)
+            <img src="{{ asset('storage/' . $graduate->picture) }}" 
+                 alt="Graduate Picture"
+                 class="w-full h-full object-cover rounded-lg">
+        @else
+            <img src="{{ asset('images/icon.jpg') }}" 
+                 alt="Default Picture"
+                 class="w-full h-full object-cover rounded-lg">
+        @endif
+    </div>
+</div>
 
             <!-- Information Section -->
             <div class="flex-1 space-y-4 print:space-y-4">

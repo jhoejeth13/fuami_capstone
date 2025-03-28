@@ -95,10 +95,10 @@
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                 <option disabled selected hidden>--Select Program--</option>
                 <optgroup label="--Academic Strand--" disabled></optgroup>
-                <option value="Science, Technology, Engineering, Mathematics(STEM)" {{ old('strand') == 'Science, Technology, Engineering, Mathematics(STEM)' ? 'selected' : '' }}>STEM: Science, Technology, Engineering, Mathematics</option>
+                <option value="Science, Technology, Engineering, and Mathematics(STEM)" {{ old('strand') == 'Science, Technology, Engineering, and Mathematics(STEM)' ? 'selected' : '' }}>STEM: Science, Technology, Engineering, and Mathematics</option>
                 <option value="Accountancy, Business, and Management(ABM)" {{ old('strand') == 'Accountancy, Business, and Management(ABM)' ? 'selected' : '' }}>ABM: Accountancy, Business, and Management</option>
                 <option value="Humanities and Social Sciences(HUMSS)" {{ old('strand') == 'Humanities and Social Sciences(HUMSS)' ? 'selected' : '' }}>HUMSS: Humanities and Social Sciences</option>
-                <option value="General Academic(GA)" {{ old('strand') == 'General Academic(GA)' ? 'selected' : '' }}>GA: General Academic</option>
+                <option value="General Academic Strand(GAS)" {{ old('strand') == 'General Academic Strand(GAS)' ? 'selected' : '' }}>GAS: General Academic Strand</option>
                 <optgroup label="--TVL Strand--" disabled></optgroup>
                 <option value="ICT: Computer System Servicing" {{ old('strand') == 'ICT: Computer System Servicing' ? 'selected' : '' }}>ICT: Information Communication and Technology</option>
                 <option value="HE: Food and Beverages Services, Bread and Pastry Production" {{ old('strand') == 'HE: Food and Beverages Services, Bread and Pastry Production' ? 'selected' : '' }}>HE: Food and Beverages Services, Bread and Pastry Production</option>
