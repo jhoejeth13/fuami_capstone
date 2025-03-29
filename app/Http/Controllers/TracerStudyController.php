@@ -64,6 +64,8 @@ class TracerStudyController extends Controller
                 ->withInput()
                 ->withErrors(['error' => 'Failed to save data: ' . $e->getMessage()]);
         }
+
+        
     }
 
     public function index(Request $request)

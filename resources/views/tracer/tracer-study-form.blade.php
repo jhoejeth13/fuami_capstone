@@ -598,8 +598,49 @@
                         </select>
                     </label>
                     <label>Religion:
-                        <input type="text" name="religion" value="{{ old('religion') }}" required>
-                    </label>
+    <select name="religion" id="religion" required onchange="handleReligionChange()">
+        <option value="">Select Religion</option>
+        <option value="Roman Catholic" {{ old('religion') == 'Roman Catholic' ? 'selected' : '' }}>Roman Catholic</option>
+        <option value="Christian" {{ old('religion') == 'Christian' ? 'selected' : '' }}>Christian</option>
+        <option value="Islam" {{ old('religion') == 'Islam' ? 'selected' : '' }}>Islam</option>
+        <option value="Iglesia ni Cristo" {{ old('religion') == 'Iglesia ni Cristo' ? 'selected' : '' }}>Iglesia ni Cristo</option>
+        <option value="Seventh-day Adventist" {{ old('religion') == 'Seventh-day Adventist' ? 'selected' : '' }}>Seventh-day Adventist</option>
+        <option value="Baptist" {{ old('religion') == 'Baptist' ? 'selected' : '' }}>Baptist</option>
+        <option value="Born Again" {{ old('religion') == 'Born Again' ? 'selected' : '' }}>Born Again</option>
+        <option value="Jehovah's Witness" {{ old('religion') == 'Jehovah\'s Witness' ? 'selected' : '' }}>Jehovah's Witness</option>
+        <option value="Others">Others (please specify)</option>
+    </select>
+    <input type="text" name="religion_other" id="religion_other" 
+           value="{{ old('religion_other') }}" 
+           style="display: none; margin-top: 0.5rem;"
+           placeholder="Please specify religion">
+</label>
+
+<script>
+function handleReligionChange() {
+    const religionSelect = document.getElementById('religion');
+    const religionOtherInput = document.getElementById('religion_other');
+    
+    if (religionSelect.value === 'Others') {
+        religionOtherInput.style.display = 'block';
+        religionOtherInput.setAttribute('required', 'required');
+    } else {
+        religionOtherInput.style.display = 'none';
+        religionOtherInput.removeAttribute('required');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    handleReligionChange();
+    
+    // If form was submitted with validation errors and "Others" was selected
+    const religionSelect = document.getElementById('religion');
+    if (religionSelect.value === 'Others') {
+        document.getElementById('religion_other').style.display = 'block';
+    }
+});
+</script>
                     <h2><i class="fas fa-map-marker-alt mr-2"></i> Address</h2>
                     <label>Purok/Barangay/Street:
                         <input type="text" name="address" value="{{ old('address') }}" required>

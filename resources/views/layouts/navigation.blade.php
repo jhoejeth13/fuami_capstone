@@ -127,7 +127,7 @@
             <div class="flex items-center justify-between p-5 border-b border-blue-700">
                 <div class="flex items-center">
                     <img src="{{ asset('images/icon.jpg') }}" alt="Logo" class="sidebar-logo h-10 w-10 rounded-lg">
-                    <span class="sidebar-header-text ml-3 text-lg font-semibold">FUAMI SHS</span>
+                    <span class="sidebar-header-text ml-3 text-lg font-semibold">FUAMI REPO</span>
                 </div>
                 <button id="toggleSidebar" class="text-blue-200 hover:text-white focus:outline-none">
                     <i class="fas fa-bars text-xl"></i>
@@ -160,9 +160,13 @@
                         <i class="fas fa-user-plus text-lg w-6 text-center"></i>
                         <span class="sidebar-text ml-3">Add Graduate</span>
                     </a>
+                    <a href="{{ route('students.index') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-user-graduate text-lg w-6 text-center"></i>
+                        <span class="sidebar-text ml-3">Manage JHS</span>
+                    </a>
                     <a href="{{ route('graduates.index') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
                         <i class="fas fa-user-graduate text-lg w-6 text-center"></i>
-                        <span class="sidebar-text ml-3">Manage Graduates</span>
+                        <span class="sidebar-text ml-3">Manage SHS</span>
                     </a>
                 </div>
                 
@@ -178,7 +182,7 @@
             
             <!-- Sidebar Footer -->
             <div class="p-4 border-t border-blue-700 text-center text-blue-300 text-sm sidebar-text">
-                FUAMI SHS &copy; {{ date('Y') }}
+                FUAMI JHS and SHS  &copy; {{ date('Y') }}
             </div>
         </aside>
 
@@ -192,7 +196,7 @@
                         <button id="mobileToggle" class="mr-4 text-gray-600 hover:text-blue-600 md:hidden">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
-                        <h1 class="text-xl font-semibold text-gray-800">@yield('title', 'Senior High Graduates Repository and Alumni Tracer System')</h1>
+                        <h1 class="text-xl font-semibold text-gray-800">@yield('title', ' JHS and SHS Graduates Repository and Alumni Tracer System')</h1>
                     </div>
                     
                     <!-- User Profile -->
@@ -230,7 +234,7 @@
             
             <!-- Footer -->
             <footer class="bg-white border-t px-6 py-4 text-center text-sm text-gray-500">
-                <p>Fr. Urios Academy of Magallanes, Inc. - Senior High School Department</p>
+                <p>Fr. Urios Academy of Magallanes, Inc.</p>
             </footer>
         </div>
     </div>

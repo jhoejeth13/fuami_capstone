@@ -5,6 +5,7 @@ use App\Http\Controllers\GraduateController;
 use App\Http\Controllers\TracerStudyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\JuniorhighschoolController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root URL to login page
@@ -47,5 +48,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 });
 
+Route::resource('students', JuniorhighschoolController::class);
 // Authentication routes
 require __DIR__.'/auth.php';

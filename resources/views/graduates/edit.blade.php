@@ -8,10 +8,15 @@
         @method('PUT')
         
         <div class="mb-4">
-            <label for="ID_student" class="block text-sm font-medium text-gray-700">Student ID</label>
-            <input type="text" name="ID_student" id="ID_student" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('ID_student', $graduate->ID_student) }}" required>
-            @error('ID_student')<div class="text-sm text-red-600">{{ $message }}</div>@enderror
-        </div>
+    <label for="ID_student" class="block text-sm font-medium text-gray-700">LRN Number</label>
+    <input type="text" name="ID_student" id="ID_student" 
+           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+           value="{{ old('ID_student', $graduate->ID_student ?? '') }}">
+    @error('ID_student')
+        <div class="text-sm text-red-600">{{ $message }}</div>
+    @enderror
+    <p class="mt-1 text-sm text-gray-500">Optional field</p>
+</div>
 
         <div class="mb-4">
             <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>

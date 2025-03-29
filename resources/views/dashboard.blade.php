@@ -16,9 +16,9 @@
                 <form action="{{ route('dashboard') }}" method="GET">
                     <label for="filter_type" class="block text-sm font-medium text-gray-700">Filter By:</label>
                     <select name="filter_type" id="filter_type" onchange="this.form.submit()" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
-                        <option value="both" {{ $selectedFilterType === 'both' ? 'selected' : '' }}>Both Graduates and Alumni</option>
-                        <option value="graduates" {{ $selectedFilterType === 'graduates' ? 'selected' : '' }}>Graduates Only</option>
-                        <option value="alumni" {{ $selectedFilterType === 'alumni' ? 'selected' : '' }}>Alumni Only</option>
+                        <option value="both" {{ $selectedFilterType === 'both' ? 'selected' : '' }}>Both Total Number of Graduates and Alumni Work Status</option>
+                        <option value="graduates" {{ $selectedFilterType === 'graduates' ? 'selected' : '' }}>Total Number of Graduates</option>
+                        <option value="alumni" {{ $selectedFilterType === 'alumni' ? 'selected' : '' }}>Alumni Work Status</option>
                     </select>
                     <input type="hidden" name="graduate_year" value="{{ $selectedGraduateYear }}">
                     <input type="hidden" name="employment_year" value="{{ $selectedEmploymentYear }}">
@@ -83,7 +83,7 @@
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <div class="text-sm font-medium text-gray-500">
-                                            Total of FUAMI SHS Graduates
+                                            Total Number of FUAMI Graduates
                                             @if ($selectedGraduateYear !== 'all')
                                                 ({{ $selectedGraduateYear }})
                                             @endif
@@ -107,7 +107,7 @@
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <div class="text-sm font-medium text-gray-500">
-                                            Total of SHS Alumni
+                                            Total of FUAMI Alumni Work Status
                                             @if ($selectedEmploymentYear !== 'all')
                                                 ({{ $selectedEmploymentYear }})
                                             @endif
