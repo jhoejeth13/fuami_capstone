@@ -571,9 +571,24 @@
                 <!-- Personal Information -->
                 <div class="form-section">
                     <h2><i class="fas fa-user mr-2"></i> Personal Information</h2>
-                    <label>Full Name:
-                        <input type="text" name="fullname" value="{{ old('fullname') }}" required>
+                    <label>First Name:
+                        <input type="text" name="first_name" value="{{ old('first_name') }}" required>
+                    </label>                    
+                    <label>Middle Name:
+                        <input type="text" name="middle_name" value="{{ old('middle_name') }}">
                     </label>
+                    <label>Last Name:
+                        <input type="text" name="last_name" value="{{ old('last_name') }}" required>
+                    </label>         
+                    <label>Suffix:
+    <select name="suffix">
+        @foreach($suffixOptions as $value => $label)
+            <option value="{{ $value }}" {{ old('suffix') == $value ? 'selected' : '' }}>
+                {{ $label }}
+            </option>
+        @endforeach
+    </select>
+</label>
                     <label>Date of Birth:
                         <input type="date" name="birthdate" id="birthdate" value="{{ old('birthdate') }}" required onchange="calculateAge()">
                     </label>
@@ -641,26 +656,196 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-                    <h2><i class="fas fa-map-marker-alt mr-2"></i> Address</h2>
-                    <label>Purok/Barangay/Street:
-                        <input type="text" name="address" value="{{ old('address') }}" required>
-                    </label>
-                    <label>Municipality:
-                        <input type="text" name="municipality" value="{{ old('municipality') }}" required>
-                    </label>
-                    <label>Province:
-                        <input type="text" name="province" value="{{ old('province') }}" required>
-                    </label>
-                    <label>Region:
-                        <input type="text" name="region" value="{{ old('region') }}" required>
-                    </label>
-                    <label>Postal Code:
+                    <h2><i class="fas fa-map-marker-alt mr-2"></i>Present Address</h2>
+                    
+                    <div class="location-fields">
+    <div class="form-group">
+        <label for="region">Region:</label>
+        <select name="region" id="region" class="form-control" required onchange="loadProvinces()">
+    <option value="">Select Region</option>
+    @foreach(App\Helpers\LocationHelper::getRegions() as $region)
+        <option value="{{ $region['region_code'] }}" {{ old('region') == $region['region_code'] ? 'selected' : '' }}>
+            {{ $region['region_name'] }} ({{ $region['region_code'] }})
+        </option>
+    @endforeach
+</select>
+    </div>
+
+    <div class="form-group">
+        <label for="province">Province:</label>
+        <select name="province" id="province" class="form-control" required onchange="loadCities()" disabled>
+            <option value="">Select Province</option>
+            @if(old('province'))
+                <option value="{{ old('province') }}" selected>{{ old('province_name') }}</option>
+            @endif
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="municipality">City/Municipality:</label>
+        <select name="municipality" id="city" class="form-control" required onchange="loadBarangays()" disabled>
+            <option value="">Select City/Municipality</option>
+            @if(old('city'))
+                <option value="{{ old('city') }}" selected>{{ old('city_name') }}</option>
+            @endif
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="barangay">Barangay:</label>
+        <select name="barangay" id="barangay" class="form-control" required disabled>
+            <option value="">Select Barangay</option>
+            @if(old('barangay'))
+                <option value="{{ old('barangay') }}" selected>{{ old('brgy_name') }}</option>
+            @endif
+        </select>
+        <label>Postal Code:
                         <input type="text" name="postal_code" value="{{ old('postal_code') }}" required>
                     </label>
                     <label>Country:
-                        <input type="text" name="country" value="{{ old('country') }}" required>
+                        <input type="text" name="country" value="{{ old('country') }}">
                     </label>
-                </div>
+
+        <label>Purok/Street:
+                        <input type="text" name="address" value="{{ old('address') }}">
+                    </label>
+    </div>
+</div>
+
+<script>
+function loadProvinces() {
+    const region = document.getElementById('region').value;
+    const provinceSelect = document.getElementById('province');
+    const citySelect = document.getElementById('city');
+    const barangaySelect = document.getElementById('barangay');
+    
+    // Reset dependent fields
+    provinceSelect.innerHTML = '<option value="">Select Province</option>';
+    provinceSelect.disabled = !region;
+    
+    citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+    citySelect.disabled = true;
+    
+    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+    barangaySelect.disabled = true;
+
+    if (!region) return;
+
+    showLoader(provinceSelect);
+    
+    fetch(`/api/provinces?region=${encodeURIComponent(region)}`)
+        .then(handleResponse)
+        .then(data => {
+            provinceSelect.innerHTML = '<option value="">Select Province</option>';
+            data.forEach(province => {
+                const option = new Option(province.name, province.code);
+                provinceSelect.add(option);
+            });
+            
+            // Restore old value if exists
+            const oldProvince = "{{ old('province') }}";
+            if (oldProvince) {
+                provinceSelect.value = oldProvince;
+                loadCities();
+            }
+        })
+        .catch(handleError.bind(null, provinceSelect));
+}
+
+function loadCities() {
+    const province = document.getElementById('province').value;
+    const citySelect = document.getElementById('city');
+    const barangaySelect = document.getElementById('barangay');
+    
+    // Reset dependent field
+    citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+    citySelect.disabled = !province;
+    
+    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+    barangaySelect.disabled = true;
+
+    if (!province) return;
+
+    showLoader(citySelect);
+    
+    fetch(`/api/cities?province=${encodeURIComponent(province)}`)
+        .then(handleResponse)
+        .then(data => {
+            citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+            data.forEach(city => {
+                const option = new Option(city.name, city.code);
+                citySelect.add(option);
+            });
+            
+            // Restore old value if exists
+            const oldCity = "{{ old('city') }}";
+            if (oldCity) {
+                citySelect.value = oldCity;
+                loadBarangays();
+            }
+        })
+        .catch(handleError.bind(null, citySelect));
+}
+
+function loadBarangays() {
+    const city = document.getElementById('city').value;
+    const barangaySelect = document.getElementById('barangay');
+    
+    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+    barangaySelect.disabled = !city;
+
+    if (!city) return;
+
+    showLoader(barangaySelect);
+    
+    fetch(`/api/barangays?city=${encodeURIComponent(city)}`)
+        .then(handleResponse)
+        .then(data => {
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            data.forEach(barangay => {
+                const option = new Option(barangay.name, barangay.code);
+                barangaySelect.add(option);
+            });
+            
+            // Restore old value if exists
+            const oldBarangay = "{{ old('barangay') }}";
+            if (oldBarangay) {
+                barangaySelect.value = oldBarangay;
+            }
+        })
+        .catch(handleError.bind(null, barangaySelect));
+}
+
+// Helper functions
+function handleResponse(response) {
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+}
+
+function handleError(selectElement, error) {
+    console.error('Error:', error);
+    selectElement.innerHTML = `<option value="">Error loading data</option>`;
+}
+
+function showLoader(selectElement) {
+    const loaderOption = document.createElement('option');
+    loaderOption.value = '';
+    loaderOption.textContent = 'Loading...';
+    loaderOption.disabled = true;
+    selectElement.innerHTML = '';
+    selectElement.appendChild(loaderOption);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const region = document.getElementById('region');
+    if (region.value) {
+        loadProvinces();
+    }
+});
+</script>
 
                 <!-- Education Information -->
                 <div class="form-section">
@@ -693,12 +878,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 <!-- Contact Information -->
                 <div class="form-section">
-                    <h2><i class="fas fa-address-book mr-2"></i> Contact Information</h2>
+                    <h2><i class="fas fa-address-book mr-2"></i> Contact Information (Optional)</h2>
                     <label>Phone Number:
-                        <input type="text" name="phone" value="{{ old('phone') }}" required>
+                        <input type="text" name="phone" value="{{ old('phone') }}">
                     </label>
                     <label>Email Address:
-                        <input type="email" name="email" value="{{ old('email') }}" required>
+                        <input type="email" name="email" value="{{ old('email') }}">
                     </label>
                 </div>
 
@@ -709,41 +894,111 @@ document.addEventListener('DOMContentLoaded', function() {
                         <select name="employment_status" id="employment_status" required onchange="toggleEmploymentFields()">
                             <option value="">Select Status</option>
                             <option value="Employed" {{ old('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
-                            <option value="Self-employed" {{ old('employment_status') == 'Self-employed' ? 'selected' : '' }}>Self-employed</option>
                             <option value="Unemployed" {{ old('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
                         </select>
                     </label>
 
-                    <!-- Employed Fields -->
-                    <div id="employed_fields" class="hidden">
-                        <h3><i class="fas fa-building mr-2"></i> Employment Details</h3>
-                        <label>Organization Type:
-                            <input type="text" name="organization_type" value="{{ old('organization_type') }}">
-                        </label>
-                        <label>Occupational Classification:
-                            <input type="text" name="occupational_classification" value="{{ old('occupational_classification') }}">
-                        </label>
+<!-- Employed Fields -->
+<div id="employed_fields" class="hidden">
+    <h3><i class="fas fa-building mr-2"></i> Employment Details</h3>
+    
+    <!-- Organization Type -->
+    <label>Organization Type:
+        <select name="organization_type" id="organization_type" required onchange="toggleOrgTypeOther()">
+            <option value="">Select Organization Type</option>
+            @foreach($organizationTypes as $type)
+                <option value="{{ $type }}" {{ old('organization_type') == $type ? 'selected' : '' }}>
+                    {{ $type }}
+                </option>
+            @endforeach
+        </select>
+    </label>
+    <div id="org_type_other_container" style="display: none; margin-top: 0.5rem;">
+        <label>Please specify organization type:
+            <input type="text" name="organization_type_other" id="organization_type_other" 
+                   value="{{ old('organization_type_other') }}"
+                   placeholder="Enter organization type">
+        </label>
+    </div>
+
+    <!-- Occupational Classification -->
+    <label>Occupational Classification:
+        <select name="occupational_classification" id="occupational_classification" required onchange="toggleOccClassOther()">
+            <option value="">Select Classification</option>
+            @foreach($occupationClassifications as $group => $options)
+                @if(is_array($options))
+                    <optgroup label="{{ $group }}">
+                        @foreach($options as $option)
+                            <option value="{{ $option }}" {{ old('occupational_classification') == $option ? 'selected' : '' }}>
+                                {{ $option }}
+                            </option>
+                        @endforeach
+                    </optgroup>
+                @else
+                    <option value="{{ $options }}" {{ old('occupational_classification') == $options ? 'selected' : '' }}>
+                        {{ $options }}
+                    </option>
+                @endif
+            @endforeach
+        </select>
+    </label>
+    <div id="occ_class_other_container" style="display: none; margin-top: 0.5rem;">
+        <label>Please specify occupational classification:
+            <input type="text" name="occupational_classification_other" id="occupational_classification_other" 
+                   value="{{ old('occupational_classification_other') }}"
+                   placeholder="Enter classification">
+        </label>
+    </div>
+    <script>
+function toggleOrgTypeOther() {
+    const orgTypeSelect = document.getElementById('organization_type');
+    const otherContainer = document.getElementById('org_type_other_container');
+    
+    if (orgTypeSelect.value === 'Other') {
+        otherContainer.style.display = 'block';
+        document.getElementById('organization_type_other').setAttribute('required', 'required');
+    } else {
+        otherContainer.style.display = 'none';
+        document.getElementById('organization_type_other').removeAttribute('required');
+    }
+}
+
+function toggleOccClassOther() {
+    const occClassSelect = document.getElementById('occupational_classification');
+    const otherContainer = document.getElementById('occ_class_other_container');
+    
+    if (occClassSelect.value === 'Other') {
+        otherContainer.style.display = 'block';
+        document.getElementById('occupational_classification_other').setAttribute('required', 'required');
+    } else {
+        otherContainer.style.display = 'none';
+        document.getElementById('occupational_classification_other').removeAttribute('required');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    toggleOrgTypeOther();
+    toggleOccClassOther();
+    
+    // If form was submitted with validation errors and "Other" was selected
+    if (document.getElementById('organization_type').value === 'Other') {
+        document.getElementById('org_type_other_container').style.display = 'block';
+    }
+    if (document.getElementById('occupational_classification').value === 'Other') {
+        document.getElementById('occ_class_other_container').style.display = 'block';
+    }
+});
+</script>
+            <label>Employer Name:
+           <input type="text" name="employer_name" value="{{ old('employer_name') }}">
+             </label>
                         <label>Employment Type:
-                            <select name="employment_type">
-                                <option value="">Select Type</option>
-                                <option value="Working Full-time" {{ old('employment_type') == 'Working Full-time' ? 'selected' : '' }}>Full-time</option>
-                                <option value="Working Part-time" {{ old('employment_type') == 'Working Part-time' ? 'selected' : '' }}>Part-time</option>
-                                <option value="Others" {{ old('employment_type') == 'Others' ? 'selected' : '' }}>Others</option>
-                            </select>
-                        </label>
-                        <label>Work Location:
-                            <select name="work_location">
-                                <option value="">Select Location</option>
-                                <option value="Local" {{ old('work_location') == 'Local' ? 'selected' : '' }}>Local</option>
-                                <option value="Abroad" {{ old('work_location') == 'Abroad' ? 'selected' : '' }}>Abroad</option>
-                            </select>
-                        </label>
-                        <label>Job Situation:
                             <select name="job_situation">
                                 <option value="">Select Situation</option>
                                 <option value="Permanent" {{ old('job_situation') == 'Permanent' ? 'selected' : '' }}>Permanent</option>
                                 <option value="Contractual" {{ old('job_situation') == 'Contractual' ? 'selected' : '' }}>Contractual</option>
-                                <option value="Casual" {{ old('job_situation') == 'Casual' ? 'selected' : '' }}>Casual</option>
+                                <option value="Casual" {{ old('job_situation') == 'Casual' ? 'selected' : '' }}>Not Permanent</option>
                                 <option value="Others" {{ old('job_situation') == 'Others' ? 'selected' : '' }}>Others</option>
                             </select>
                         </label>
@@ -756,32 +1011,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <option value="16-20" {{ old('years_in_company') == '16-20' ? 'selected' : '' }}>16-20 years</option>
                                 <option value="20-25" {{ old('years_in_company') == '20-25' ? 'selected' : '' }}>20-25 years</option>
                                 <option value="25 above" {{ old('years_in_company') == '25 above' ? 'selected' : '' }}>25+ years</option>
-                            </select>
-                        </label>
-                        <label>Job Related to SHS Track?
-                            <select name="job_related_to_shs">
-                                <option value="Yes" {{ old('job_related_to_shs') == 'Yes' ? 'selected' : '' }}>Yes</option>
-                                <option value="No" {{ old('job_related_to_shs') == 'No' ? 'selected' : '' }}>No</option>
-                            </select>
-                        </label>
-                    </div>
-
-                    <!-- Self-Employed Fields -->
-                    <div id="self_employed_fields" class="hidden">
-                        <h3><i class="fas fa-user-tie mr-2"></i> Self-Employment Details</h3>
-                        <label>Nature of Employment:
-                            <input type="text" name="nature_of_employment" value="{{ old('nature_of_employment') }}">
-                        </label>
-                        <label>Company Name:
-                            <input type="text" name="company_name" value="{{ old('company_name') }}">
-                        </label>
-                        <label>Years in Business:
-                            <select name="years_in_business">
-                                <option value="">Select Years</option>
-                                <option value="0-5" {{ old('years_in_business') == '0-5' ? 'selected' : '' }}>0-5 years</option>
-                                <option value="6-10" {{ old('years_in_business') == '6-10' ? 'selected' : '' }}>6-10 years</option>
-                                <option value="10-15" {{ old('years_in_business') == '10-15' ? 'selected' : '' }}>10-15 years</option>
-                                <option value="16 Above" {{ old('years_in_business') == '16 Above' ? 'selected' : '' }}>16+ years</option>
                             </select>
                         </label>
                     </div>
@@ -815,11 +1044,39 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         function toggleEmploymentFields() {
-            const status = document.getElementById('employment_status').value;
-            document.getElementById('employed_fields').style.display = status === 'Employed' ? 'block' : 'none';
-            document.getElementById('self_employed_fields').style.display = status === 'Self-employed' ? 'block' : 'none';
-            document.getElementById('unemployed_fields').style.display = status === 'Unemployed' ? 'block' : 'none';
-        }
+    const status = document.getElementById('employment_status').value;
+    const employedFields = document.getElementById('employed_fields');
+    const unemployedFields = document.getElementById('unemployed_fields');
+    
+    // List of all employed-related fields
+    const employedFieldsToToggle = [
+        'organization_type',
+        'occupational_classification',
+        'employer_name',
+        'job_situation',
+        'years_in_company'
+    ];
+    
+    if (status === 'Employed') {
+        employedFields.style.display = 'block';
+        unemployedFields.style.display = 'none';
+        
+        // Add required attributes
+        employedFieldsToToggle.forEach(field => {
+            const fieldElement = document.getElementsByName(field)[0];
+            if (fieldElement) fieldElement.required = true;
+        });
+    } else {
+        employedFields.style.display = 'none';
+        unemployedFields.style.display = 'block';
+        
+        // Remove required attributes
+        employedFieldsToToggle.forEach(field => {
+            const fieldElement = document.getElementsByName(field)[0];
+            if (fieldElement) fieldElement.required = false;
+        });
+    }
+}
 
         function openForm() {
             document.getElementById('formModal').style.display = 'flex';

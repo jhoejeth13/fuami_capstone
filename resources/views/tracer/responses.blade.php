@@ -21,7 +21,6 @@
                     class="w-full sm:w-64 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <option value="">All Employment Status</option>
                 <option value="Employed" {{ request('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
-                <option value="Self-employed" {{ request('employment_status') == 'Self-employed' ? 'selected' : '' }}>Self-employed</option>
                 <option value="Unemployed" {{ request('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
             </select>
 
@@ -59,9 +58,9 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border border-gray-300">{{ $index + 1 }}</td>
                     <td class="px-6 py-4 text-sm text-gray-900 border border-gray-300">
                         <div class="space-y-2">
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-user text-gray-500"></i>
-                                <strong>{{ $response->fullname }}</strong>
+                        <div class="flex items-center space-x-2">
+                                <i class="fas fa-map-marker-alt text-gray-500"></i>
+                                <span>Name: {{ $response->first_name }} {{ $response->middle_name }} {{ $response->last_name }} {{ $response->suffix }}</span>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <i class="fas fa-birthday-cake text-gray-500"></i>
@@ -85,7 +84,7 @@
                             </div>
                             <div class="flex items-center space-x-2">
                                 <i class="fas fa-map-marker-alt text-gray-500"></i>
-                                <span>Address: {{ $response->address }}, {{ $response->municipality }}, {{ $response->province }}, {{ $response->region }} Region, {{ $response->country }} {{ $response->postal_code }}</span>
+                                <span>Address: {{ $response->address }}, {{ $response->barangay }},{{ $response->municipality }}, {{ $response->province }}, {{ $response->region }} Region, {{ $response->country }} {{ $response->postal_code }}</span>
                             </div>
                         </div>
                     </td>
@@ -118,19 +117,15 @@
                                 </div>
                                 <div class="flex items-center space-x-2">
                                     <i class="fas fa-clock text-gray-500"></i>
-                                    <span>Type: {{ $response->employment_type }}</span>
+                                    <span>Employment Type: {{ $response->job_situation }}</span>
                                 </div>
                                 <div class="flex items-center space-x-2">
-                                    <i class="fas fa-map-pin text-gray-500"></i>
-                                    <span>Location: {{ $response->work_location }}</span>
+                                    <i class="fas fa-clock text-gray-500"></i>
+                                    <span>Employer Name: {{ $response->employer_name }}</span>
                                 </div>
                                 <div class="flex items-center space-x-2">
                                     <i class="fas fa-calendar-alt text-gray-500"></i>
                                     <span>Years: {{ $response->years_in_company }}</span>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <i class="fas fa-check-circle text-gray-500"></i>
-                                    <span>Job Related: {{ $response->job_related_to_shs ? 'Yes' : 'No' }}</span>
                                 </div>
                             @elseif($response->employment_status === 'Self-employed')
                                 <div class="flex items-center space-x-2">
@@ -148,33 +143,21 @@
                             @else
                                 <div class="flex items-center space-x-2">
                                     <i class="fas fa-exclamation-circle text-gray-500"></i>
-                                    <span>Reason: {{ $response->unemployment_reason }}</span>
+                                    <span>Reason: {{ $response->unemployment_reason ?? 'N/A' }}</span>
                                 </div>
                             @endif
                         </div>
                     </td>
                     <td class="px-6 py-4 text-sm text-gray-900 border border-gray-300">
                         <div class="space-y-2">
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-phone text-gray-500"></i>
-                                <span>Phone Number: {{ $response->phone }}</span>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <i class="fas fa-envelope text-gray-500"></i>
-                                <span>Email: {{ $response->email }}</span>
-                            </div>
-                            @if($response->facebook)
-                                <div class="flex items-center space-x-2">
-                                    <i class="fab fa-facebook text-blue-600"></i>
-                                    <span>{{ $response->facebook }}</span>
-                                </div>
-                            @endif
-                            @if($response->twitter)
-                                <div class="flex items-center space-x-2">
-                                    <i class="fab fa-twitter text-blue-400"></i>
-                                    <span>{{ $response->twitter }}</span>
-                                </div>
-                            @endif
+                        <div class="flex items-center space-x-2">
+    <i class="fas fa-phone text-gray-500"></i>
+    <span>Phone Number: {{ $response->phone ?? 'N/A' }}</span>
+</div>
+<div class="flex items-center space-x-2">
+    <i class="fas fa-envelope text-gray-500"></i>
+    <span>Email: {{ $response->email ?? 'N/A' }}</span>
+</div>
                         </div>
                     </td>
                 </tr>
