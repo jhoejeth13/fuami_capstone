@@ -174,4 +174,48 @@ class TracerStudyController extends Controller
 
     return $rules;
 }
+public function edit($id)
+{
+    $response = TracerStudyResponse::findOrFail($id);
+    $years = DB::table('years')->pluck('year')->sort();
+    
+    return view('tracer.edit', [
+        'response' => $response,
+        'years' => $years,
+        'organizationTypes' => $this->organizationTypes,
+        'occupationClassifications' => $this->occupationClassifications,
+        'suffixOptions' => $this->suffixOptions,
+    ]);
+}
+
+public function update(Request $request, $id)
+{
+    $validated = $request->validate([
+        // Same validation rules as in submitForm
+    ]);
+
+    $response = TracerStudyResponse::findOrFail($id);
+    
+    try {
+        $response->update($validated);
+        return redirect()->route('tracer.responses')->with('success', 'Record updated successfully!');
+    } catch (\Exception $e) {
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['error' => 'Failed to update record: ' . $e->getMessage()]);
+    }
+}
+
+public function destroy($id)
+{
+    $response = TracerStudyResponse::findOrFail($id);
+    
+    try {
+        $response->delete();
+        return redirect()->route('tracer.responses')->with('success', 'Record deleted successfully!');
+    } catch (\Exception $e) {
+        return redirect()->route('tracer.responses')
+            ->withErrors(['error' => 'Failed to delete record: ' . $e->getMessage()]);
+    }
+}
 }

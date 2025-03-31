@@ -1,75 +1,163 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Add New Student</h1>
-    <form action="{{ route('students.store') }}" method="POST" enctype="multipart/form-data">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Page Heading -->
+    <h1 class="text-2xl font-semibold text-black mb-6">Add New Student</h1>
+
+    <!-- Form -->
+    <form action="{{ route('students.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-sm sm:rounded-lg p-6">
         @csrf
-        <div class="form-group">
-            <label for="lrn_number">LRN Number</label>
-            <input type="text" class="form-control" id="lrn_number" name="lrn_number" required maxlength="13" value="{{ old('lrn_number') }}">
-            @error('lrn_number')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-        <div class="form-group">
-            <label for="first_name">First Name</label>
-            <input type="text" class="form-control" id="first_name" name="first_name" required maxlength="50" value="{{ old('first_name') }}">
+
+        <!-- LRN Number -->
+        <div class="mb-4">
+    <label for="lrn_number" class="block text-sm font-medium text-gray-700">LRN Number (Optional)</label>
+    <input type="text" name="lrn_number" id="lrn_number" value="{{ old('lrn_number') }}" maxlength="12"
+           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+    @error('lrn_number')
+        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+    @enderror
+</div>
+
+        <!-- First Name -->
+        <div class="mb-4">
+            <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+            <input type="text" name="first_name" id="first_name" value="{{ old('first_name') }}" required maxlength="50"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
             @error('first_name')
-                <div class="text-danger">{{ $message }}</div>
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
             @enderror
         </div>
-        <div class="form-group">
-            <label for="middle_name">Middle Name</label>
-            <input type="text" class="form-control" id="middle_name" name="middle_name" maxlength="50" value="{{ old('middle_name') }}">
+
+        <!-- Middle Name -->
+        <div class="mb-4">
+            <label for="middle_name" class="block text-sm font-medium text-gray-700">Middle Name (Optional)</label>
+            <input type="text" name="middle_name" id="middle_name" value="{{ old('middle_name') }}" maxlength="50"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+            @error('middle_name')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
-        <div class="form-group">
-            <label for="last_name">Last Name</label>
-            <input type="text" class="form-control" id="last_name" name="last_name" required maxlength="50" value="{{ old('last_name') }}">
+
+        <!-- Last Name -->
+        <div class="mb-4">
+            <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name</label>
+            <input type="text" name="last_name" id="last_name" value="{{ old('last_name') }}" required maxlength="50"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
             @error('last_name')
-                <div class="text-danger">{{ $message }}</div>
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
             @enderror
         </div>
-        <div class="form-group">
-            <label for="suffix">Suffix</label>
-            <input type="text" class="form-control" id="suffix" name="suffix" maxlength="10" value="{{ old('suffix') }}">
+
+        <!-- Suffix -->
+        <div class="mb-4">
+            <label for="suffix" class="block text-sm font-medium text-gray-700">Suffix (Optional)</label>
+            <select name="suffix" id="suffix" 
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                @foreach($suffixOptions as $value => $label)
+                    <option value="{{ $value }}" {{ old('suffix') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
+            </select>
+            <div id="otherSuffixContainer" class="mt-2 hidden">
+                <input type="text" name="other_suffix" id="other_suffix" placeholder="Enter suffix" maxlength="10" value="{{ old('other_suffix') }}"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+            </div>
+            @error('suffix')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+            @error('other_suffix')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
-        <div class="form-group">
-            <label for="gender">Gender</label>
-            <select class="form-control" id="gender" name="gender" required>
-                <option value="">Select Gender</option>
+
+        <!-- Gender -->
+        <div class="mb-4">
+            <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
+            <select name="gender" id="gender" required
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                <option value="">-- Select Gender --</option>
                 <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
                 <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
             </select>
             @error('gender')
-                <div class="text-danger">{{ $message }}</div>
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
             @enderror
         </div>
-        <div class="form-group">
-            <label for="birthdate">Birthdate</label>
-            <input type="date" class="form-control" id="birthdate" name="birthdate" value="{{ old('birthdate') }}">
+
+        <!-- Birthdate -->
+        <div class="mb-4">
+            <label for="birthdate" class="block text-sm font-medium text-gray-700">Birthdate</label>
+            <input type="date" name="birthdate" id="birthdate" value="{{ old('birthdate') }}"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+            @error('birthdate')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
-        <div class="form-group">
-            <label for="address">Address</label>
-            <textarea class="form-control" id="address" name="address" rows="2" maxlength="255">{{ old('address') }}</textarea>
+
+        <!-- Address -->
+        <div class="mb-4">
+            <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+            <textarea name="address" id="address" rows="2" maxlength="255"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">{{ old('address') }}</textarea>
+            @error('address')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
-        <div class="form-group">
-            <label for="school_year">School Year</label>
-            <input type="text" class="form-control" id="school_year" name="school_year" required maxlength="20" value="{{ old('school_year') }}">
+
+        <!-- School Year -->
+        <div class="mb-4">
+            <label for="school_year" class="block text-sm font-medium text-gray-700">School Year</label>
+            <input type="text" name="school_year" id="school_year" value="{{ old('school_year') }}" required maxlength="20"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
             @error('school_year')
-                <div class="text-danger">{{ $message }}</div>
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
             @enderror
         </div>
-        <div class="form-group">
-            <label for="photo">Student Photo</label>
-            <input type="file" class="form-control-file" id="photo" name="photo">
-            <small class="form-text text-muted"></small>
+
+        <!-- Photo -->
+        <div class="mb-6">
+            <label for="photo" class="block text-sm font-medium text-gray-700">Student Photo</label>
+            <input type="file" name="photo" id="photo"
+                   class="mt-1 block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
             @error('photo')
-                <div class="text-danger">{{ $message }}</div>
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
             @enderror
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <a href="{{ route('students.index') }}" class="btn btn-secondary">Cancel</a>
+
+        <!-- Buttons -->
+        <div class="flex space-x-2">
+            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-white rounded-md font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                Submit
+            </button>
+            <a href="{{ route('students.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-500 border border-transparent rounded-md font-semibold text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                Cancel
+            </a>
+        </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const suffixSelect = document.getElementById('suffix');
+        const otherSuffixContainer = document.getElementById('otherSuffixContainer');
+        const otherSuffixInput = document.getElementById('other_suffix');
+
+        function toggleSuffixField() {
+            if (suffixSelect.value === 'Others') {
+                otherSuffixContainer.classList.remove('hidden');
+                otherSuffixInput.setAttribute('required', 'required');
+            } else {
+                otherSuffixContainer.classList.add('hidden');
+                otherSuffixInput.removeAttribute('required');
+                otherSuffixInput.value = '';
+            }
+        }
+
+        // Set up event listener
+        suffixSelect.addEventListener('change', toggleSuffixField);
+
+        // Initialize on page load
+        toggleSuffixField();
+    });
+</script>
 @endsection

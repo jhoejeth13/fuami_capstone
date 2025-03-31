@@ -65,7 +65,7 @@
                     <div>
         <p class="text-sm text-gray-600 print:text-black font-bold">Birthdate</p>
         <p class="text-base font-medium text-gray-900 print:text-black">
-            {{ $student->formatted_birthdate }}
+        {{ $student->birthdate ? \Carbon\Carbon::parse($student->birthdate)->format('M d, Y') : 'N/A' }}
         </p>
     </div>
     <div>

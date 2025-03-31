@@ -170,4 +170,5 @@ class GraduateController extends Controller
 
         return response()->json(['year' => $year->year]);
     }
+
 }
