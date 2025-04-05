@@ -10,6 +10,7 @@ class TracerStudyResponse extends Model
     use HasFactory;
 
     protected $fillable = [
+        'graduate_type',
         'fullname',
         'first_name',
         'middle_name',
@@ -51,4 +52,16 @@ class TracerStudyResponse extends Model
         'unemployment_reason',
         'fuami_factor',
     ];
+
+    // Scope for JHS graduates
+    public function scopeJhs($query)
+    {
+        return $query->where('graduate_type', 'JHS');
+    }
+    
+    // Scope for SHS graduates
+    public function scopeShs($query)
+    {
+        return $query->where('graduate_type', 'SHS');
+    }
 }

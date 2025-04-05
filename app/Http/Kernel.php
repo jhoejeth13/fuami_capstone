@@ -21,7 +21,7 @@ class Kernel extends HttpKernel
         \Illuminate\Http\Middleware\HandleCors::class, // Updated for Laravel 11
 
         // Prevent requests during maintenance mode
-        \Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class,
+        \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
 
         // Validate the size of incoming POST requests
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
@@ -61,7 +61,7 @@ class Kernel extends HttpKernel
 
         'api' => [
             // Throttle API requests
-            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':60,1', // Updated syntax for Laravel 11
+            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
 
             // Substitute route bindings
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
@@ -69,43 +69,26 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * The application's route middleware.
+     * The application's middleware aliases.
      *
-     * These middleware may be assigned to groups or used individually.
+     * Aliases may be used instead of class names to conveniently assign middleware to routes and groups.
      *
      * @var array<string, class-string|string>
      */
-    protected $routeMiddleware = [
-        // Authenticate users
+    protected $middlewareAliases = [
         'auth' => \App\Http\Middleware\Authenticate::class,
-
-        // Authenticate users with HTTP Basic Auth
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-
-        // Substitute route bindings
-        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-
-        // Set cache headers for responses
+        'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-
-        // Authorize user actions
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
-
-        // Redirect authenticated users
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-
-        // Validate signed URLs
-        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
-
-        // Throttle requests
+        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+        'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-
-        // Ensure the user's email is verified
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-
-        // Spatie Laravel Permission Middleware
-        'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+        'role' => \App\Http\Middleware\CheckRole::class,
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-        'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class, // Added for convenience
+        'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
     ];
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Graduate;
 use App\Models\TracerStudyResponse;
+use App\Models\Juniorhighschool;
 
 class DashboardController extends Controller
 {
@@ -19,6 +20,23 @@ class DashboardController extends Controller
         // Get the selected year for employment data from the request (default to 'all' if not provided)
         $selectedEmploymentYear = $request->input('employment_year', 'all');
 
+        // Fetch JHS students total and gender data
+        $totalJHSStudentsQuery = Juniorhighschool::query();
+        if ($selectedGraduateYear !== 'all') {
+            $totalJHSStudentsQuery->where('school_year', $selectedGraduateYear);
+        }
+        $totalJHSStudents = $totalJHSStudentsQuery->count();
+
+        // Fetch JHS gender data
+        $maleJHSStudentsQuery = Juniorhighschool::where('gender', 'Male');
+        $femaleJHSStudentsQuery = Juniorhighschool::where('gender', 'Female');
+        if ($selectedGraduateYear !== 'all') {
+            $maleJHSStudentsQuery->where('school_year', $selectedGraduateYear);
+            $femaleJHSStudentsQuery->where('school_year', $selectedGraduateYear);
+        }
+        $maleJHSStudents = $maleJHSStudentsQuery->count();
+        $femaleJHSStudents = $femaleJHSStudentsQuery->count();
+
         // Fetch the total number of graduates (filtered by selected year or all)
         $totalGraduatesQuery = Graduate::query();
         if ($selectedGraduateYear !== 'all') {
@@ -27,8 +45,8 @@ class DashboardController extends Controller
         $totalGraduates = $totalGraduatesQuery->count();
 
         // Fetch the number of male and female graduates (filtered by selected year or all)
-        $maleGraduatesQuery = Graduate::where('gender', 'male');
-        $femaleGraduatesQuery = Graduate::where('gender', 'female');
+        $maleGraduatesQuery = Graduate::where('gender', 'Male');
+        $femaleGraduatesQuery = Graduate::where('gender', 'Female');
         if ($selectedGraduateYear !== 'all') {
             $maleGraduatesQuery->where('year_graduated', $selectedGraduateYear);
             $femaleGraduatesQuery->where('year_graduated', $selectedGraduateYear);
@@ -37,9 +55,9 @@ class DashboardController extends Controller
         $femaleGraduates = $femaleGraduatesQuery->count();
 
         // Fetch employment status counts (filtered by selected year or all)
-        $employedQuery = TracerStudyResponse::where('employment_status', 'employed');
-        $selfEmployedQuery = TracerStudyResponse::where('employment_status', 'self-employed');
-        $unemployedQuery = TracerStudyResponse::where('employment_status', 'unemployed');
+        $employedQuery = TracerStudyResponse::where('employment_status', 'Employed');
+        $selfEmployedQuery = TracerStudyResponse::where('employment_status', 'Self-employed');
+        $unemployedQuery = TracerStudyResponse::where('employment_status', 'Unemployed');
         if ($selectedEmploymentYear !== 'all') {
             $employedQuery->where('year_graduated', $selectedEmploymentYear);
             $selfEmployedQuery->where('year_graduated', $selectedEmploymentYear);
@@ -74,11 +92,18 @@ class DashboardController extends Controller
             $lastUpdated = now(); // Fallback if both tables are empty
         }
 
-        // Get a list of available years for the graduate dropdown filter
-        $availableGraduateYears = Graduate::select('year_graduated')
+        // Get a list of available years for the graduate dropdown filter (combine from both JHS and SHS)
+        $shsYears = Graduate::select('year_graduated')
             ->distinct()
             ->orderBy('year_graduated', 'desc')
             ->pluck('year_graduated');
+            
+        $jhsYears = Juniorhighschool::select('school_year')
+            ->distinct()
+            ->orderBy('school_year', 'desc')
+            ->pluck('school_year');
+            
+        $availableGraduateYears = collect($shsYears)->merge($jhsYears)->unique()->sort()->values();
 
         // Get a list of available years for the employment dropdown filter
         $availableEmploymentYears = TracerStudyResponse::select('year_graduated')
@@ -88,21 +113,28 @@ class DashboardController extends Controller
 
         // Prepare data for charts
         $genderData = [
-            'male' => $maleGraduates,
-            'female' => $femaleGraduates,
+            'Male' => $maleGraduates,
+            'Female' => $femaleGraduates,
+        ];
+        
+        $jhsGenderData = [
+            'Male' => $maleJHSStudents,
+            'Female' => $femaleJHSStudents,
         ];
 
         $employmentData = [
-            'employed' => $employed,
-            'self_employed' => $selfEmployed,
-            'unemployed' => $unemployed,
+            'Employed' => $employed,
+            'Self Employed' => $selfEmployed,
+            'Unemployed' => $unemployed,
         ];
 
         return view('dashboard', compact(
             'totalGraduates',
+            'totalJHSStudents',
             'totalEmployed',
             'totalAlumni',
             'genderData',
+            'jhsGenderData',
             'employmentData',
             'lastUpdated',
             'selectedGraduateYear',

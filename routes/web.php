@@ -6,6 +6,7 @@ use App\Http\Controllers\TracerStudyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\JuniorhighschoolController;
+use App\Http\Controllers\RecordSelectionController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root URL to login page
@@ -25,15 +26,30 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Record Selection route (protected by auth middleware)
+Route::middleware('auth')->group(function () {
+    Route::get('/create-record', [RecordSelectionController::class, 'index'])->name('records.create-selection');
+});
+
 // Graduate routes (protected by auth middleware)
 Route::middleware('auth')->group(function () {
     Route::resource('graduates', GraduateController::class);
 });
 
 // Tracer Study routes
-Route::get('/tracer-study', [TracerStudyController::class, 'showForm'])->name('tracer.form');
-Route::post('/tracer-study', [TracerStudyController::class, 'submitForm'])->name('tracer.submit');
-Route::get('/tracer-responses', [TracerStudyController::class, 'index'])->name('tracer-responses.index');
+Route::middleware('auth')->group(function () {
+    // Public routes (viewable by all authenticated users)
+    Route::get('/tracer-study', [TracerStudyController::class, 'showForm'])->name('tracer.form');
+    Route::post('/tracer-study', [TracerStudyController::class, 'submitForm'])->name('tracer.submit');
+    Route::get('/tracer-responses', [TracerStudyController::class, 'index'])->name('tracer-responses.index');
+    
+    // Admin-only routes
+    Route::middleware(\App\Http\Middleware\AdminMiddleware::class)->group(function () {
+        Route::get('/tracer-responses/{id}/edit', [TracerStudyController::class, 'edit'])->name('tracer.edit');
+        Route::put('/tracer-responses/{id}', [TracerStudyController::class, 'update'])->name('tracer.update');
+        Route::delete('/tracer-responses/{id}', [TracerStudyController::class, 'destroy'])->name('tracer.destroy');
+    });
+});
 
 // Add Year route
 Route::post('/add-year', [GraduateController::class, 'addYear'])->name('add.year');

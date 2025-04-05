@@ -6,7 +6,8 @@
     <title>FUAMI SHS Dashboard</title>
     <!-- CDN Links -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
+    <!-- Font Awesome (Local) -->
+    @include('includes.fontawesome')
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -156,9 +157,9 @@
                 <!-- Graduate Management Section -->
                 <div class="px-4 py-3">
                     <h3 class="sidebar-section uppercase text-xs font-semibold text-blue-300 tracking-wider sidebar-text">Graduate Records</h3>
-                    <a href="{{ route('graduates.create') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
-                        <i class="fas fa-user-plus text-lg w-6 text-center"></i>
-                        <span class="sidebar-text ml-3">Add Graduate</span>
+                    <a href="{{ route('records.create-selection') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-plus-circle text-lg w-6 text-center"></i>
+                        <span class="sidebar-text ml-3">Create Record</span>
                     </a>
                     <a href="{{ route('students.index') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
                         <i class="fas fa-user-graduate text-lg w-6 text-center"></i>

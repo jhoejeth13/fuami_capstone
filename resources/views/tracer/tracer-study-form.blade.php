@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FUAMI SHS Tracer System</title>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Font Awesome (Local) -->
+    @include('includes.fontawesome')
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -534,15 +534,15 @@
     <div id="formModal" class="form-modal">
         <div class="form-content">
             <button class="close-btn" onclick="closeForm()">&times;</button>
-            <h1 class="form-title">FUAMI SHS Graduate Tracer Form</h1>
+            <h1 class="form-title">FUAMI Graduate Tracer Form</h1>
             
             <div class="form-note">
                 <p>
-                    <strong>Dear graduates of FUAMI SHS,</strong><br><br>
+                    <strong>Dear graduates of FUAMI,</strong><br><br>
                     Please take time to complete the Tracer Study Form accurately and honestly. 
                     Your participation is crucial for research purposes, as it will help evaluate your 
                     employability status and contribute to the enhancement of the curriculum offered 
-                    at Senior High of FR. URIOS ACADEMY OF MAGALLANES, INC. 
+                    at FR. URIOS ACADEMY OF MAGALLANES, INC. 
                     Rest assured that your responses will be kept confidential.<br><br>
                     Thank you for your cooperation.
                 </p>
@@ -554,7 +554,7 @@
                 </div>
             @endif
 
-            @if($errors->any()))
+            @if($errors->any())
                 <div class="error-message">
                     <h3><i class="fas fa-exclamation-circle mr-2"></i> Errors:</h3>
                     <ul>
@@ -565,518 +565,534 @@
                 </div>
             @endif
 
-            <form action="{{ route('tracer.submit') }}" method="POST" onsubmit="showComplimentaryMessage()">
+            <form action="{{ route('tracer.submit') }}" method="POST">
                 @csrf
 
-                <!-- Personal Information -->
+                <!-- Graduate Type Section -->
                 <div class="form-section">
-                    <h2><i class="fas fa-user mr-2"></i> Personal Information</h2>
-                    <label>First Name:
-                        <input type="text" name="first_name" value="{{ old('first_name') }}" required>
-                    </label>                    
-                    <label>Middle Name:
-                        <input type="text" name="middle_name" value="{{ old('middle_name') }}">
-                    </label>
-                    <label>Last Name:
-                        <input type="text" name="last_name" value="{{ old('last_name') }}" required>
-                    </label>         
-                    <label>Suffix:
-    <select name="suffix">
-        @foreach($suffixOptions as $value => $label)
-            <option value="{{ $value }}" {{ old('suffix') == $value ? 'selected' : '' }}>
-                {{ $label }}
-            </option>
-        @endforeach
-    </select>
-</label>
-                    <label>Date of Birth:
-                        <input type="date" name="birthdate" id="birthdate" value="{{ old('birthdate') }}" required onchange="calculateAge()">
-                    </label>
-                    <label>Age:
-                        <input type="number" name="age" id="age" value="{{ old('age') }}" required readonly>
-                    </label>
-                    <label>Sex:
-                        <select name="gender" required>
-                            <option value="">Select Sex</option>
-                            <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
-                            <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
-                        </select>
-                    </label>
-                    <label>Civil Status:
-                        <select name="civil_status" required>
-                            <option value="">Select Civil Status</option>
-                            <option value="Single" {{ old('civil_status') == 'Single' ? 'selected' : '' }}>Single</option>
-                            <option value="Married" {{ old('civil_status') == 'Married' ? 'selected' : '' }}>Married</option>
-                            <option value="Divorced" {{ old('civil_status') == 'Divorced' ? 'selected' : '' }}>Divorced</option>
-                            <option value="Widowed" {{ old('civil_status') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
-                            <option value="Separated" {{ old('civil_status') == 'Separated' ? 'selected' : '' }}>Separated</option>
-                        </select>
-                    </label>
-                    <label>Religion:
-    <select name="religion" id="religion" required onchange="handleReligionChange()">
-        <option value="">Select Religion</option>
-        <option value="Roman Catholic" {{ old('religion') == 'Roman Catholic' ? 'selected' : '' }}>Roman Catholic</option>
-        <option value="Christian" {{ old('religion') == 'Christian' ? 'selected' : '' }}>Christian</option>
-        <option value="Islam" {{ old('religion') == 'Islam' ? 'selected' : '' }}>Islam</option>
-        <option value="Iglesia ni Cristo" {{ old('religion') == 'Iglesia ni Cristo' ? 'selected' : '' }}>Iglesia ni Cristo</option>
-        <option value="Seventh-day Adventist" {{ old('religion') == 'Seventh-day Adventist' ? 'selected' : '' }}>Seventh-day Adventist</option>
-        <option value="Baptist" {{ old('religion') == 'Baptist' ? 'selected' : '' }}>Baptist</option>
-        <option value="Born Again" {{ old('religion') == 'Born Again' ? 'selected' : '' }}>Born Again</option>
-        <option value="Jehovah's Witness" {{ old('religion') == 'Jehovah\'s Witness' ? 'selected' : '' }}>Jehovah's Witness</option>
-        <option value="Others">Others (please specify)</option>
-    </select>
-    <input type="text" name="religion_other" id="religion_other" 
-           value="{{ old('religion_other') }}" 
-           style="display: none; margin-top: 0.5rem;"
-           placeholder="Please specify religion">
-</label>
-
-<script>
-function handleReligionChange() {
-    const religionSelect = document.getElementById('religion');
-    const religionOtherInput = document.getElementById('religion_other');
-    
-    if (religionSelect.value === 'Others') {
-        religionOtherInput.style.display = 'block';
-        religionOtherInput.setAttribute('required', 'required');
-    } else {
-        religionOtherInput.style.display = 'none';
-        religionOtherInput.removeAttribute('required');
-    }
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    handleReligionChange();
-    
-    // If form was submitted with validation errors and "Others" was selected
-    const religionSelect = document.getElementById('religion');
-    if (religionSelect.value === 'Others') {
-        document.getElementById('religion_other').style.display = 'block';
-    }
-});
-</script>
-                    <h2><i class="fas fa-map-marker-alt mr-2"></i>Present Address</h2>
-                    
-                    <div class="location-fields">
-    <div class="form-group">
-        <label for="region">Region:</label>
-        <select name="region" id="region" class="form-control" required onchange="loadProvinces()">
-    <option value="">Select Region</option>
-    @foreach(App\Helpers\LocationHelper::getRegions() as $region)
-        <option value="{{ $region['region_code'] }}" {{ old('region') == $region['region_code'] ? 'selected' : '' }}>
-            {{ $region['region_name'] }} ({{ $region['region_code'] }})
-        </option>
-    @endforeach
-</select>
-    </div>
-
-    <div class="form-group">
-        <label for="province">Province:</label>
-        <select name="province" id="province" class="form-control" required onchange="loadCities()" disabled>
-            <option value="">Select Province</option>
-            @if(old('province'))
-                <option value="{{ old('province') }}" selected>{{ old('province_name') }}</option>
-            @endif
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label for="municipality">City/Municipality:</label>
-        <select name="municipality" id="city" class="form-control" required onchange="loadBarangays()" disabled>
-            <option value="">Select City/Municipality</option>
-            @if(old('city'))
-                <option value="{{ old('city') }}" selected>{{ old('city_name') }}</option>
-            @endif
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label for="barangay">Barangay:</label>
-        <select name="barangay" id="barangay" class="form-control" required disabled>
-            <option value="">Select Barangay</option>
-            @if(old('barangay'))
-                <option value="{{ old('barangay') }}" selected>{{ old('brgy_name') }}</option>
-            @endif
-        </select>
-        <label>Postal Code:
-                        <input type="text" name="postal_code" value="{{ old('postal_code') }}" required>
-                    </label>
-                    <label>Country:
-                        <input type="text" name="country" value="{{ old('country') }}">
-                    </label>
-
-        <label>Purok/Street:
-                        <input type="text" name="address" value="{{ old('address') }}">
-                    </label>
-    </div>
-</div>
-
-<script>
-function loadProvinces() {
-    const region = document.getElementById('region').value;
-    const provinceSelect = document.getElementById('province');
-    const citySelect = document.getElementById('city');
-    const barangaySelect = document.getElementById('barangay');
-    
-    // Reset dependent fields
-    provinceSelect.innerHTML = '<option value="">Select Province</option>';
-    provinceSelect.disabled = !region;
-    
-    citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
-    citySelect.disabled = true;
-    
-    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
-    barangaySelect.disabled = true;
-
-    if (!region) return;
-
-    showLoader(provinceSelect);
-    
-    fetch(`/api/provinces?region=${encodeURIComponent(region)}`)
-        .then(handleResponse)
-        .then(data => {
-            provinceSelect.innerHTML = '<option value="">Select Province</option>';
-            data.forEach(province => {
-                const option = new Option(province.name, province.code);
-                provinceSelect.add(option);
-            });
-            
-            // Restore old value if exists
-            const oldProvince = "{{ old('province') }}";
-            if (oldProvince) {
-                provinceSelect.value = oldProvince;
-                loadCities();
-            }
-        })
-        .catch(handleError.bind(null, provinceSelect));
-}
-
-function loadCities() {
-    const province = document.getElementById('province').value;
-    const citySelect = document.getElementById('city');
-    const barangaySelect = document.getElementById('barangay');
-    
-    // Reset dependent field
-    citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
-    citySelect.disabled = !province;
-    
-    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
-    barangaySelect.disabled = true;
-
-    if (!province) return;
-
-    showLoader(citySelect);
-    
-    fetch(`/api/cities?province=${encodeURIComponent(province)}`)
-        .then(handleResponse)
-        .then(data => {
-            citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
-            data.forEach(city => {
-                const option = new Option(city.name, city.code);
-                citySelect.add(option);
-            });
-            
-            // Restore old value if exists
-            const oldCity = "{{ old('city') }}";
-            if (oldCity) {
-                citySelect.value = oldCity;
-                loadBarangays();
-            }
-        })
-        .catch(handleError.bind(null, citySelect));
-}
-
-function loadBarangays() {
-    const city = document.getElementById('city').value;
-    const barangaySelect = document.getElementById('barangay');
-    
-    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
-    barangaySelect.disabled = !city;
-
-    if (!city) return;
-
-    showLoader(barangaySelect);
-    
-    fetch(`/api/barangays?city=${encodeURIComponent(city)}`)
-        .then(handleResponse)
-        .then(data => {
-            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
-            data.forEach(barangay => {
-                const option = new Option(barangay.name, barangay.code);
-                barangaySelect.add(option);
-            });
-            
-            // Restore old value if exists
-            const oldBarangay = "{{ old('barangay') }}";
-            if (oldBarangay) {
-                barangaySelect.value = oldBarangay;
-            }
-        })
-        .catch(handleError.bind(null, barangaySelect));
-}
-
-// Helper functions
-function handleResponse(response) {
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-}
-
-function handleError(selectElement, error) {
-    console.error('Error:', error);
-    selectElement.innerHTML = `<option value="">Error loading data</option>`;
-}
-
-function showLoader(selectElement) {
-    const loaderOption = document.createElement('option');
-    loaderOption.value = '';
-    loaderOption.textContent = 'Loading...';
-    loaderOption.disabled = true;
-    selectElement.innerHTML = '';
-    selectElement.appendChild(loaderOption);
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const region = document.getElementById('region');
-    if (region.value) {
-        loadProvinces();
-    }
-});
-</script>
-
-                <!-- Education Information -->
-                <div class="form-section">
-                    <h2><i class="fas fa-graduation-cap mr-2"></i> Education Information</h2>
-                    <label>SHS Track/Strand Completed:
-                        <select name="shs_track" required>
-                            <option disabled selected hidden value="">Select Program</option>
-                            <optgroup label="Academic Strand">
-                                <option value="STEM" {{ old('shs_track') == 'STEM' ? 'selected' : '' }}>STEM - Science, Technology, Engineering, and Mathematics</option>
-                                <option value="ABM" {{ old('shs_track') == 'ABM' ? 'selected' : '' }}>ABM - Accountancy, Business, and Management</option>
-                                <option value="HUMSS" {{ old('shs_track') == 'HUMSS' ? 'selected' : '' }}>HUMSS - Humanities and Social Sciences</option>
-                                <option value="GAS" {{ old('shs_track') == 'GAS' ? 'selected' : '' }}>GAS - General Academic Strand</option>
-                            </optgroup>
-                            <optgroup label="TVL Strand">
-                                <option value="ICT" {{ old('shs_track') == 'ICT' ? 'selected' : '' }}>ICT - Information and Communications Technology</option>
-                                <option value="HE" {{ old('shs_track') == 'HE' ? 'selected' : '' }}>HE - Home Economics</option>
-                                <option value="IA" {{ old('shs_track') == 'IA' ? 'selected' : '' }}>IA - Industrial Arts</option>
-                            </optgroup>
-                        </select>
-                    </label>
-                    <label>Year Graduated:
-                        <select name="year_graduated" required>
-                            <option value="">Select Year</option>
-                            @foreach ($years as $year)
-                                <option value="{{ $year }}" {{ old('year_graduated') == $year ? 'selected' : '' }}>{{ $year }}</option>
-                            @endforeach
+                    <h2><i class="fas fa-user-graduate mr-2"></i> Graduate Type</h2>
+                    <label>Please select your graduate type:
+                        <select name="graduate_type" id="graduate_type" required onchange="toggleFormSections()">
+                            <option value="" selected>-- Select Graduate Type --</option>
+                            <option value="JHS" {{ old('graduate_type') == 'JHS' ? 'selected' : '' }}>Junior High School (JHS) Graduate</option>
+                            <option value="SHS" {{ old('graduate_type') == 'SHS' ? 'selected' : '' }}>Senior High School (SHS) Graduate</option>
                         </select>
                     </label>
                 </div>
 
-                <!-- Contact Information -->
-                <div class="form-section">
-                    <h2><i class="fas fa-address-book mr-2"></i> Contact Information (Optional)</h2>
-                    <label>Phone Number:
-                        <input type="text" name="phone" value="{{ old('phone') }}">
-                    </label>
-                    <label>Email Address:
-                        <input type="email" name="email" value="{{ old('email') }}">
-                    </label>
-                </div>
-
-                <!-- Employment Information -->
-                <div class="form-section">
-                    <h2><i class="fas fa-briefcase mr-2"></i> Employment Information</h2>
-                    <label>Employment Status:
-                        <select name="employment_status" id="employment_status" required onchange="toggleEmploymentFields()">
-                            <option value="">Select Status</option>
-                            <option value="Employed" {{ old('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
-                            <option value="Unemployed" {{ old('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
-                        </select>
-                    </label>
-
-<!-- Employed Fields -->
-<div id="employed_fields" class="hidden">
-    <h3><i class="fas fa-building mr-2"></i> Employment Details</h3>
-    
-    <!-- Organization Type -->
-    <label>Organization Type:
-        <select name="organization_type" id="organization_type" required onchange="toggleOrgTypeOther()">
-            <option value="">Select Organization Type</option>
-            @foreach($organizationTypes as $type)
-                <option value="{{ $type }}" {{ old('organization_type') == $type ? 'selected' : '' }}>
-                    {{ $type }}
-                </option>
-            @endforeach
-        </select>
-    </label>
-    <div id="org_type_other_container" style="display: none; margin-top: 0.5rem;">
-        <label>Please specify organization type:
-            <input type="text" name="organization_type_other" id="organization_type_other" 
-                   value="{{ old('organization_type_other') }}"
-                   placeholder="Enter organization type">
-        </label>
-    </div>
-
-    <!-- Occupational Classification -->
-    <label>Occupational Classification:
-        <select name="occupational_classification" id="occupational_classification" required onchange="toggleOccClassOther()">
-            <option value="">Select Classification</option>
-            @foreach($occupationClassifications as $group => $options)
-                @if(is_array($options))
-                    <optgroup label="{{ $group }}">
-                        @foreach($options as $option)
-                            <option value="{{ $option }}" {{ old('occupational_classification') == $option ? 'selected' : '' }}>
-                                {{ $option }}
-                            </option>
-                        @endforeach
-                    </optgroup>
-                @else
-                    <option value="{{ $options }}" {{ old('occupational_classification') == $options ? 'selected' : '' }}>
-                        {{ $options }}
-                    </option>
-                @endif
-            @endforeach
-        </select>
-    </label>
-    <div id="occ_class_other_container" style="display: none; margin-top: 0.5rem;">
-        <label>Please specify occupational classification:
-            <input type="text" name="occupational_classification_other" id="occupational_classification_other" 
-                   value="{{ old('occupational_classification_other') }}"
-                   placeholder="Enter classification">
-        </label>
-    </div>
-    <script>
-function toggleOrgTypeOther() {
-    const orgTypeSelect = document.getElementById('organization_type');
-    const otherContainer = document.getElementById('org_type_other_container');
-    
-    if (orgTypeSelect.value === 'Other') {
-        otherContainer.style.display = 'block';
-        document.getElementById('organization_type_other').setAttribute('required', 'required');
-    } else {
-        otherContainer.style.display = 'none';
-        document.getElementById('organization_type_other').removeAttribute('required');
-    }
-}
-
-function toggleOccClassOther() {
-    const occClassSelect = document.getElementById('occupational_classification');
-    const otherContainer = document.getElementById('occ_class_other_container');
-    
-    if (occClassSelect.value === 'Other') {
-        otherContainer.style.display = 'block';
-        document.getElementById('occupational_classification_other').setAttribute('required', 'required');
-    } else {
-        otherContainer.style.display = 'none';
-        document.getElementById('occupational_classification_other').removeAttribute('required');
-    }
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    toggleOrgTypeOther();
-    toggleOccClassOther();
-    
-    // If form was submitted with validation errors and "Other" was selected
-    if (document.getElementById('organization_type').value === 'Other') {
-        document.getElementById('org_type_other_container').style.display = 'block';
-    }
-    if (document.getElementById('occupational_classification').value === 'Other') {
-        document.getElementById('occ_class_other_container').style.display = 'block';
-    }
-});
-</script>
-            <label>Employer Name:
-           <input type="text" name="employer_name" value="{{ old('employer_name') }}">
-             </label>
-                        <label>Employment Type:
-                            <select name="job_situation">
-                                <option value="">Select Situation</option>
-                                <option value="Permanent" {{ old('job_situation') == 'Permanent' ? 'selected' : '' }}>Permanent</option>
-                                <option value="Contractual" {{ old('job_situation') == 'Contractual' ? 'selected' : '' }}>Contractual</option>
-                                <option value="Casual" {{ old('job_situation') == 'Casual' ? 'selected' : '' }}>Not Permanent</option>
-                                <option value="Others" {{ old('job_situation') == 'Others' ? 'selected' : '' }}>Others</option>
+                <!-- Rest of the form (hidden initially) -->
+                <div id="rest-of-form" style="display: none;">
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h2><i class="fas fa-user mr-2"></i> Personal Information</h2>
+                        <label>First Name:
+                            <input type="text" name="first_name" value="{{ old('first_name') }}" required>
+                        </label>                    
+                        <label>Middle Name:
+                            <input type="text" name="middle_name" value="{{ old('middle_name') }}">
+                        </label>
+                        <label>Last Name:
+                            <input type="text" name="last_name" value="{{ old('last_name') }}" required>
+                        </label>         
+                        <label>Suffix:
+                            <select name="suffix">
+                                @foreach($suffixOptions as $value => $label)
+                                    <option value="{{ $value }}" {{ old('suffix') == $value ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
                             </select>
                         </label>
-                        <label>Years in Company:
-                            <select name="years_in_company">
-                                <option value="">Select Years</option>
-                                <option value="0-5" {{ old('years_in_company') == '0-5' ? 'selected' : '' }}>0-5 years</option>
-                                <option value="6-10" {{ old('years_in_company') == '6-10' ? 'selected' : '' }}>6-10 years</option>
-                                <option value="10-15" {{ old('years_in_company') == '10-15' ? 'selected' : '' }}>10-15 years</option>
-                                <option value="16-20" {{ old('years_in_company') == '16-20' ? 'selected' : '' }}>16-20 years</option>
-                                <option value="20-25" {{ old('years_in_company') == '20-25' ? 'selected' : '' }}>20-25 years</option>
-                                <option value="25 above" {{ old('years_in_company') == '25 above' ? 'selected' : '' }}>25+ years</option>
+                        <label>Date of Birth:
+                            <input type="date" name="birthdate" id="birthdate" value="{{ old('birthdate') }}" required onchange="calculateAge()" pattern="\d{2}/\d{2}/\d{2}">
+                            <small>Format: MM/DD/YY</small>
+                        </label>
+                        <label>Age:
+                            <input type="number" name="age" id="age" value="{{ old('age') }}" required readonly>
+                        </label>
+                        <label>Sex:
+                            <select name="gender" required>
+                                <option value="">Select Sex</option>
+                                <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+                                <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
+                            </select>
+                        </label>
+                        <label>Civil Status:
+                            <select name="civil_status" required>
+                                <option value="">Select Civil Status</option>
+                                <option value="Single" {{ old('civil_status') == 'Single' ? 'selected' : '' }}>Single</option>
+                                <option value="Married" {{ old('civil_status') == 'Married' ? 'selected' : '' }}>Married</option>
+                                <option value="Divorced" {{ old('civil_status') == 'Divorced' ? 'selected' : '' }}>Divorced</option>
+                                <option value="Widowed" {{ old('civil_status') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
+                                <option value="Separated" {{ old('civil_status') == 'Separated' ? 'selected' : '' }}>Separated</option>
+                            </select>
+                        </label>
+                        <label>Religion:
+                            <select name="religion" id="religion" required onchange="handleReligionChange()">
+                                <option value="">Select Religion</option>
+                                <option value="Roman Catholic" {{ old('religion') == 'Roman Catholic' ? 'selected' : '' }}>Roman Catholic</option>
+                                <option value="Christian" {{ old('religion') == 'Christian' ? 'selected' : '' }}>Christian</option>
+                                <option value="Islam" {{ old('religion') == 'Islam' ? 'selected' : '' }}>Islam</option>
+                                <option value="Iglesia ni Cristo" {{ old('religion') == 'Iglesia ni Cristo' ? 'selected' : '' }}>Iglesia ni Cristo</option>
+                                <option value="Seventh-day Adventist" {{ old('religion') == 'Seventh-day Adventist' ? 'selected' : '' }}>Seventh-day Adventist</option>
+                                <option value="Baptist" {{ old('religion') == 'Baptist' ? 'selected' : '' }}>Baptist</option>
+                                <option value="Born Again" {{ old('religion') == 'Born Again' ? 'selected' : '' }}>Born Again</option>
+                                <option value="Jehovah's Witness" {{ old('religion') == 'Jehovah\'s Witness' ? 'selected' : '' }}>Jehovah's Witness</option>
+                                <option value="Others">Others (please specify)</option>
+                            </select>
+                            <input type="text" name="religion_other" id="religion_other" 
+                                value="{{ old('religion_other') }}" 
+                                style="display: none; margin-top: 0.5rem;"
+                                placeholder="Please specify religion">
+                        </label>
+                        <h2><i class="fas fa-map-marker-alt mr-2"></i>Present Address</h2>
+                        
+                        <div class="location-fields">
+                            <div class="form-group">
+                                <label for="region">Region:</label>
+                                <select name="region" id="region" class="form-control" required onchange="loadProvinces()">
+                                    <option value="">Select Region</option>
+                                    @foreach(App\Helpers\LocationHelper::getRegions() as $region)
+                                        <option value="{{ $region['region_code'] }}" {{ old('region') == $region['region_code'] ? 'selected' : '' }}>
+                                            {{ $region['region_name'] }} ({{ $region['region_code'] }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="province">Province:</label>
+                                <select name="province" id="province" class="form-control" required onchange="loadCities()" disabled>
+                                    <option value="">Select Province</option>
+                                    @if(old('province'))
+                                        <option value="{{ old('province') }}" selected>{{ old('province_name') }}</option>
+                                    @endif
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="municipality">City/Municipality:</label>
+                                <select name="municipality" id="city" class="form-control" required onchange="loadBarangays()" disabled>
+                                    <option value="">Select City/Municipality</option>
+                                    @if(old('city'))
+                                        <option value="{{ old('city') }}" selected>{{ old('city_name') }}</option>
+                                    @endif
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="barangay">Barangay:</label>
+                                <select name="barangay" id="barangay" class="form-control" required disabled>
+                                    <option value="">Select Barangay</option>
+                                    @if(old('barangay'))
+                                        <option value="{{ old('barangay') }}" selected>{{ old('brgy_name') }}</option>
+                                    @endif
+                                </select>
+                                <label>Postal Code:
+                                    <input type="text" name="postal_code" value="{{ old('postal_code') }}" required>
+                                </label>
+                                <label>Country:
+                                    <input type="text" name="country" value="{{ old('country', 'Philippines') }}">
+                                </label>
+                                <label>Purok/Street:
+                                    <input type="text" name="address" value="{{ old('address') }}">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Education Information (only for SHS) -->
+                    <div class="form-section" id="education-section" style="display: none;">
+                        <h2><i class="fas fa-graduation-cap mr-2"></i> Education Information</h2>
+                        <label>SHS Track/Strand Completed:
+                            <select name="shs_track" id="shs_track">
+                                <option disabled selected hidden value="">Select Program</option>
+                                <optgroup label="Academic Strand">
+                                    <option value="STEM" {{ old('shs_track') == 'STEM' ? 'selected' : '' }}>STEM - Science, Technology, Engineering, and Mathematics</option>
+                                    <option value="ABM" {{ old('shs_track') == 'ABM' ? 'selected' : '' }}>ABM - Accountancy, Business, and Management</option>
+                                    <option value="HUMSS" {{ old('shs_track') == 'HUMSS' ? 'selected' : '' }}>HUMSS - Humanities and Social Sciences</option>
+                                    <option value="GAS" {{ old('shs_track') == 'GAS' ? 'selected' : '' }}>GAS - General Academic Strand</option>
+                                </optgroup>
+                                <optgroup label="TVL Strand">
+                                    <option value="ICT" {{ old('shs_track') == 'ICT' ? 'selected' : '' }}>ICT - Information and Communications Technology</option>
+                                    <option value="HE" {{ old('shs_track') == 'HE' ? 'selected' : '' }}>HE - Home Economics</option>
+                                    <option value="IA" {{ old('shs_track') == 'IA' ? 'selected' : '' }}>IA - Industrial Arts</option>
+                                </optgroup>
+                            </select>
+                        </label>
+                        <label>Year Graduated:
+                            <select name="year_graduated" required>
+                                <option value="">Select Year</option>
+                                @foreach ($years as $year)
+                                    <option value="{{ $year }}" {{ old('year_graduated') == $year ? 'selected' : '' }}>{{ $year }}</option>
+                                @endforeach
                             </select>
                         </label>
                     </div>
 
-                    <!-- Unemployed Fields -->
-                    <div id="unemployed_fields" class="hidden">
-                        <h3><i class="fas fa-user-clock mr-2"></i> Unemployment Details</h3>
-                        <label>Reasons for Unemployment:
-                            <textarea name="unemployment_reason" rows="4">{{ old('unemployment_reason') }}</textarea>
+                    <!-- Contact Information -->
+                    <div class="form-section">
+                        <h2><i class="fas fa-address-book mr-2"></i> Contact Information (Optional)</h2>
+                        <label>Phone Number:
+                            <input type="text" name="phone" value="{{ old('phone') }}">
+                        </label>
+                        <label>Email Address:
+                            <input type="email" name="email" value="{{ old('email') }}">
                         </label>
                     </div>
-                </div>
 
-                <div class="flex justify-between mt-6">
-                <button type="button" class="btn border border-gray-300 text-gray-800 hover:bg-gray-100" onclick="closeForm()">
-    <i class="fas fa-times mr-2"></i> Cancel
-</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-paper-plane mr-2"></i> Submit Form
-                    </button>
+                    <!-- Employment Information -->
+                    <div class="form-section">
+                        <h2><i class="fas fa-briefcase mr-2"></i> Employment Information</h2>
+                        <label>Employment Status:
+                            <select name="employment_status" id="employment_status" required onchange="toggleEmploymentFields()">
+                                <option value="">Select Status</option>
+                                <option value="Employed" {{ old('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
+                                <option value="Unemployed" {{ old('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
+                            </select>
+                        </label>
+
+                        <!-- Employed Fields -->
+                        <div id="employed_fields" class="hidden">
+                            <h3><i class="fas fa-building mr-2"></i> Employment Details</h3>
+                            
+                            <!-- Organization Type -->
+                            <label>Organization Type:
+                                <select name="organization_type" id="organization_type" onchange="toggleOrgTypeOther()">
+                                    <option value="">Select Organization Type</option>
+                                    @foreach($organizationTypes as $type)
+                                        <option value="{{ $type }}" {{ old('organization_type') == $type ? 'selected' : '' }}>
+                                            {{ $type }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </label>
+                            <div id="org_type_other_container" style="display: none; margin-top: 0.5rem;">
+                                <label>Please specify organization type:
+                                    <input type="text" name="organization_type_other" id="organization_type_other" 
+                                          value="{{ old('organization_type_other') }}"
+                                          placeholder="Enter organization type">
+                                </label>
+                            </div>
+
+                            <!-- Occupational Classification -->
+                            <label>Occupational Classification:
+                                <select name="occupational_classification" id="occupational_classification" onchange="toggleOccClassOther()">
+                                    <option value="">Select Classification</option>
+                                    @foreach($occupationClassifications as $group => $options)
+                                        @if(is_array($options))
+                                            <optgroup label="{{ $group }}">
+                                                @foreach($options as $option)
+                                                    <option value="{{ $option }}" {{ old('occupational_classification') == $option ? 'selected' : '' }}>
+                                                        {{ $option }}
+                                                    </option>
+                                                @endforeach
+                                            </optgroup>
+                                        @else
+                                            <option value="{{ $options }}" {{ old('occupational_classification') == $options ? 'selected' : '' }}>
+                                                {{ $options }}
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                            </label>
+                            <div id="occ_class_other_container" style="display: none; margin-top: 0.5rem;">
+                                <label>Please specify occupational classification:
+                                    <input type="text" name="occupational_classification_other" id="occupational_classification_other" 
+                                          value="{{ old('occupational_classification_other') }}"
+                                          placeholder="Enter classification">
+                                </label>
+                            </div>
+                            
+                            <label>Employer Name:
+                                <input type="text" name="employer_name" value="{{ old('employer_name') }}">
+                            </label>
+                            <label>Employment Type:
+                                <select name="job_situation">
+                                    <option value="">Select Situation</option>
+                                    <option value="Permanent" {{ old('job_situation') == 'Permanent' ? 'selected' : '' }}>Permanent</option>
+                                    <option value="Contractual" {{ old('job_situation') == 'Contractual' ? 'selected' : '' }}>Contractual</option>
+                                    <option value="Casual" {{ old('job_situation') == 'Casual' ? 'selected' : '' }}>Not Permanent</option>
+                                    <option value="Others" {{ old('job_situation') == 'Others' ? 'selected' : '' }}>Others</option>
+                                </select>
+                            </label>
+                            <label>Years in Company:
+                                <select name="years_in_company">
+                                    <option value="">Select Years</option>
+                                    <option value="0-5" {{ old('years_in_company') == '0-5' ? 'selected' : '' }}>0-5 years</option>
+                                    <option value="6-10" {{ old('years_in_company') == '6-10' ? 'selected' : '' }}>6-10 years</option>
+                                    <option value="10-15" {{ old('years_in_company') == '10-15' ? 'selected' : '' }}>10-15 years</option>
+                                    <option value="16-20" {{ old('years_in_company') == '16-20' ? 'selected' : '' }}>16-20 years</option>
+                                    <option value="20-25" {{ old('years_in_company') == '20-25' ? 'selected' : '' }}>20-25 years</option>
+                                    <option value="25 above" {{ old('years_in_company') == '25 above' ? 'selected' : '' }}>25+ years</option>
+                                </select>
+                            </label>
+                        </div>
+
+                        <!-- Unemployed Fields -->
+                        <div id="unemployed_fields" class="hidden">
+                            <h3><i class="fas fa-user-clock mr-2"></i> Unemployment Details</h3>
+                            <label>Reasons for Unemployment:
+                                <textarea name="unemployment_reason" rows="4">{{ old('unemployment_reason') }}</textarea>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between mt-6">
+                        <button type="button" class="btn border border-gray-300 text-gray-800 hover:bg-gray-100" onclick="closeForm()">
+                            <i class="fas fa-times mr-2"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane mr-2"></i> Submit Form
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // Initialize visibility on page load
+        // Show complimentary message after form submission - now done separately after success
+        function showSuccessMessage() {
+            Swal.fire({
+                title: 'Thank You!',
+                text: 'Your response has been successfully recorded.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#1d4ed8'
+            });
+        }
+        
+        // Execute the success message if we returned with a success status
         document.addEventListener('DOMContentLoaded', function() {
+            @if(session('success'))
+                showSuccessMessage();
+            @endif
+            
             toggleEmploymentFields();
             document.getElementById('currentYear').textContent = new Date().getFullYear();
+            
+            // Check if form was previously filled (e.g., after validation error)
+            const graduateType = document.getElementById('graduate_type').value;
+            if (graduateType) {
+                toggleFormSections();
+            }
+            
+            // Initialize address fields if values exist
+            const region = document.getElementById('region');
+            if (region && region.value) {
+                loadProvinces();
+            }
+            
+            // Initialize religion fields
+            handleReligionChange();
+            
+            // Set date format for date inputs
+            const birthdateInput = document.getElementById('birthdate');
+            if (birthdateInput) {
+                birthdateInput.addEventListener('focus', function() {
+                    this.type = 'date';
+                });
+                birthdateInput.addEventListener('blur', function() {
+                    if (!this.value) {
+                        this.type = 'text';
+                    }
+                });
+            }
         });
+        
+        // Toggle form sections based on graduate type
+        function toggleFormSections() {
+            const graduateType = document.getElementById('graduate_type').value;
+            const restOfForm = document.getElementById('rest-of-form');
+            const educationSection = document.getElementById('education-section');
+            const shsTrackField = document.getElementById('shs_track');
+            
+            if (!graduateType) {
+                restOfForm.style.display = 'none';
+                return;
+            }
+            
+            // Show the rest of the form
+            restOfForm.style.display = 'block';
+            
+            // Handle education section visibility and validation
+            if (graduateType === 'JHS') {
+                educationSection.style.display = 'none';
+                shsTrackField.removeAttribute('required');
+            } else if (graduateType === 'SHS') {
+                educationSection.style.display = 'block';
+                shsTrackField.setAttribute('required', 'required');
+            }
+        }
+        
+        // Address dropdown functions
+        function loadProvinces() {
+            const region = document.getElementById('region').value;
+            const provinceSelect = document.getElementById('province');
+            const citySelect = document.getElementById('city');
+            const barangaySelect = document.getElementById('barangay');
+            
+            // Reset dependent fields
+            provinceSelect.innerHTML = '<option value="">Select Province</option>';
+            provinceSelect.disabled = !region;
+            
+            citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+            citySelect.disabled = true;
+            
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            barangaySelect.disabled = true;
+
+            if (!region) return;
+
+            showLoader(provinceSelect);
+            
+            fetch(`/api/provinces?region=${encodeURIComponent(region)}`)
+                .then(handleResponse)
+                .then(data => {
+                    provinceSelect.innerHTML = '<option value="">Select Province</option>';
+                    data.forEach(province => {
+                        const option = new Option(province.name, province.code);
+                        provinceSelect.add(option);
+                    });
+                    
+                    // Restore old value if exists
+                    const oldProvince = "{{ old('province') }}";
+                    if (oldProvince) {
+                        provinceSelect.value = oldProvince;
+                        loadCities();
+                    }
+                })
+                .catch(handleError.bind(null, provinceSelect));
+        }
+
+        function loadCities() {
+            const province = document.getElementById('province').value;
+            const citySelect = document.getElementById('city');
+            const barangaySelect = document.getElementById('barangay');
+            
+            // Reset dependent field
+            citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+            citySelect.disabled = !province;
+            
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            barangaySelect.disabled = true;
+
+            if (!province) return;
+
+            showLoader(citySelect);
+            
+            fetch(`/api/cities?province=${encodeURIComponent(province)}`)
+                .then(handleResponse)
+                .then(data => {
+                    citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+                    data.forEach(city => {
+                        const option = new Option(city.name, city.code);
+                        citySelect.add(option);
+                    });
+                    
+                    // Restore old value if exists
+                    const oldCity = "{{ old('city') }}";
+                    if (oldCity) {
+                        citySelect.value = oldCity;
+                        loadBarangays();
+                    }
+                })
+                .catch(handleError.bind(null, citySelect));
+        }
+
+        function loadBarangays() {
+            const city = document.getElementById('city').value;
+            const barangaySelect = document.getElementById('barangay');
+            
+            barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            barangaySelect.disabled = !city;
+
+            if (!city) return;
+
+            showLoader(barangaySelect);
+            
+            fetch(`/api/barangays?city=${encodeURIComponent(city)}`)
+                .then(handleResponse)
+                .then(data => {
+                    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+                    data.forEach(barangay => {
+                        const option = new Option(barangay.name, barangay.code);
+                        barangaySelect.add(option);
+                    });
+                    
+                    // Restore old value if exists
+                    const oldBarangay = "{{ old('barangay') }}";
+                    if (oldBarangay) {
+                        barangaySelect.value = oldBarangay;
+                    }
+                })
+                .catch(handleError.bind(null, barangaySelect));
+        }
+
+        // Helper functions for address dropdowns
+        function handleResponse(response) {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        }
+
+        function handleError(selectElement, error) {
+            console.error('Error:', error);
+            selectElement.innerHTML = `<option value="">Error loading data</option>`;
+        }
+
+        function showLoader(selectElement) {
+            const loaderOption = document.createElement('option');
+            loaderOption.value = '';
+            loaderOption.textContent = 'Loading...';
+            loaderOption.disabled = true;
+            selectElement.innerHTML = '';
+            selectElement.appendChild(loaderOption);
+        }
 
         function toggleEmploymentFields() {
-    const status = document.getElementById('employment_status').value;
-    const employedFields = document.getElementById('employed_fields');
-    const unemployedFields = document.getElementById('unemployed_fields');
-    
-    // List of all employed-related fields
-    const employedFieldsToToggle = [
-        'organization_type',
-        'occupational_classification',
-        'employer_name',
-        'job_situation',
-        'years_in_company'
-    ];
-    
-    if (status === 'Employed') {
-        employedFields.style.display = 'block';
-        unemployedFields.style.display = 'none';
-        
-        // Add required attributes
-        employedFieldsToToggle.forEach(field => {
-            const fieldElement = document.getElementsByName(field)[0];
-            if (fieldElement) fieldElement.required = true;
-        });
-    } else {
-        employedFields.style.display = 'none';
-        unemployedFields.style.display = 'block';
-        
-        // Remove required attributes
-        employedFieldsToToggle.forEach(field => {
-            const fieldElement = document.getElementsByName(field)[0];
-            if (fieldElement) fieldElement.required = false;
-        });
-    }
-}
+            const status = document.getElementById('employment_status').value;
+            const employedFields = document.getElementById('employed_fields');
+            const unemployedFields = document.getElementById('unemployed_fields');
+            
+            // List of all employed-related fields
+            const employedFieldsToToggle = [
+                'organization_type',
+                'occupational_classification',
+                'employer_name',
+                'job_situation',
+                'years_in_company'
+            ];
+            
+            if (status === 'Employed') {
+                employedFields.style.display = 'block';
+                unemployedFields.style.display = 'none';
+                
+                // Add required attributes
+                employedFieldsToToggle.forEach(field => {
+                    const fieldElement = document.getElementsByName(field)[0];
+                    if (fieldElement) fieldElement.required = true;
+                });
+            } else if (status === 'Unemployed') {
+                employedFields.style.display = 'none';
+                unemployedFields.style.display = 'block';
+                
+                // Remove required attributes
+                employedFieldsToToggle.forEach(field => {
+                    const fieldElement = document.getElementsByName(field)[0];
+                    if (fieldElement) fieldElement.required = false;
+                });
+                
+                // Ensure unemployment_reason is not required
+                const unemploymentReasonField = document.getElementsByName('unemployment_reason')[0];
+                if (unemploymentReasonField) unemploymentReasonField.removeAttribute('required');
+            } else {
+                employedFields.style.display = 'none';
+                unemployedFields.style.display = 'none';
+            }
+        }
 
         function openForm() {
             document.getElementById('formModal').style.display = 'flex';
@@ -1103,15 +1119,43 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Show complimentary message after form submission
-        function showComplimentaryMessage() {
-            Swal.fire({
-                title: 'Thank You!',
-                text: 'Your response has been successfully recorded.',
-                icon: 'success',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#1d4ed8'
-            });
+        function handleReligionChange() {
+            const religionSelect = document.getElementById('religion');
+            const religionOtherInput = document.getElementById('religion_other');
+            
+            if (religionSelect.value === 'Others') {
+                religionOtherInput.style.display = 'block';
+                religionOtherInput.setAttribute('required', 'required');
+            } else {
+                religionOtherInput.style.display = 'none';
+                religionOtherInput.removeAttribute('required');
+            }
+        }
+
+        function toggleOrgTypeOther() {
+            const orgTypeSelect = document.getElementById('organization_type');
+            const otherContainer = document.getElementById('org_type_other_container');
+            
+            if (orgTypeSelect.value === 'Other') {
+                otherContainer.style.display = 'block';
+                document.getElementById('organization_type_other').setAttribute('required', 'required');
+            } else {
+                otherContainer.style.display = 'none';
+                document.getElementById('organization_type_other').removeAttribute('required');
+            }
+        }
+
+        function toggleOccClassOther() {
+            const occClassSelect = document.getElementById('occupational_classification');
+            const otherContainer = document.getElementById('occ_class_other_container');
+            
+            if (occClassSelect.value === 'Other') {
+                otherContainer.style.display = 'block';
+                document.getElementById('occupational_classification_other').setAttribute('required', 'required');
+            } else {
+                otherContainer.style.display = 'none';
+                document.getElementById('occupational_classification_other').removeAttribute('required');
+            }
         }
 
         // Close modal when clicking outside

@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
+    <!-- Font Awesome (Local) -->
+    @include('includes.fontawesome')
     
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -26,6 +28,7 @@
             }
         }
     </style>
+    @stack('styles')
 </head>
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100 dark:bg-blue-900">
@@ -42,7 +45,17 @@
         @endisset
 
         <!-- Page Content -->
+        <button id="toggleSidebar" class="text-blue-200 hover:text-white focus:outline-none" aria-label="Toggle sidebar">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
 
+        <button id="mobileToggle" class="mr-4 text-gray-600 hover:text-blue-600 md:hidden" aria-label="Toggle mobile menu">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
     </div>
 </body>
 </html>
