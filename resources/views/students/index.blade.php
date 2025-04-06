@@ -290,6 +290,14 @@
                 
                 <!-- Filters -->
                 <div class="flex flex-col sm:flex-row gap-2">
+                    <div class="flex gap-2">
+                        <input type="text" id="newYearInput" placeholder="Add School Year..." 
+                            class="filter-select">
+                        <button id="addYearButton" class="btn-add action-btn">
+                            <i class="fas fa-plus"></i> Add
+                        </button>
+                    </div>
+                    
                     <select id="yearFilter" name="year" class="filter-select">
                         <option value="">All School Years</option>
                         @foreach ($schoolYears as $year)
@@ -380,6 +388,79 @@ document.addEventListener('DOMContentLoaded', function() {
         const yearFilter = document.getElementById('yearFilter');
         const rowsPerPage = document.getElementById('rowsPerPage');
         const printFilteredBtn = document.getElementById('printFiltered');
+        const newYearInput = document.getElementById('newYearInput');
+        const addYearButton = document.getElementById('addYearButton');
+
+        // Add year functionality
+        addYearButton.addEventListener('click', function() {
+            const yearValue = newYearInput.value.trim();
+            
+            if (!yearValue) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please enter a valid school year'
+                });
+                return;
+            }
+            
+            // Make AJAX request to add year
+            fetch('{{ route("add.jhs.year") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ year: yearValue })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Failed to add school year');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Success: add the new year to the dropdown and select it
+                const option = document.createElement('option');
+                option.value = data.year;
+                option.text = data.year;
+                
+                // Check if the option already exists
+                let exists = false;
+                for (let i = 0; i < yearFilter.options.length; i++) {
+                    if (yearFilter.options[i].value === data.year) {
+                        exists = true;
+                        break;
+                    }
+                }
+                
+                if (!exists) {
+                    yearFilter.add(option);
+                }
+                
+                yearFilter.value = data.year;
+                
+                // Clear input
+                newYearInput.value = '';
+                
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'School year added successfully'
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'Failed to add school year. It may already exist.'
+                });
+            });
+        });
 
         // Print filtered results
         printFilteredBtn.addEventListener('click', function() {

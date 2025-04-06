@@ -16,6 +16,21 @@ class Authenticate
      */
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
+        // Define public routes that don't require authentication
+        $publicRoutes = [
+            'tracer.form',
+            'tracer.jhs-form', 
+            'tracer.shs-form',
+            'tracer.submit',
+            'tracer.submit-jhs',
+            'tracer.submit-shs'
+        ];
+        
+        // If the current route is in the public routes, allow access without authentication
+        if ($request->routeIs(...$publicRoutes)) {
+            return $next($request);
+        }
+        
         $guards = empty($guards) ? [null] : $guards;
 
         foreach ($guards as $guard) {

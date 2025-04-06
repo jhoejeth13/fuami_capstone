@@ -64,7 +64,7 @@ function initializeCharts() {
                 labels: ['Male', 'Female'],
                 datasets: [{
                     label: 'Gender Distribution',
-                    data: [genderData.male, genderData.female],
+                    data: [genderData.Male, genderData.Female],
                     backgroundColor: [
                         'rgba(54, 162, 235, 0.8)', // Blue for Male
                         'rgba(255, 99, 132, 0.8)', // Red for Female
@@ -90,8 +90,7 @@ function initializeCharts() {
                         formatter: (value) => value
                     }
                 }
-            },
-            plugins: [ChartDataLabels]
+            }
         });
     }
 
@@ -104,7 +103,7 @@ function initializeCharts() {
                 labels: ['Employed', 'Self-Employed', 'Unemployed'],
                 datasets: [{
                     label: 'Employment Status',
-                    data: [employmentData.employed, employmentData.self_employed, employmentData.unemployed],
+                    data: [employmentData.Employed, employmentData['Self Employed'], employmentData.Unemployed],
                     backgroundColor: [
                         'rgba(75, 192, 192, 0.8)', // Green for Employed
                         'rgba(153, 102, 255, 0.8)', // Purple for Self-Employed
@@ -138,8 +137,7 @@ function initializeCharts() {
                         formatter: (value) => value
                     }
                 }
-            },
-            plugins: [ChartDataLabels]
+            }
         });
     }
 }
@@ -152,11 +150,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set up Chart.js global defaults
     Chart.defaults.font.family = "'Inter', 'Helvetica', 'Arial', sans-serif";
     Chart.defaults.color = '#6B7280';
-    Chart.defaults.plugins.datalabels.color = '#ffffff';
-    Chart.defaults.plugins.datalabels.font.weight = 'bold';
     
-    // Register the datalabels plugin
-    Chart.register(ChartDataLabels);
+    // Check if ChartDataLabels is available and register it
+    if (window.ChartDataLabels) {
+        Chart.register(ChartDataLabels);
+        Chart.defaults.plugins.datalabels.color = '#ffffff';
+        Chart.defaults.plugins.datalabels.font.weight = 'bold';
+    } else {
+        console.error('ChartDataLabels plugin not found');
+    }
     
     // Function to handle JHS gender chart
     function setupJHSGenderChart() {
@@ -258,11 +260,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     data: Object.values(genderData),
                     backgroundColor: [
-                        'rgba(79, 70, 229, 0.8)',  // Indigo
+                        'rgba(37, 99, 235, 0.8)',   // Blue
                         'rgba(236, 72, 153, 0.8)',  // Pink
                     ],
                     borderColor: [
-                        'rgba(79, 70, 229, 1)',
+                        'rgba(37, 99, 235, 1)',
                         'rgba(236, 72, 153, 1)',
                     ],
                     borderWidth: 1
@@ -306,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     
-    // Function to handle employment chart
+    // Function to handle employment status chart
     function setupEmploymentChart() {
         const employmentChart = document.getElementById('employmentChart');
         if (!employmentChart) return;
@@ -314,33 +316,33 @@ document.addEventListener('DOMContentLoaded', function () {
         let employmentData;
         
         try {
-            employmentData = JSON.parse(chartData.dataset.employment || '{"Employed": 0, "Unemployed": 0}');
+            employmentData = JSON.parse(chartData.dataset.employment || '{"Employed": 0, "Self Employed": 0, "Unemployed": 0}');
         } catch (error) {
             console.error('Error parsing employment data:', error);
-            employmentData = {"Employed": 0, "Unemployed": 0};
+            employmentData = {"Employed": 0, "Self Employed": 0, "Unemployed": 0};
         }
         
         // Default data if empty
         if (Object.keys(employmentData).length === 0) {
-            employmentData = {"Employed": 0, "Unemployed": 0};
+            employmentData = {"Employed": 0, "Self Employed": 0, "Unemployed": 0};
         }
         
-        new Chart(employmentChart, {
+        const ctx = employmentChart.getContext('2d');
+        new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: Object.keys(employmentData),
                 datasets: [{
-                    label: 'Number of Alumni',
                     data: Object.values(employmentData),
                     backgroundColor: [
-                        'rgba(16, 185, 129, 0.8)',  // Green (Employed)
-                        'rgba(245, 158, 11, 0.8)',  // Amber (Unemployed)
-                        'rgba(99, 102, 241, 0.8)',  // Indigo (Others if present)
+                        'rgba(16, 185, 129, 0.8)',  // Green
+                        'rgba(139, 92, 246, 0.8)',  // Purple
+                        'rgba(239, 68, 68, 0.8)',   // Red
                     ],
                     borderColor: [
                         'rgba(16, 185, 129, 1)',
-                        'rgba(245, 158, 11, 1)',
-                        'rgba(99, 102, 241, 1)',
+                        'rgba(139, 92, 246, 1)',
+                        'rgba(239, 68, 68, 1)',
                     ],
                     borderWidth: 1
                 }]
@@ -349,54 +351,132 @@ document.addEventListener('DOMContentLoaded', function () {
                 indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    datalabels: {
-                        anchor: 'end',
-                        align: 'end',
-                        formatter: (value) => {
-                            return value;
-                        },
-                        color: '#374151',
-                        font: {
-                            weight: 'bold'
-                        },
-                        display: function(context) {
-                            return context.dataset.data[context.dataIndex] > 0;
-                        },
-                    },
-                    legend: {
-                        display: false
-                    }
-                },
                 scales: {
                     x: {
                         beginAtZero: true,
                         grid: {
                             display: true,
-                            drawBorder: false,
+                            drawBorder: true,
+                            drawOnChartArea: true,
+                            drawTicks: true,
+                        },
+                        ticks: {
+                            precision: 0
                         }
                     },
                     y: {
                         grid: {
-                            display: false,
-                            drawBorder: false
+                            display: false
                         }
                     }
-                }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        color: '#000',
+                        formatter: (value) => value,
+                        display: function(context) {
+                            return context.dataset.data[context.dataIndex] > 0;
+                        },
+                    }
+                },
             }
         });
     }
     
-    // Call the chart setup functions
+    // Function to handle JHS employment chart
+    function setupJHSEmploymentChart() {
+        const jhsEmploymentChart = document.getElementById('jhsEmploymentChart');
+        if (!jhsEmploymentChart) return;
+        
+        let jhsEmploymentData;
+        
+        try {
+            jhsEmploymentData = JSON.parse(chartData.dataset.jhsEmployment || '{"Employed": 0, "Unemployed": 0}');
+        } catch (error) {
+            console.error('Error parsing JHS employment data:', error);
+            jhsEmploymentData = {"Employed": 0, "Unemployed": 0};
+        }
+        
+        // Default data if empty
+        if (Object.keys(jhsEmploymentData).length === 0) {
+            jhsEmploymentData = {"Employed": 0, "Unemployed": 0};
+        }
+        
+        const ctx = jhsEmploymentChart.getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(jhsEmploymentData),
+                datasets: [{
+                    data: Object.values(jhsEmploymentData),
+                    backgroundColor: [
+                        'rgba(16, 185, 129, 0.8)',  // Green for Employed
+                        'rgba(239, 68, 68, 0.8)',   // Red for Unemployed
+                    ],
+                    borderColor: [
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(239, 68, 68, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: {
+                            display: true,
+                            drawBorder: true,
+                            drawOnChartArea: true,
+                            drawTicks: true,
+                        },
+                        ticks: {
+                            precision: 0
+                        }
+                    },
+                    y: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        color: '#000',
+                        formatter: (value) => value,
+                        display: function(context) {
+                            return context.dataset.data[context.dataIndex] > 0;
+                        },
+                    }
+                },
+            }
+        });
+    }
+    
+    // Initialize all charts
     setupJHSGenderChart();
     setupGenderChart();
     setupEmploymentChart();
+    setupJHSEmploymentChart();
     
-    // Function to print charts
-    window.printCharts = function() {
-        // Allow some time for charts to render properly
-        setTimeout(function() {
-            window.print();
-        }, 500);
-    };
+    // Set up event listener for the print button
+    const printButton = document.getElementById('print-dashboard');
+    if (printButton) {
+        printButton.addEventListener('click', function() {
+            printCharts();
+        });
+    }
 });

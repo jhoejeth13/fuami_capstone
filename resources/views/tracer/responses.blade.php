@@ -48,35 +48,35 @@
                             <option value="SHS" {{ request('graduate_type', 'SHS') == 'SHS' ? 'selected' : '' }}>SHS Graduates</option>
                             <option value="JHS" {{ request('graduate_type') == 'JHS' ? 'selected' : '' }}>JHS Graduates</option>
                         </select>
-                    </div>
-                    
+    </div>
+
                     <div class="space-y-2">
                         <label for="employment_status" class="block text-sm font-medium text-gray-700">Employment Status</label>
                         <select id="employment_status" name="employment_status" onchange="this.form.submit()"
                                 class="mt-1 block w-64 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                            <option value="">All Employment Status</option>
-                            <option value="Employed" {{ request('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
-                            <option value="Unemployed" {{ request('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
-                        </select>
+                <option value="">All Employment Status</option>
+                <option value="Employed" {{ request('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
+                <option value="Unemployed" {{ request('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
+            </select>
                     </div>
                     
                     <div class="space-y-2">
                         <label for="perPage" class="block text-sm font-medium text-gray-700">Results Per Page</label>
                         <select id="perPage" name="perPage" onchange="this.form.submit()"
                                 class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                            <option value="5" {{ request('perPage') == 5 ? 'selected' : '' }}>5</option>
-                            <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
-                            <option value="15" {{ request('perPage') == 15 ? 'selected' : '' }}>15</option>
-                            <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25</option>
-                        </select>
+                <option value="5" {{ request('perPage') == 5 ? 'selected' : '' }}>5</option>
+                <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
+                <option value="15" {{ request('perPage') == 15 ? 'selected' : '' }}>15</option>
+                <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25</option>
+            </select>
                     </div>
-                    
+
                     <div class="bg-gray-50 px-4 py-2 rounded-md text-sm text-gray-600 self-end">
                         Showing {{ $responses->firstItem() ?? 0 }} - {{ $responses->lastItem() ?? 0 }} of {{ $responses->total() }} results
-                    </div>
-                </form>
             </div>
-        </div>
+        </form>
+    </div>
+                            </div>
 
         <!-- Response Cards -->
         <div class="space-y-6">
@@ -112,7 +112,7 @@
                                 </form>
                             @endif
                         </div>
-                    </div>
+                            </div>
 
                     <!-- Card Content -->
                     <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -140,7 +140,13 @@
                                 </div>
                                 <div class="flex items-start">
                                     <i class="fas fa-map-marker-alt text-gray-400 w-5 mr-2 mt-1"></i>
-                                    <span class="text-sm">{{ $response->address }}, {{ $response->barangay }}, {{ $response->municipality }}, {{ $response->province }}, {{ $response->region }} Region</span>
+                                    <span class="text-sm">
+                                        {{ $response->address }}, 
+                                        {{ App\Helpers\LocationHelper::getBarangayName($response->barangay) }}, 
+                                        {{ App\Helpers\LocationHelper::getCityName($response->municipality) }}, 
+                                        {{ App\Helpers\LocationHelper::getProvinceName($response->province) }}, 
+                                        {{ App\Helpers\LocationHelper::getRegionName($response->region) }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -171,8 +177,8 @@
                                     <div class="flex items-center">
                                         <i class="fas fa-history text-gray-400 w-5 mr-2"></i>
                                         <span>{{ $response->years_in_company }}</span>
-                                    </div>
-                                @elseif($response->employment_status === 'Self-employed')
+                                </div>
+                            @elseif($response->employment_status === 'Self-employed')
                                     <div class="flex items-center">
                                         <i class="fas fa-store text-gray-400 w-5 mr-2"></i>
                                         <span>{{ $response->company_name }}</span>
@@ -218,68 +224,55 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+</div>
+                        </div>
             @empty
                 <div class="bg-white rounded-lg shadow p-6 text-center">
                     <i class="fas fa-search text-gray-400 text-4xl mb-3"></i>
                     <p class="text-gray-600">No responses found. Try adjusting your filters.</p>
                 </div>
             @endforelse
-        </div>
+    </div>
 
         <!-- Improved Pagination -->
         <div class="mt-8 flex justify-center">
             <div class="inline-flex rounded-md shadow">
                 <nav class="flex items-center rounded-md divide-x divide-gray-200">
-                    {{-- Previous Page Link --}}
-                    @if ($responses->onFirstPage())
+            {{-- Previous Page Link --}}
+            @if ($responses->onFirstPage())
                         <span class="relative inline-flex items-center px-4 py-2 bg-white text-sm font-medium text-gray-300 cursor-not-allowed rounded-l-md">
                             <i class="fas fa-chevron-left mr-1.5"></i> Previous
-                        </span>
-                    @else
+                </span>
+            @else
                         <a href="{{ $responses->previousPageUrl() }}" class="relative inline-flex items-center px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-l-md">
                             <i class="fas fa-chevron-left mr-1.5"></i> Previous
-                        </a>
-                    @endif
+                </a>
+            @endif
 
-                    {{-- Pagination Elements --}}
-                    @php
-                        $start = max(1, $responses->currentPage() - 1);
-                        $end = min($responses->lastPage(), $responses->currentPage() + 2);
-                        
-                        if ($responses->currentPage() <= 2) {
-                            $end = min(4, $responses->lastPage());
-                        }
-                        
-                        if ($responses->currentPage() >= $responses->lastPage() - 1) {
-                            $start = max(1, $responses->lastPage() - 3);
-                        }
-                    @endphp
+            {{-- Pagination Elements --}}
+            @php
+                $start = max(1, $responses->currentPage() - 1);
+                $end = min($responses->lastPage(), $responses->currentPage() + 2);
+            @endphp
 
-                    @foreach ($responses->getUrlRange($start, $end) as $page => $url)
-                        @if ($page == $responses->currentPage())
-                            <span class="relative inline-flex items-center px-4 py-2 bg-indigo-600 text-sm font-medium text-white">
-                                {{ $page }}
-                            </span>
-                        @else
-                            <a href="{{ $url }}" class="relative inline-flex items-center px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                                {{ $page }}
-                            </a>
-                        @endif
-                    @endforeach
+            @for ($i = $start; $i <= $end; $i++)
+                <a href="{{ $responses->url($i) }}" 
+                   class="{{ $responses->currentPage() == $i ? 'bg-indigo-50 text-indigo-600 relative inline-flex items-center px-4 py-2 text-sm font-medium' : 'bg-white text-gray-700 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 text-sm font-medium' }}">
+                    {{ $i }}
+                </a>
+            @endfor
 
-                    {{-- Next Page Link --}}
-                    @if ($responses->hasMorePages())
-                        <a href="{{ $responses->nextPageUrl() }}" class="relative inline-flex items-center px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-r-md">
-                            Next <i class="fas fa-chevron-right ml-1.5"></i>
-                        </a>
-                    @else
-                        <span class="relative inline-flex items-center px-4 py-2 bg-white text-sm font-medium text-gray-300 cursor-not-allowed rounded-r-md">
-                            Next <i class="fas fa-chevron-right ml-1.5"></i>
-                        </span>
-                    @endif
-                </nav>
+            {{-- Next Page Link --}}
+            @if ($responses->hasMorePages())
+                <a href="{{ $responses->nextPageUrl() }}" class="relative inline-flex items-center px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-r-md">
+                    Next <i class="fas fa-chevron-right ml-1.5"></i>
+                </a>
+            @else
+                <span class="relative inline-flex items-center px-4 py-2 bg-white text-sm font-medium text-gray-300 cursor-not-allowed rounded-r-md">
+                    Next <i class="fas fa-chevron-right ml-1.5"></i>
+                </span>
+            @endif
+        </nav>
             </div>
         </div>
     </div>
@@ -334,4 +327,4 @@
         box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
     }
 </style>
-@endpush 
+@endpush

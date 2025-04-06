@@ -31,3 +31,5 @@ return new class extends Migration
         });
     }
 };
+
+            $table->string('shs_track')->nullable(false)->change();

@@ -89,11 +89,11 @@
                         </div>
                         <div class="flex space-x-2">
                             @if(Auth::user() && Auth::user()->hasRole('admin'))
-                                <a href="{{ route('tracer.edit', $response->id) }}" 
+                                <a href="{{ route('tracer.edit-jhs', $response->id) }}" 
                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md bg-white text-indigo-700 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                     <i class="fas fa-edit mr-1.5"></i> Edit
                                 </a>
-                                <form action="{{ route('tracer.destroy', $response->id) }}" method="POST" class="inline">
+                                <form action="{{ route('tracer.destroy-jhs', $response->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 
@@ -132,7 +132,13 @@
                                 </div>
                                 <div class="flex items-start">
                                     <i class="fas fa-map-marker-alt text-gray-400 w-5 mr-2 mt-1"></i>
-                                    <span class="text-sm">{{ $response->address }}, {{ $response->barangay }}, {{ $response->municipality }}, {{ $response->province }}, {{ $response->region }} Region</span>
+                                    <span class="text-sm">
+                                        {{ $response->address }}, 
+                                        {{ App\Helpers\LocationHelper::getBarangayName($response->barangay) }}, 
+                                        {{ App\Helpers\LocationHelper::getCityName($response->municipality) }}, 
+                                        {{ App\Helpers\LocationHelper::getProvinceName($response->province) }}, 
+                                        {{ App\Helpers\LocationHelper::getRegionName($response->region) }}
+                                    </span>
                                 </div>
                             </div>
                         </div>

@@ -12,8 +12,9 @@ class TracerStudyController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
-        $this->middleware(\App\Http\Middleware\AdminMiddleware::class)->only(['edit', 'update', 'destroy']);
+        // Apply auth middleware only to admin functions and index
+        $this->middleware('auth')->only(['index', 'edit', 'update', 'destroy', 'editJHS', 'updateJHS', 'destroyJHS']);
+        $this->middleware(\App\Http\Middleware\AdminMiddleware::class)->only(['edit', 'update', 'destroy', 'editJHS', 'updateJHS', 'destroyJHS']);
     }
 
     // Organization types and occupational classifications
@@ -51,31 +52,120 @@ class TracerStudyController extends Controller
         'Other' => 'Other'
     ];
 
-    public function showForm()
+    public function showForm(Request $request)
     {
-        // Fetch unique graduation years from the database
-        $years = DB::table('years')->pluck('year')->sort();
-
-        // Get regions with caching (simplified without error logging)
-        $regions = Cache::remember('regions_data', 3600, function () {
-            return LocationHelper::getRegions() ?? [];
-        });
-
-        // Pass the years and dropdown options to the view
-        return view('tracer.tracer-study-form', [
-            'years' => $years,
-            'organizationTypes' => $this->organizationTypes,
-            'occupationClassifications' => $this->occupationClassifications,
-            'suffixOptions' => $this->suffixOptions,
-            'regions' => $regions,
-        ]);
+        // If graduate_type is passed directly in the request, redirect to the appropriate form
+        if ($request->has('graduate_type')) {
+            $graduateType = $request->input('graduate_type');
+            
+            if ($graduateType === 'JHS') {
+                return redirect()->route('tracer.jhs-form');
+            } else if ($graduateType === 'SHS') {
+                return redirect()->route('tracer.shs-form');
+            }
+        }
+        
+        // Otherwise show the selection form
+        return view('tracer.tracer-study-form');
     }
 
     public function submitForm(Request $request)
     {
-        // Common validation rules for both JHS and SHS
-        $rules = [
+        // Validate the graduate type field
+        $request->validate([
             'graduate_type' => 'required|in:JHS,SHS',
+        ]);
+        
+        // Get graduate type and redirect to the appropriate form
+        $graduateType = $request->input('graduate_type');
+        
+        if ($graduateType === 'JHS') {
+            return redirect()->route('tracer.jhs-form');
+        } else if ($graduateType === 'SHS') {
+            return redirect()->route('tracer.shs-form');
+        }
+        
+        // If something is wrong, go back with error
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['error' => 'Invalid graduate type selected.']);
+    }
+
+    public function index(Request $request)
+    {
+        // Get the graduate type from request or default to SHS
+        $type = $request->input('type', 'shs');
+        
+        if (strtolower($type) === 'jhs') {
+            // Query JHS tracer responses
+            $query = \App\Models\JHSTracerResponse::query();
+            
+            // Apply filters
+            if ($request->filled('employment_status')) {
+                $query->where('employment_status', $request->employment_status);
+            }
+            
+            // Paginate the results
+            $perPage = $request->input('perPage', 5);
+            $responses = $query->paginate($perPage)->appends($request->except('page'));
+            
+            // Use JHS responses view
+            return view('tracer.jhs-responses', [
+                'responses' => $responses,
+                'organizationTypes' => $this->organizationTypes,
+                'occupationClassifications' => $this->occupationClassifications,
+                'suffixOptions' => $this->suffixOptions,
+                'type' => 'jhs'
+            ]);
+        } else {
+            // Query SHS tracer responses
+        $query = TracerStudyResponse::query();
+
+            // Apply filters
+        if ($request->filled('employment_status')) {
+            $query->where('employment_status', $request->employment_status);
+        }
+
+            // Filter by graduate type
+            $query->where('graduate_type', 'SHS');
+            
+            // Paginate the results
+            $perPage = $request->input('perPage', 5);
+            $responses = $query->paginate($perPage)->appends($request->except('page'));
+            
+            // Use SHS responses view
+        return view('tracer.responses', [
+            'responses' => $responses,
+            'organizationTypes' => $this->organizationTypes,
+            'occupationClassifications' => $this->occupationClassifications,
+                'suffixOptions' => $this->suffixOptions,
+                'type' => 'shs'
+        ]);
+        }
+    }
+
+public function edit($id)
+{
+    $response = TracerStudyResponse::findOrFail($id);
+    
+    // Generate years for the graduation year dropdown
+    $currentYear = date('Y');
+    $years = range($currentYear, $currentYear - 10);
+    
+    return view('tracer.edit', [
+        'response' => $response,
+        'organizationTypes' => $this->organizationTypes,
+        'occupationClassifications' => $this->occupationClassifications,
+        'suffixOptions' => $this->suffixOptions,
+        'years' => $years
+    ]);
+}
+
+public function update(Request $request, $id)
+{
+        $response = TracerStudyResponse::findOrFail($id);
+
+        $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -97,44 +187,35 @@ class TracerStudyController extends Controller
             'phone' => 'nullable|string',
             'email' => 'nullable|email',
             'employment_status' => 'required|string',
-            'organization_type' => 'nullable|string',
+            'employer_name' => 'required_if:employment_status,Employed|nullable|string',
+            'organization_type' => 'nullable|string|required_if:employment_status,Employed',
             'organization_type_other' => 'nullable|string|required_if:organization_type,Other',
-            'occupational_classification' => 'nullable|string',
+            'occupational_classification' => 'nullable|string|required_if:employment_status,Employed',
             'occupational_classification_other' => 'nullable|string|required_if:occupational_classification,Other',
-            'employer_name' => 'nullable|string',
-            'employment_type' => 'nullable|string',
-            'work_location' => 'nullable|string',
-            'job_situation' => 'nullable|string',
-            'years_in_company' => 'nullable|string',
-            'monthly_income' => 'nullable|integer',
-            'reason_staying_job' => 'nullable|string',
-            'nature_of_employment' => 'nullable|string',
-            'company_name' => 'nullable|string',
-            'years_in_business' => 'nullable|string',
-            'self_employed_income' => 'nullable|integer',
+            'job_situation' => 'nullable|string|required_if:employment_status,Employed',
+            'years_in_company' => 'nullable|string|required_if:employment_status,Employed',
             'unemployment_reason' => 'nullable|string',
-        ];
-        
-        // Add SHS-specific validation only if graduate_type is SHS
-        if ($request->input('graduate_type') === 'SHS') {
-            $rules['shs_track'] = 'required|string';
-        }
-
-        $validated = $request->validate($rules);
+            'shs_track' => 'required|string',
+        ]);
 
         // Handle "other" values
-        if ($request->organization_type === 'Other') {
+        if ($request->filled('organization_type') && $request->organization_type === 'Other') {
             $validated['organization_type'] = $request->organization_type_other;
         }
         
-        if ($request->occupational_classification === 'Other') {
+        if ($request->filled('occupational_classification') && $request->occupational_classification === 'Other') {
             $validated['occupational_classification'] = $request->occupational_classification_other;
         }
 
-        if ($request->suffix === 'Other') {
+        if ($request->filled('suffix') && $request->suffix === 'Other') {
             $validated['suffix'] = $request->suffix_other;
         }
 
+        // Remove fields that are not in the database
+        unset($validated['suffix_other']);
+        unset($validated['organization_type_other']);
+        unset($validated['occupational_classification_other']);
+        
         // Convert Yes/No to boolean if they exist in the request
         if ($request->has('job_related_to_shs')) {
             $validated['job_related_to_shs'] = $request->job_related_to_shs === 'Yes';
@@ -145,8 +226,119 @@ class TracerStudyController extends Controller
         }
 
         try {
-            TracerStudyResponse::create($validated);
-            return redirect()->back()->with('success', 'Data saved successfully!');
+            $response->update($validated);
+            return redirect()->route('tracer.responses')->with('success', 'Response updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to update response: ' . $e->getMessage()]);
+        }
+    }
+
+    public function destroy($id)
+    {
+        $response = TracerStudyResponse::findOrFail($id);
+        $response->delete();
+        
+        return redirect()->route('tracer.responses')->with('success', 'Response deleted successfully.');
+}
+
+    public function showJHSForm()
+    {
+        // Helper function to get regions and provinces
+        $regions = cache()->remember('regions', 60*24*7, function() {
+            return LocationHelper::getRegions();
+        });
+        
+        // Generate years for the graduation year dropdown
+        $currentYear = date('Y');
+        $years = range($currentYear, $currentYear - 10);
+        
+        return view('tracer.jhs-form', [
+            'organizationTypes' => $this->organizationTypes,
+            'occupationClassifications' => $this->occupationClassifications,
+            'suffixOptions' => $this->suffixOptions,
+            'regions' => $regions,
+            'years' => $years,
+        ]);
+    }
+
+    public function showSHSForm()
+    {
+        // Helper function to get regions and provinces
+        $regions = cache()->remember('regions', 60*24*7, function() {
+            return LocationHelper::getRegions();
+        });
+        
+        // Generate years for the graduation year dropdown
+        $currentYear = date('Y');
+        $years = range($currentYear, $currentYear - 10);
+        
+        return view('tracer.shs-form', [
+            'organizationTypes' => $this->organizationTypes,
+            'occupationClassifications' => $this->occupationClassifications,
+            'suffixOptions' => $this->suffixOptions,
+            'regions' => $regions,
+            'years' => $years,
+        ]);
+    }
+
+    public function submitJHSForm(Request $request)
+    {
+        $validated = $request->validate([
+            'graduate_type' => 'required|in:JHS',
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'suffix' => 'nullable|string|max:10',
+            'suffix_other' => 'nullable|string|max:255|required_if:suffix,Other',
+            'age' => 'required|integer|min:16',
+            'gender' => 'required|string',
+            'birthdate' => 'required|date',
+            'civil_status' => 'required|string',
+            'religion' => 'required|string',
+            'address' => 'nullable|string',
+            'barangay' => 'required|string',
+            'municipality' => 'required|string',
+            'province' => 'required|string',
+            'region' => 'required|string',
+            'postal_code' => 'nullable|string',
+            'country' => 'nullable|string',
+            'year_graduated' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
+            'phone' => 'nullable|string',
+            'email' => 'nullable|email',
+            'employment_status' => 'required|string',
+            'employer_name' => 'required_if:employment_status,Employed|nullable|string',
+            'organization_type' => 'nullable|string|required_if:employment_status,Employed',
+            'organization_type_other' => 'nullable|string|required_if:organization_type,Other',
+            'occupational_classification' => 'nullable|string|required_if:employment_status,Employed',
+            'occupational_classification_other' => 'nullable|string|required_if:occupational_classification,Other',
+            'job_situation' => 'nullable|string|required_if:employment_status,Employed',
+            'years_in_company' => 'nullable|string|required_if:employment_status,Employed',
+            'unemployment_reason' => 'nullable|string',
+        ]);
+
+        // Handle "other" values
+        if ($request->filled('organization_type') && $request->organization_type === 'Other') {
+            $validated['organization_type'] = $request->organization_type_other;
+        }
+        
+        if ($request->filled('occupational_classification') && $request->occupational_classification === 'Other') {
+            $validated['occupational_classification'] = $request->occupational_classification_other;
+        }
+
+        if ($request->filled('suffix') && $request->suffix === 'Other') {
+            $validated['suffix'] = $request->suffix_other;
+        }
+
+        // Remove fields that are not in the database
+        unset($validated['suffix_other']);
+        unset($validated['organization_type_other']);
+        unset($validated['occupational_classification_other']);
+        
+        try {
+            \App\Models\JHSTracerResponse::create($validated);
+            return redirect()->back()->with('success', 'JHS graduate data saved successfully!');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -154,165 +346,173 @@ class TracerStudyController extends Controller
         }
     }
 
-    public function index(Request $request)
+    public function submitSHSForm(Request $request)
     {
-        $query = TracerStudyResponse::query();
-
-        // Apply filters
-        if ($request->filled('employment_status')) {
-            $query->where('employment_status', $request->employment_status);
-        }
-        
-        // Filter by graduate type, default to SHS if not specified
-        $graduateType = $request->input('graduate_type', 'SHS');
-        $query->where('graduate_type', $graduateType);
-
-        $perPage = $request->input('perPage', 5); // Default to 5 items per page
-        $responses = $query->paginate($perPage)->appends($request->except('page'));
-
-        // Determine which view to use based on graduate type
-        $view = $graduateType === 'JHS' ? 'tracer.jhs-responses' : 'tracer.responses';
-
-        return view($view, [
-            'responses' => $responses,
-            'organizationTypes' => $this->organizationTypes,
-            'occupationClassifications' => $this->occupationClassifications,
-            'suffixOptions' => $this->suffixOptions,
-            'graduateType' => $graduateType
-        ]);
-    }
-
-    public function rules()
-    {
-        $rules = [
-            'employment_status' => 'required|in:Employed,Unemployed',
-            'unemployment_reason' => 'nullable',
-        ];
-
-        if ($this->input('employment_status') === 'Employed') {
-            $rules += [
-                'employer_name' => 'nullable',
-                'organization_type' => 'nullable',
-                'occupational_classification' => 'nullable',
-                'job_situation' => 'nullable',
-                'years_in_company' => 'nullable'
-            ];
-        }
-
-        return $rules;
-    }
-
-    public function edit($id)
-    {
-        $response = TracerStudyResponse::findOrFail($id);
-        $years = DB::table('years')->pluck('year')->sort();
-        
-        return view('tracer.edit', [
-            'response' => $response,
-            'years' => $years,
-            'organizationTypes' => $this->organizationTypes,
-            'occupationClassifications' => $this->occupationClassifications,
-            'suffixOptions' => $this->suffixOptions,
-        ]);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $response = TracerStudyResponse::findOrFail($id);
-
-        $rules = [
-            // Personal Information
+        $validated = $request->validate([
+            'graduate_type' => 'required|in:SHS',
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
             'suffix' => 'nullable|string|max:10',
-            'age' => 'required|integer|min:1',
-            'gender' => 'required|string|in:Male,Female',
+            'suffix_other' => 'nullable|string|max:255|required_if:suffix,Other',
+            'age' => 'required|integer|min:16',
+            'gender' => 'required|string',
             'birthdate' => 'required|date',
-            'civil_status' => 'required|string|in:Single,Married,Widowed,Separated',
-            'religion' => 'required|string|max:255',
-            'religion_other' => 'nullable|string|max:255|required_if:religion,Others',
-            'address' => 'required|string|max:255',
-            'barangay' => 'required|string|max:255',
-            'municipality' => 'required|string|max:255',
-            'province' => 'required|string|max:255',
-            'region' => 'required|string|max:255',
-            
-            // Education Information
-            'shs_track' => 'required|string|in:Academic,Technical-Vocational-Livelihood',
-            'year_graduated' => 'required|integer|min:2000|max:' . (date('Y') + 1),
-            
-            // Contact Information
-            'phone' => 'required|string|max:20',
-            'email' => 'required|email|max:255',
-            
-            // Employment Information
-            'employment_status' => 'required|string|in:Employed,Unemployed',
-        ];
+            'civil_status' => 'required|string',
+            'religion' => 'required|string',
+            'address' => 'nullable|string',
+            'barangay' => 'required|string',
+            'municipality' => 'required|string',
+            'province' => 'required|string',
+            'region' => 'required|string',
+            'postal_code' => 'nullable|string',
+            'country' => 'nullable|string',
+            'year_graduated' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
+            'phone' => 'nullable|string',
+            'email' => 'nullable|email',
+            'employment_status' => 'required|string',
+            'employer_name' => 'required_if:employment_status,Employed|nullable|string',
+            'organization_type' => 'nullable|string|required_if:employment_status,Employed',
+            'organization_type_other' => 'nullable|string|required_if:organization_type,Other',
+            'occupational_classification' => 'nullable|string|required_if:employment_status,Employed',
+            'occupational_classification_other' => 'nullable|string|required_if:occupational_classification,Other',
+            'job_situation' => 'nullable|string|required_if:employment_status,Employed',
+            'years_in_company' => 'nullable|string|required_if:employment_status,Employed',
+            'unemployment_reason' => 'nullable|string',
+            'shs_track' => 'required|string',
+            'job_related_to_shs' => 'nullable|string|in:Yes,No',
+            'fuami_factor' => 'nullable|string|in:Yes,No',
+        ]);
 
-        // Add conditional rules based on employment status
-        if ($request->employment_status === 'Employed') {
-            $rules['employer_name'] = 'required|string|max:255';
-            $rules['organization_type'] = 'required|string|max:255';
-            $rules['occupational_classification'] = 'required|string|max:255';
-            $rules['job_situation'] = 'required|string|in:Regular,Contractual,Probationary,Project-based,Permanent,Part-time';
-            $rules['years_in_company'] = 'required|string|max:255';
-            
-            // If organization type is "Others (please specify)", require the other field
-            if ($request->organization_type === 'Others (please specify)') {
-                $rules['organization_type_other'] = 'required|string|max:255';
-            }
-            
-            // If occupational classification is "Other", require the other field
-            if ($request->occupational_classification === 'Others (please specify)') {
-                $rules['occupational_classification_other'] = 'required|string|max:255';
-            }
-        } else {
-            $rules['unemployment_reason'] = 'required|string|max:255';
-        }
-
-        // Validate the request data
-        $validated = $request->validate($rules);
-
-        // Handle the "Others" value for religion
-        if ($request->religion === 'Others') {
-            $validated['religion'] = $request->religion_other;
-        }
-
-        // Handle other "Others" values like organization_type, etc.
-        if ($request->organization_type === 'Others (please specify)') {
+        // Handle "other" values
+        if ($request->filled('organization_type') && $request->organization_type === 'Other') {
             $validated['organization_type'] = $request->organization_type_other;
         }
         
-        if ($request->occupational_classification === 'Others (please specify)') {
+        if ($request->filled('occupational_classification') && $request->occupational_classification === 'Other') {
             $validated['occupational_classification'] = $request->occupational_classification_other;
         }
 
-        // Remove the fields that are not in the database table
-        unset($validated['religion_other']);
+        if ($request->filled('suffix') && $request->suffix === 'Other') {
+            $validated['suffix'] = $request->suffix_other;
+        }
+
+        // Remove fields that are not in the database
+        unset($validated['suffix_other']);
+        unset($validated['organization_type_other']);
+        unset($validated['occupational_classification_other']);
+        
+        // Convert Yes/No to boolean
+        if ($request->has('job_related_to_shs')) {
+            $validated['job_related_to_shs'] = $request->job_related_to_shs === 'Yes';
+        }
+        
+        if ($request->has('fuami_factor')) {
+            $validated['fuami_factor'] = $request->fuami_factor === 'Yes';
+        }
+
+        try {
+            TracerStudyResponse::create($validated);
+            return redirect()->back()->with('success', 'SHS graduate data saved successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to save data: ' . $e->getMessage()]);
+        }
+    }
+
+    public function editJHS($id)
+    {
+        $response = \App\Models\JHSTracerResponse::findOrFail($id);
+        
+        // Helper function to get regions and provinces
+        $regions = cache()->remember('regions', 60*24*7, function() {
+            return LocationHelper::getRegions();
+        });
+
+        // Generate years for the graduation year dropdown
+        $currentYear = date('Y');
+        $years = range($currentYear, $currentYear - 10);
+
+        return view('tracer.jhs-edit', [
+            'response' => $response,
+            'organizationTypes' => $this->organizationTypes,
+            'occupationClassifications' => $this->occupationClassifications,
+            'suffixOptions' => $this->suffixOptions,
+            'regions' => $regions,
+            'years' => $years
+        ]);
+    }
+
+    public function updateJHS(Request $request, $id)
+    {
+        $response = \App\Models\JHSTracerResponse::findOrFail($id);
+        
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'suffix' => 'nullable|string|max:10',
+            'suffix_other' => 'nullable|string|max:255|required_if:suffix,Other',
+            'age' => 'required|integer|min:16',
+            'gender' => 'required|string',
+            'birthdate' => 'required|date',
+            'civil_status' => 'required|string',
+            'religion' => 'required|string',
+            'address' => 'nullable|string',
+            'barangay' => 'required|string',
+            'municipality' => 'required|string',
+            'province' => 'required|string',
+            'region' => 'required|string',
+            'postal_code' => 'nullable|string',
+            'country' => 'nullable|string',
+            'year_graduated' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
+            'phone' => 'nullable|string',
+            'email' => 'nullable|email',
+            'employment_status' => 'required|string',
+            'employer_name' => 'required_if:employment_status,Employed|nullable|string',
+            'organization_type' => 'nullable|string|required_if:employment_status,Employed',
+            'organization_type_other' => 'nullable|string|required_if:organization_type,Other',
+            'occupational_classification' => 'nullable|string|required_if:employment_status,Employed',
+            'occupational_classification_other' => 'nullable|string|required_if:occupational_classification,Other',
+            'job_situation' => 'nullable|string|required_if:employment_status,Employed',
+            'years_in_company' => 'nullable|string|required_if:employment_status,Employed',
+            'unemployment_reason' => 'nullable|string',
+        ]);
+
+        // Handle "other" values
+        if ($request->filled('organization_type') && $request->organization_type === 'Other') {
+            $validated['organization_type'] = $request->organization_type_other;
+        }
+        
+        if ($request->filled('occupational_classification') && $request->occupational_classification === 'Other') {
+            $validated['occupational_classification'] = $request->occupational_classification_other;
+        }
+
+        if ($request->filled('suffix') && $request->suffix === 'Other') {
+            $validated['suffix'] = $request->suffix_other;
+        }
+
+        // Remove fields that are not in the database
+        unset($validated['suffix_other']);
         unset($validated['organization_type_other']);
         unset($validated['occupational_classification_other']);
 
         try {
             $response->update($validated);
-            return redirect()->route('tracer-responses.index')
-                ->with('success', 'Updated successfully.');
+            return redirect()->route('tracer.responses', ['type' => 'jhs'])->with('success', 'Response updated successfully.');
         } catch (\Exception $e) {
-            return redirect()->route('tracer-responses.index')
-                ->withErrors(['error' => 'Failed to update record: ' . $e->getMessage()]);
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to update response: ' . $e->getMessage()]);
         }
     }
 
-    public function destroy($id)
+    public function destroyJHS($id)
     {
-        $response = TracerStudyResponse::findOrFail($id);
+        $response = \App\Models\JHSTracerResponse::findOrFail($id);
+        $response->delete();
         
-        try {
-            $response->delete();
-            return redirect()->route('tracer-responses.index')->with('success', 'Record deleted successfully!');
-        } catch (\Exception $e) {
-            return redirect()->route('tracer-responses.index')
-                ->withErrors(['error' => 'Failed to delete record: ' . $e->getMessage()]);
-        }
+        return redirect()->route('tracer.responses', ['type' => 'jhs'])->with('success', 'Response deleted successfully.');
     }
 }

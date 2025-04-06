@@ -24,6 +24,12 @@ class JuniorhighschoolController extends Controller
     {
         $query = Juniorhighschool::query();
         
+        // Exclude "Year Reference" dummy records from the main listing
+        $query->where(function($q) {
+            $q->where('first_name', '!=', 'Year')
+              ->orWhere('last_name', '!=', 'Reference');
+        });
+        
         // Search filter
         if ($search = request('search')) {
             $query->where(function($q) use ($search) {
@@ -46,7 +52,7 @@ class JuniorhighschoolController extends Controller
         $perPage = request('perPage') ?? 5;
         $students = $query->paginate($perPage);
         
-        // Get unique school years for filter dropdown
+        // Get unique school years for filter dropdown (don't exclude dummy records here)
         $schoolYears = Juniorhighschool::select('school_year')
                         ->distinct()
                         ->orderBy('school_year', 'desc')
@@ -57,15 +63,22 @@ class JuniorhighschoolController extends Controller
 
     public function create()
     {
+        // Get unique school years for dropdown
+        $schoolYears = Juniorhighschool::select('school_year')
+                        ->distinct()
+                        ->orderBy('school_year', 'desc')
+                        ->pluck('school_year');
+                        
         return view('students.create', [
-            'suffixOptions' => $this->suffixOptions
+            'suffixOptions' => $this->suffixOptions,
+            'schoolYears' => $schoolYears
         ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'lrn_number' => 'nullable|sometimes|unique:juniorhighschool|max:12',          
+            'lrn_number' => 'required|max:12|unique:juniorhighschool',          
             'first_name' => 'required|max:50',
             'middle_name' => 'nullable|max:50',
             'last_name' => 'required|max:50',
@@ -97,9 +110,16 @@ class JuniorhighschoolController extends Controller
 
     public function edit(Juniorhighschool $student)
     {
+        // Get unique school years for dropdown
+        $schoolYears = Juniorhighschool::select('school_year')
+                        ->distinct()
+                        ->orderBy('school_year', 'desc')
+                        ->pluck('school_year');
+                        
         return view('students.edit', [
             'student' => $student,
-            'suffixOptions' => $this->suffixOptions
+            'suffixOptions' => $this->suffixOptions,
+            'schoolYears' => $schoolYears
         ]);
     }
 
@@ -154,6 +174,12 @@ class JuniorhighschoolController extends Controller
     {
         $query = Juniorhighschool::query();
         
+        // Exclude "Year Reference" dummy records
+        $query->where(function($q) {
+            $q->where('first_name', '!=', 'Year')
+              ->orWhere('last_name', '!=', 'Reference');
+        });
+        
         // Apply the same filters as the index method
         if ($search = request('search')) {
             $query->where(function($q) use ($search) {
@@ -167,9 +193,35 @@ class JuniorhighschoolController extends Controller
             $query->where('school_year', $year);
         }
         
+        // Grade level filter
+        if ($grade = request('grade')) {
+            $query->where('grade_level', $grade);
+        }
+        
         $students = $query->get();
         $school_year = request('year');
         
         return view('students.print', compact('students', 'school_year'));
+    }
+    
+    /**
+     * Add a new school year for JHS students
+     */
+    public function addYear(Request $request)
+    {
+        $request->validate([
+            'year' => 'required|string|unique:juniorhighschool,school_year',
+        ]);
+
+        // Create a dummy record with the new school year so it appears in the filters
+        // We'll add a placeholder record that will show up in the filter but not in listings
+        $dummy = new Juniorhighschool();
+        $dummy->first_name = 'Year';
+        $dummy->last_name = 'Reference';
+        $dummy->gender = 'Male';
+        $dummy->school_year = $request->input('year');
+        $dummy->save();
+
+        return response()->json(['year' => $request->input('year')]);
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Graduate;
 use App\Models\TracerStudyResponse;
 use App\Models\Juniorhighschool;
+use App\Models\JHSTracerResponse;
 
 class DashboardController extends Controller
 {
@@ -56,19 +57,33 @@ class DashboardController extends Controller
 
         // Fetch employment status counts (filtered by selected year or all)
         $employedQuery = TracerStudyResponse::where('employment_status', 'Employed');
-        $selfEmployedQuery = TracerStudyResponse::where('employment_status', 'Self-employed');
         $unemployedQuery = TracerStudyResponse::where('employment_status', 'Unemployed');
         if ($selectedEmploymentYear !== 'all') {
             $employedQuery->where('year_graduated', $selectedEmploymentYear);
-            $selfEmployedQuery->where('year_graduated', $selectedEmploymentYear);
             $unemployedQuery->where('year_graduated', $selectedEmploymentYear);
         }
         $employed = $employedQuery->count();
-        $selfEmployed = $selfEmployedQuery->count();
         $unemployed = $unemployedQuery->count();
 
-        // Calculate total employed (employed + self-employed)
-        $totalEmployed = $employed + $selfEmployed;
+        // Fetch JHS employment status counts
+        $jhsEmployedQuery = JHSTracerResponse::where('employment_status', 'Employed');
+        $jhsUnemployedQuery = JHSTracerResponse::where('employment_status', 'Unemployed');
+        if ($selectedEmploymentYear !== 'all') {
+            $jhsEmployedQuery->where('year_graduated', $selectedEmploymentYear);
+            $jhsUnemployedQuery->where('year_graduated', $selectedEmploymentYear);
+        }
+        $jhsEmployed = $jhsEmployedQuery->count();
+        $jhsUnemployed = $jhsUnemployedQuery->count();
+
+        // Calculate total JHS alumni
+        $totalJHSAlumniQuery = JHSTracerResponse::query();
+        if ($selectedEmploymentYear !== 'all') {
+            $totalJHSAlumniQuery->where('year_graduated', $selectedEmploymentYear);
+        }
+        $totalJHSAlumni = $totalJHSAlumniQuery->count();
+
+        // Calculate total employed (employed)
+        $totalEmployed = $employed;
 
         // Fetch total alumni based on year_graduated in tracer_study_responses
         $totalAlumniQuery = TracerStudyResponse::query();
@@ -124,8 +139,12 @@ class DashboardController extends Controller
 
         $employmentData = [
             'Employed' => $employed,
-            'Self Employed' => $selfEmployed,
             'Unemployed' => $unemployed,
+        ];
+        
+        $jhsEmploymentData = [
+            'Employed' => $jhsEmployed,
+            'Unemployed' => $jhsUnemployed,
         ];
 
         return view('dashboard', compact(
@@ -133,9 +152,11 @@ class DashboardController extends Controller
             'totalJHSStudents',
             'totalEmployed',
             'totalAlumni',
+            'totalJHSAlumni',
             'genderData',
             'jhsGenderData',
             'employmentData',
+            'jhsEmploymentData',
             'lastUpdated',
             'selectedGraduateYear',
             'selectedEmploymentYear',
@@ -144,5 +165,4 @@ class DashboardController extends Controller
             'availableEmploymentYears'
         ));
     }
-    
 }

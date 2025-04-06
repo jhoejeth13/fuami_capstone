@@ -22,12 +22,18 @@
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f8fafc;
+            overflow-x: hidden;
         }
         
         /* Sidebar transitions */
         .sidebar {
             width: var(--sidebar-width);
             transition: all 0.3s ease;
+            left: 0;
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
         
         .sidebar.collapsed {
@@ -45,14 +51,58 @@
             justify-content: center;
         }
         
+        /* Navbar scrolling */
+        .sidebar-nav-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Mobile Sidebar */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: var(--sidebar-width);
+                position: fixed;
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 25;
+            }
+            
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+        
         /* Main content adjustment */
         .main-content {
             margin-left: var(--sidebar-width);
             transition: margin-left 0.3s ease;
+            width: calc(100% - var(--sidebar-width));
         }
         
         .sidebar.collapsed ~ .main-content {
             margin-left: var(--sidebar-collapsed);
+            width: calc(100% - var(--sidebar-collapsed));
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
         }
         
         /* Active nav item */
@@ -113,18 +163,22 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
+
         .sidebar.collapsed #toggleSidebar {
-    margin-left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
+            margin-left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
+    <!-- Mobile Sidebar Overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+    
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar fixed h-full bg-gradient-to-b from-blue-900 to-blue-800 text-white shadow-lg z-20">
+        <aside id="sidebar" class="sidebar fixed h-full bg-gradient-to-b from-blue-900 to-blue-800 text-white shadow-lg">
             <div class="flex items-center justify-between p-5 border-b border-blue-700">
                 <div class="flex items-center">
                     <img src="{{ asset('images/icon.jpg') }}" alt="Logo" class="sidebar-logo h-10 w-10 rounded-lg">
@@ -174,10 +228,18 @@
                 <!-- Tracer Section -->
                 <div class="px-4 py-3">
                     <h3 class="sidebar-section uppercase text-xs font-semibold text-blue-300 tracking-wider sidebar-text">Alumni Tracking</h3>
-                    <a href="{{ route('tracer-responses.index') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
+                    <a href="{{ route('tracer-responses.index') }}?type=jhs" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
                         <i class="fas fa-search text-lg w-6 text-center"></i>
-                        <span class="sidebar-text ml-3">Alumni Tracer</span>
+                        <span class="sidebar-text ml-3">JHS Alumni Tracker</span>
                     </a>
+                    <a href="{{ route('tracer-responses.index') }}?type=shs" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-search text-lg w-6 text-center"></i>
+                        <span class="sidebar-text ml-3">SHS Alumni Tracker</span>
+                    </a>
+                    <!-- <a href="{{ route('tracer.form') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-edit text-lg w-6 text-center"></i>
+                        <span class="sidebar-text ml-3">Alumni Tracer Form</span>
+                    </a> -->
                 </div>
             </nav>
             
@@ -191,20 +253,20 @@
         <div class="main-content flex-1 flex flex-col min-h-screen">
             <!-- Top Navigation -->
             <header class="bg-white shadow-sm sticky top-0 z-10">
-                <div class="flex items-center justify-between px-6 py-4">
+                <div class="flex items-center justify-between px-4 md:px-6 py-4">
                     <!-- Breadcrumbs would go here -->
                     <div class="flex items-center">
                         <button id="mobileToggle" class="mr-4 text-gray-600 hover:text-blue-600 md:hidden">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
-                        <h1 class="text-xl font-semibold text-gray-800">@yield('title', ' JHS and SHS Graduates Repository and Alumni Tracer System')</h1>
+                        <h1 class="text-lg md:text-xl font-semibold text-gray-800 truncate">@yield('title', 'JHS and SHS Graduates Repository and Alumni Tracer System')</h1>
                     </div>
                     
                     <!-- User Profile -->
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 md:space-x-4">
                         <div class="relative">
                             <button onclick="toggleProfileDropdown()" class="flex items-center space-x-2 focus:outline-none">
-                                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-800 font-semibold">
+                                <div class="h-8 w-8 md:h-10 md:w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-800 font-semibold">
                                     {{ substr(Auth::user()->name, 0, 1) }}
                                 </div>
                                 <span class="hidden md:inline text-gray-700">{{ Auth::user()->name }}</span>
@@ -229,12 +291,12 @@
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 p-6 bg-gray-50">
+            <main class="flex-1 p-4 md:p-6 bg-gray-50 overflow-x-auto">
                 @yield('content')
             </main>
             
             <!-- Footer -->
-            <footer class="bg-white border-t px-6 py-4 text-center text-sm text-gray-500">
+            <footer class="bg-white border-t px-4 md:px-6 py-4 text-center text-sm text-gray-500">
                 <p>Fr. Urios Academy of Magallanes, Inc.</p>
             </footer>
         </div>
@@ -245,6 +307,7 @@
         const sidebar = document.getElementById('sidebar');
         const toggleSidebar = document.getElementById('toggleSidebar');
         const mobileToggle = document.getElementById('mobileToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
         
         function toggleSidebarCollapse() {
             sidebar.classList.toggle('collapsed');
@@ -253,17 +316,28 @@
         
         // Mobile sidebar toggle
         function toggleMobileSidebar() {
-            sidebar.classList.toggle('-translate-x-full');
+            sidebar.classList.toggle('mobile-open');
+            sidebarOverlay.classList.toggle('active');
         }
         
         // Initialize sidebar state
-        if (localStorage.getItem('sidebarCollapsed') === 'true') {
-            sidebar.classList.add('collapsed');
+        function initSidebar() {
+            // For desktop: use collapsed state from localStorage
+            if (window.innerWidth > 768) {
+                if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                    sidebar.classList.add('collapsed');
+                }
+            } else {
+                // For mobile: default to hidden
+                sidebar.classList.remove('collapsed');
+                sidebar.classList.remove('mobile-open');
+            }
         }
         
         // Event listeners
         toggleSidebar.addEventListener('click', toggleSidebarCollapse);
         mobileToggle.addEventListener('click', toggleMobileSidebar);
+        sidebarOverlay.addEventListener('click', toggleMobileSidebar);
         
         // Profile dropdown toggle
         function toggleProfileDropdown() {
@@ -277,11 +351,6 @@
             
             if (!profileButton.contains(event.target) && !profileDropdown.contains(event.target)) {
                 profileDropdown.classList.add('hidden');
-            }
-            
-            // Close mobile sidebar when clicking outside
-            if (window.innerWidth < 768 && !sidebar.contains(event.target) && !mobileToggle.contains(event.target)) {
-                sidebar.classList.add('-translate-x-full');
             }
         });
         
@@ -297,7 +366,8 @@
         function setActiveNavItem() {
             const currentPath = window.location.pathname;
             document.querySelectorAll('.nav-item').forEach(item => {
-                const linkPath = item.getAttribute('href');
+                const href = item.getAttribute('href');
+                const linkPath = href.split('?')[0]; // Remove query string for comparison
                 if (currentPath === linkPath || 
                     (linkPath !== '/' && currentPath.startsWith(linkPath))) {
                     item.classList.add('active');
@@ -305,8 +375,20 @@
             });
         }
         
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                // On desktop
+                sidebar.classList.remove('mobile-open');
+                sidebarOverlay.classList.remove('active');
+            }
+        });
+        
         // Run on page load
-        document.addEventListener('DOMContentLoaded', setActiveNavItem);
+        document.addEventListener('DOMContentLoaded', function() {
+            initSidebar();
+            setActiveNavItem();
+        });
     </script>
 </body>
 </html>

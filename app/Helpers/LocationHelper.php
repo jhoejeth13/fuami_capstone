@@ -54,4 +54,94 @@ class LocationHelper
     {
         return self::loadJson('barangay.json');
     }
+    
+    // New helper methods to convert codes to names
+    
+    /**
+     * Get region name by region code
+     * 
+     * @param string $regionCode
+     * @return string
+     */
+    public static function getRegionName($regionCode)
+    {
+        if (empty($regionCode)) {
+            return '';
+        }
+        
+        $regions = self::getRegions();
+        foreach ($regions as $region) {
+            if ($region['region_code'] == $regionCode) {
+                return $region['region_name'];
+            }
+        }
+        
+        return $regionCode; // Return the code if not found
+    }
+    
+    /**
+     * Get province name by province code
+     * 
+     * @param string $provinceCode
+     * @return string
+     */
+    public static function getProvinceName($provinceCode)
+    {
+        if (empty($provinceCode)) {
+            return '';
+        }
+        
+        $provinces = self::getProvinces();
+        foreach ($provinces as $province) {
+            if ($province['province_code'] == $provinceCode) {
+                return $province['province_name'];
+            }
+        }
+        
+        return $provinceCode; // Return the code if not found
+    }
+    
+    /**
+     * Get city/municipality name by city code
+     * 
+     * @param string $cityCode
+     * @return string
+     */
+    public static function getCityName($cityCode)
+    {
+        if (empty($cityCode)) {
+            return '';
+        }
+        
+        $cities = self::getCities();
+        foreach ($cities as $city) {
+            if ($city['city_code'] == $cityCode) {
+                return $city['city_name'];
+            }
+        }
+        
+        return $cityCode; // Return the code if not found
+    }
+    
+    /**
+     * Get barangay name by barangay code
+     * 
+     * @param string $brgyCode
+     * @return string
+     */
+    public static function getBarangayName($brgyCode)
+    {
+        if (empty($brgyCode)) {
+            return '';
+        }
+        
+        $barangays = self::getBarangays();
+        foreach ($barangays as $barangay) {
+            if ($barangay['brgy_code'] == $brgyCode) {
+                return $barangay['brgy_name'];
+            }
+        }
+        
+        return $brgyCode; // Return the code if not found
+    }
 }
