@@ -265,7 +265,7 @@
             <h2>Choose Your Graduate Type</h2>
             <p>Please select your graduate type to proceed to the appropriate tracer form. Your participation helps us improve our educational programs and better serve future students.</p>
             
-            <form action="{{ route('tracer.submit') }}" method="POST" class="animate-fade delay-300" style="max-width: 600px; margin: 0 auto;">
+            <form id="graduateTypeForm" class="animate-fade delay-300" style="max-width: 600px; margin: 0 auto;">
                 @csrf
 
                 <!-- Graduate Type Section -->
@@ -282,9 +282,9 @@
                     </div>
                     
                     <div style="text-align: center;">
-                        <button type="submit" class="start-button">
+                        <button type="button" id="startButton" class="start-button" onclick="redirectToForm()">
                             <i class="fas fa-clipboard-list"></i>
-                            <span>Continue to Form</span>
+                            <span>Fill Out Tracer Form</span>
                         </button>
                     </div>
                 </div>
@@ -300,7 +300,30 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('currentYear').textContent = new Date().getFullYear();
+            
+            // Add event listener for Enter key
+            document.getElementById('graduate_type').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    redirectToForm();
+                }
+            });
         });
+
+        function redirectToForm() {
+            const graduateType = document.getElementById('graduate_type').value;
+            
+            if (!graduateType) {
+                alert('Please select your graduate type first.');
+                return;
+            }
+            
+            if (graduateType === 'JHS') {
+                window.location.href = "{{ route('tracer.jhs-form') }}";
+            } else if (graduateType === 'SHS') {
+                window.location.href = "{{ route('tracer.shs-form') }}";
+            }
+        }
     </script>
 </body>
-</html>
+</html> 

@@ -199,7 +199,13 @@
                                         <label for="employer_name" class="block text-sm font-medium text-gray-700">Employer Name</label>
                                         <input type="text" name="employer_name" id="employer_name" value="{{ old('employer_name', $response->employer_name) }}"
                                             class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                        </div>
+                                    </div>
+
+                                    <div class="sm:col-span-3">
+                                        <label for="employer_address" class="block text-sm font-medium text-gray-700">Employer Address</label>
+                                        <input type="text" name="employer_address" id="employer_address" value="{{ old('employer_address', $response->employer_address) }}"
+                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
 
                                     <div class="sm:col-span-3">
                                         <label for="organization_type" class="block text-sm font-medium text-gray-700">Organization Type</label>

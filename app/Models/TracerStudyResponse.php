@@ -38,6 +38,7 @@ class TracerStudyResponse extends Model
         'organization_type',
         'occupational_classification',
         'employer_name',
+        'employer_address',
         'employment_type',
         'work_location',
         'job_situation',

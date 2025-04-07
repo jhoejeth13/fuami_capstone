@@ -42,12 +42,12 @@
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Filters & Controls</h2>
                 <form method="GET" action="{{ url()->current() }}" class="flex flex-wrap gap-6 items-end">
                     <div class="space-y-2">
-                        <label for="graduate_type" class="block text-sm font-medium text-gray-700">Graduate Type</label>
-                        <select id="graduate_type" name="graduate_type" onchange="this.form.submit()"
+                        <!-- <label for="graduate_type" class="block text-sm font-medium text-gray-700">Graduate Type</label> -->
+                        <!-- <select id="graduate_type" name="graduate_type" onchange="this.form.submit()"
                                 class="mt-1 block w-64 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                             <option value="SHS" {{ request('graduate_type', 'SHS') == 'SHS' ? 'selected' : '' }}>SHS Graduates</option>
                             <option value="JHS" {{ request('graduate_type') == 'JHS' ? 'selected' : '' }}>JHS Graduates</option>
-                        </select>
+                        </select> -->
     </div>
 
                     <div class="space-y-2">
@@ -145,7 +145,8 @@
                                         {{ App\Helpers\LocationHelper::getBarangayName($response->barangay) }}, 
                                         {{ App\Helpers\LocationHelper::getCityName($response->municipality) }}, 
                                         {{ App\Helpers\LocationHelper::getProvinceName($response->province) }}, 
-                                        {{ App\Helpers\LocationHelper::getRegionName($response->region) }}
+                                        {{ App\Helpers\LocationHelper::getRegionName($response->region) }},
+                                        {{ $response->country ?? 'Philippines' }}
                                     </span>
                                 </div>
                             </div>
@@ -161,6 +162,10 @@
                                     <div class="flex items-center">
                                         <i class="fas fa-building text-gray-400 w-5 mr-2"></i>
                                         <span>{{ $response->employer_name }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-map-marker-alt text-gray-400 w-5 mr-2"></i>
+                                        <span>{{ $response->employer_address }}</span>
                                     </div>
                                     <div class="flex items-center">
                                         <i class="fas fa-industry text-gray-400 w-5 mr-2"></i>

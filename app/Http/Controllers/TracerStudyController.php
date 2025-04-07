@@ -66,7 +66,7 @@ class TracerStudyController extends Controller
         }
         
         // Otherwise show the selection form
-        return view('tracer.tracer-study-form');
+        return view('tracer.form');
     }
 
     public function submitForm(Request $request)
@@ -86,8 +86,8 @@ class TracerStudyController extends Controller
         }
         
         // If something is wrong, go back with error
-        return redirect()->back()
-            ->withInput()
+                return redirect()->back()
+                    ->withInput()
             ->withErrors(['error' => 'Invalid graduate type selected.']);
     }
 
@@ -309,6 +309,7 @@ public function update(Request $request, $id)
             'email' => 'nullable|email',
             'employment_status' => 'required|string',
             'employer_name' => 'required_if:employment_status,Employed|nullable|string',
+            'employer_address' => 'required_if:employment_status,Employed|nullable|string',
             'organization_type' => 'nullable|string|required_if:employment_status,Employed',
             'organization_type_other' => 'nullable|string|required_if:organization_type,Other',
             'occupational_classification' => 'nullable|string|required_if:employment_status,Employed',
@@ -372,6 +373,7 @@ public function update(Request $request, $id)
             'email' => 'nullable|email',
             'employment_status' => 'required|string',
             'employer_name' => 'required_if:employment_status,Employed|nullable|string',
+            'employer_address' => 'required_if:employment_status,Employed|nullable|string',
             'organization_type' => 'nullable|string|required_if:employment_status,Employed',
             'organization_type_other' => 'nullable|string|required_if:organization_type,Other',
             'occupational_classification' => 'nullable|string|required_if:employment_status,Employed',

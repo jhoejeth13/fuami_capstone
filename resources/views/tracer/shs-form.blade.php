@@ -582,14 +582,19 @@
                         <input type="text" name="last_name" value="{{ old('last_name') }}" required>
                     </label>         
                     <label>Suffix:
-    <select name="suffix">
-        @foreach($suffixOptions as $value => $label)
-            <option value="{{ $value }}" {{ old('suffix') == $value ? 'selected' : '' }}>
-                {{ $label }}
-            </option>
-        @endforeach
-    </select>
-</label>
+                        <select name="suffix" id="suffix" onchange="toggleOtherSuffix()">
+                            @foreach($suffixOptions as $value => $label)
+                                <option value="{{ $value }}" {{ old('suffix') == $value ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </label>
+                    <div id="otherSuffixContainer" style="display: none;">
+                        <label>Specify Suffix:
+                            <input type="text" name="suffix_other" value="{{ old('suffix_other') }}" maxlength="10">
+                        </label>
+                    </div>
                     <label>Date of Birth:
                             <input type="date" name="birthdate" id="birthdate" value="{{ old('birthdate') }}" required onchange="calculateAge()" pattern="\d{2}/\d{2}/\d{2}">
                             <small>Format: MM/DD/YY</small>
@@ -675,14 +680,18 @@
                 <option value="{{ old('barangay') }}" selected>{{ old('brgy_name') }}</option>
             @endif
         </select>
-        <input type="hidden" name="postal_code" value="{{ old('postal_code', '') }}">
+        <input type="hidden" name="postal_code" value="0000">
         <input type="hidden" name="country" value="{{ old('country', 'Philippines') }}">
         <label>Purok/Street:
-                        <input type="text" name="address" value="{{ old('address') }}">
-                    </label>
-                            </div>
+            <input type="text" name="address" value="{{ old('address') }}">
+        </label>
+        <div class="form-group">
+            <label for="country">Country:</label>
+            <input type="text" name="country" id="country" class="form-control" value="{{ old('country', 'Philippines') }}" readonly>
+        </div>
     </div>
 </div>
+        </div>
 
                     <!-- Education Information (only for SHS) -->
                     <div class="form-section" id="education-section" style="display: none;">
@@ -779,58 +788,59 @@
             @endforeach
         </select>
     </label>
-    <div id="occ_class_other_container" style="display: none; margin-top: 0.5rem;">
-        <label>Please specify occupational classification:
-            <input type="text" name="occupational_classification_other" id="occupational_classification_other" 
-                   value="{{ old('occupational_classification_other') }}"
-                   placeholder="Enter classification">
+    <div id="occ_class_other_container" style="display: none;">
+        <label>Specify Occupational Classification:
+            <input type="text" name="occupational_classification_other" value="{{ old('occupational_classification_other') }}" maxlength="255">
         </label>
     </div>
                             
             <label>Employer Name:
            <input type="text" name="employer_name" value="{{ old('employer_name') }}">
              </label>
-                        <label>Employment Type:
-                            <select name="job_situation">
-                                <option value="">Select Situation</option>
-                                <option value="Permanent" {{ old('job_situation') == 'Permanent' ? 'selected' : '' }}>Permanent</option>
-                                <option value="Contractual" {{ old('job_situation') == 'Contractual' ? 'selected' : '' }}>Contractual</option>
-                                <option value="Casual" {{ old('job_situation') == 'Casual' ? 'selected' : '' }}>Not Permanent</option>
-                                <option value="Others" {{ old('job_situation') == 'Others' ? 'selected' : '' }}>Others</option>
-                            </select>
-                        </label>
-                        <label>Years in Company:
-                            <select name="years_in_company">
-                                <option value="">Select Years</option>
-                                <option value="0-5" {{ old('years_in_company') == '0-5' ? 'selected' : '' }}>0-5 years</option>
-                                <option value="6-10" {{ old('years_in_company') == '6-10' ? 'selected' : '' }}>6-10 years</option>
-                                <option value="10-15" {{ old('years_in_company') == '10-15' ? 'selected' : '' }}>10-15 years</option>
-                                <option value="16-20" {{ old('years_in_company') == '16-20' ? 'selected' : '' }}>16-20 years</option>
-                                <option value="20-25" {{ old('years_in_company') == '20-25' ? 'selected' : '' }}>20-25 years</option>
-                                <option value="25 above" {{ old('years_in_company') == '25 above' ? 'selected' : '' }}>25+ years</option>
-                            </select>
-                        </label>
-                    </div>
+            <label>Employer Address:
+                <input type="text" name="employer_address" value="{{ old('employer_address') }}">
+            </label>
+            <label>Employment Type:
+                <select name="job_situation">
+                    <option value="">Select Situation</option>
+                    <option value="Permanent" {{ old('job_situation') == 'Permanent' ? 'selected' : '' }}>Permanent</option>
+                    <option value="Contractual" {{ old('job_situation') == 'Contractual' ? 'selected' : '' }}>Contractual</option>
+                    <option value="Casual" {{ old('job_situation') == 'Casual' ? 'selected' : '' }}>Not Permanent</option>
+                    <option value="Others" {{ old('job_situation') == 'Others' ? 'selected' : '' }}>Others</option>
+                </select>
+            </label>
+            <label>Years in Company:
+                <select name="years_in_company">
+                    <option value="">Select Years</option>
+                    <option value="0-5" {{ old('years_in_company') == '0-5' ? 'selected' : '' }}>0-5 years</option>
+                    <option value="6-10" {{ old('years_in_company') == '6-10' ? 'selected' : '' }}>6-10 years</option>
+                    <option value="10-15" {{ old('years_in_company') == '10-15' ? 'selected' : '' }}>10-15 years</option>
+                    <option value="16-20" {{ old('years_in_company') == '16-20' ? 'selected' : '' }}>16-20 years</option>
+                    <option value="20-25" {{ old('years_in_company') == '20-25' ? 'selected' : '' }}>20-25 years</option>
+                    <option value="25 above" {{ old('years_in_company') == '25 above' ? 'selected' : '' }}>25+ years</option>
+                </select>
+            </label>
+        </div>
 
-                    <!-- Unemployed Fields -->
-                    <div id="unemployed_fields" class="hidden">
-                        <h3><i class="fas fa-user-clock mr-2"></i> Unemployment Details</h3>
-                        <label>Reasons for Unemployment:
-                            <textarea name="unemployment_reason" rows="4">{{ old('unemployment_reason') }}</textarea>
-                        </label>
-                    </div>
-                </div>
+        <!-- Unemployed Fields -->
+        <div id="unemployed_fields" class="hidden">
+            <h3><i class="fas fa-user-clock mr-2"></i> Unemployment Details</h3>
+            <label>Reasons for Unemployment:
+                <textarea name="unemployment_reason" rows="4">{{ old('unemployment_reason') }}</textarea>
+            </label>
+        </div>
+    </div>
 
-                <div class="flex justify-between mt-6">
-                <button type="button" class="btn border border-gray-300 text-gray-800 hover:bg-gray-100" onclick="closeForm()">
-    <i class="fas fa-times mr-2"></i> Cancel
+    <div class="flex justify-between mt-6">
+    <button type="button" class="btn border border-gray-300 text-gray-800 hover:bg-gray-100" onclick="closeForm()">
+<i class="fas fa-times mr-2"></i> Cancel
 </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-paper-plane mr-2"></i> Submit Form
-                    </button>
-                    </div>
-                </div>
-            </form>
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane mr-2"></i> Submit Form
+        </button>
+        </div>
+    </div>
+</form>
         </div>
     </div>
 
@@ -1025,6 +1035,7 @@
         'organization_type',
         'occupational_classification',
         'employer_name',
+        'employer_address',
         'job_situation',
         'years_in_company'
     ];
@@ -1112,12 +1123,23 @@
             const occClassSelect = document.getElementById('occupational_classification');
             const otherContainer = document.getElementById('occ_class_other_container');
             
-            if (occClassSelect.value === 'Other') {
+            if (occClassSelect.value === 'Others (please specify)') {
                 otherContainer.style.display = 'block';
-                document.getElementById('occupational_classification_other').setAttribute('required', 'required');
             } else {
                 otherContainer.style.display = 'none';
-                document.getElementById('occupational_classification_other').removeAttribute('required');
+            }
+        }
+
+        function toggleOtherSuffix() {
+            const suffixSelect = document.getElementById('suffix');
+            const otherSuffixContainer = document.getElementById('otherSuffixContainer');
+            
+            if (suffixSelect.value === 'Other') {
+                otherSuffixContainer.style.display = 'block';
+                document.getElementById('suffix_other').setAttribute('required', 'required');
+            } else {
+                otherSuffixContainer.style.display = 'none';
+                document.getElementById('suffix_other').removeAttribute('required');
             }
         }
 
@@ -1128,6 +1150,31 @@
                 closeForm();
             }
         }
+
+        // Add these functions for address auto-fill
+        function autoFillPostalCode() {
+            const city = document.getElementById('city').value;
+            const postalCodeMap = {
+                'MAGALLANES': '8604',
+                // Add more city-postal code mappings as needed
+            };
+            
+            if (city && postalCodeMap[city]) {
+                document.getElementById('postal_code').value = postalCodeMap[city];
+            }
+        }
+
+        // Add event listener for city change
+        document.getElementById('city').addEventListener('change', function() {
+            autoFillPostalCode();
+        });
+
+        // Initialize postal code if city is already selected
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('city').value) {
+                autoFillPostalCode();
+            }
+        });
     </script>
     
     <!-- SweetAlert2 for better alerts -->

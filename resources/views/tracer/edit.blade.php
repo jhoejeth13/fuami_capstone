@@ -244,6 +244,14 @@
                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                         </div>
                         <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="employer_address">
+                                Employer Address *
+                            </label>
+                            <input type="text" name="employer_address" id="employer_address"
+                                   value="{{ old('employer_address', $response->employer_address) }}"
+                                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                        <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="organization_type">
                                 Organization Type *
                             </label>

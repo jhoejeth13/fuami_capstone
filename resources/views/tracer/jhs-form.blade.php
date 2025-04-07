@@ -582,7 +582,7 @@
                         <input type="text" name="last_name" value="{{ old('last_name') }}" required>
                     </label>         
                     <label>Suffix:
-                        <select name="suffix">
+                        <select name="suffix" id="suffix" onchange="toggleOtherSuffix()">
                             @foreach($suffixOptions as $value => $label)
                                 <option value="{{ $value }}" {{ old('suffix') == $value ? 'selected' : '' }}>
                                     {{ $label }}
@@ -590,6 +590,11 @@
                             @endforeach
                         </select>
                     </label>
+                    <div id="otherSuffixContainer" style="display: none;">
+                        <label>Specify Suffix:
+                            <input type="text" name="suffix_other" value="{{ old('suffix_other') }}" maxlength="10">
+                        </label>
+                    </div>
                     <label>Date of Birth:
                         <input type="date" name="birthdate" id="birthdate" value="{{ old('birthdate') }}" required onchange="calculateAge()" pattern="\d{2}/\d{2}/\d{2}">
                         <small>Format: MM/DD/YY</small>
@@ -675,11 +680,15 @@
                                     <option value="{{ old('barangay') }}" selected>{{ old('brgy_name') }}</option>
                                 @endif
                             </select>
-                            <input type="hidden" name="postal_code" value="{{ old('postal_code', '') }}">
+                            <input type="hidden" name="postal_code" value="0000">
                             <input type="hidden" name="country" value="{{ old('country', 'Philippines') }}">
                             <label>Purok/Street:
                                 <input type="text" name="address" value="{{ old('address') }}">
                             </label>
+                            <div class="form-group">
+                                <label for="country">Country:</label>
+                                <input type="text" name="country" id="country" class="form-control" value="{{ old('country', 'Philippines') }}" readonly>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -745,7 +754,6 @@
                         <!-- Occupational Classification -->
                         <label>Occupational Classification:
                             <select name="occupational_classification" id="occupational_classification" onchange="toggleOccClassOther()">
-                                <option value="">Select Classification</option>
                                 @foreach($occupationClassifications as $group => $options)
                                     @if(is_array($options))
                                         <optgroup label="{{ $group }}">
@@ -763,16 +771,17 @@
                                 @endforeach
                             </select>
                         </label>
-                        <div id="occ_class_other_container" style="display: none; margin-top: 0.5rem;">
-                            <label>Please specify occupational classification:
-                                <input type="text" name="occupational_classification_other" id="occupational_classification_other" 
-                                    value="{{ old('occupational_classification_other') }}"
-                                    placeholder="Enter classification">
+                        <div id="occ_class_other_container" style="display: none;">
+                            <label>Specify Occupational Classification:
+                                <input type="text" name="occupational_classification_other" value="{{ old('occupational_classification_other') }}" maxlength="255">
                             </label>
                         </div>
                         
                         <label>Employer Name:
                             <input type="text" name="employer_name" value="{{ old('employer_name') }}">
+                        </label>
+                        <label>Employer Address:
+                            <input type="text" name="employer_address" value="{{ old('employer_address') }}">
                         </label>
                         <label>Employment Type:
                             <select name="job_situation">
@@ -997,6 +1006,7 @@
                 'organization_type',
                 'occupational_classification',
                 'employer_name',
+                'employer_address',
                 'job_situation',
                 'years_in_company'
             ];
@@ -1084,12 +1094,23 @@
             const occClassSelect = document.getElementById('occupational_classification');
             const otherContainer = document.getElementById('occ_class_other_container');
             
-            if (occClassSelect.value === 'Other') {
+            if (occClassSelect.value === 'Others (please specify)') {
                 otherContainer.style.display = 'block';
-                document.getElementById('occupational_classification_other').setAttribute('required', 'required');
             } else {
                 otherContainer.style.display = 'none';
-                document.getElementById('occupational_classification_other').removeAttribute('required');
+            }
+        }
+
+        function toggleOtherSuffix() {
+            const suffixSelect = document.getElementById('suffix');
+            const otherSuffixContainer = document.getElementById('otherSuffixContainer');
+            
+            if (suffixSelect.value === 'Other') {
+                otherSuffixContainer.style.display = 'block';
+                document.getElementById('suffix_other').setAttribute('required', 'required');
+            } else {
+                otherSuffixContainer.style.display = 'none';
+                document.getElementById('suffix_other').removeAttribute('required');
             }
         }
 

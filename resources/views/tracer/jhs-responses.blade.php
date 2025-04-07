@@ -137,7 +137,8 @@
                                         {{ App\Helpers\LocationHelper::getBarangayName($response->barangay) }}, 
                                         {{ App\Helpers\LocationHelper::getCityName($response->municipality) }}, 
                                         {{ App\Helpers\LocationHelper::getProvinceName($response->province) }}, 
-                                        {{ App\Helpers\LocationHelper::getRegionName($response->region) }}
+                                        {{ App\Helpers\LocationHelper::getRegionName($response->region) }},
+                                        {{ $response->country ?? 'Philippines' }}
                                     </span>
                                 </div>
                             </div>
@@ -153,6 +154,10 @@
                                     <div class="flex items-center">
                                         <i class="fas fa-building text-gray-400 w-5 mr-2"></i>
                                         <span>{{ $response->employer_name }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-map-marker-alt text-gray-400 w-5 mr-2"></i>
+                                        <span>{{ $response->employer_address }}</span>
                                     </div>
                                     <div class="flex items-center">
                                         <i class="fas fa-industry text-gray-400 w-5 mr-2"></i>

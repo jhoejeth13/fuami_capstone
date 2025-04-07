@@ -34,6 +34,7 @@ class JHSTracerResponse extends Model
         'email',
         'employment_status',
         'employer_name',
+        'employer_address',
         'organization_type',
         'occupational_classification',
         'job_situation',
