@@ -5,8 +5,9 @@
     <div class="container mx-auto px-4 py-8">
         <!-- Page Header -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">Graduate Tracer Study Responses</h1>
-            <p class="text-gray-600">Track and manage graduate information</p>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">SHS Graduate Tracer Study Responses
+            </h1>
+            <p class="text-gray-600">Track and manage alumni graduates information</p>
         </div>
         
         <!-- Notification Messages -->
@@ -42,13 +43,20 @@
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">Filters & Controls</h2>
                 <form method="GET" action="{{ url()->current() }}" class="flex flex-wrap gap-6 items-end">
                     <div class="space-y-2">
-                        <!-- <label for="graduate_type" class="block text-sm font-medium text-gray-700">Graduate Type</label> -->
-                        <!-- <select id="graduate_type" name="graduate_type" onchange="this.form.submit()"
-                                class="mt-1 block w-64 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                            <option value="SHS" {{ request('graduate_type', 'SHS') == 'SHS' ? 'selected' : '' }}>SHS Graduates</option>
-                            <option value="JHS" {{ request('graduate_type') == 'JHS' ? 'selected' : '' }}>JHS Graduates</option>
-                        </select> -->
-    </div>
+                        <label for="search" class="block text-sm font-medium text-gray-700">Search by Name</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <input type="text" 
+                                   name="search" 
+                                   id="search" 
+                                   value="{{ request('search') }}"
+                                   placeholder="Enter student name..."
+                                   class="block w-64 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                            <button type="submit" 
+                                    class="absolute inset-y-0 right-0 px-3 flex items-center bg-indigo-500 text-white rounded-r-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
 
                     <div class="space-y-2">
                         <label for="employment_status" class="block text-sm font-medium text-gray-700">Employment Status</label>
@@ -128,20 +136,20 @@
                                 </div>
                                 <div class="flex items-center">
                                     <i class="fas fa-calendar-alt text-gray-400 w-5 mr-2"></i>
-                                    <span>Born: {{ date('M d, Y', strtotime($response->birthdate)) }}</span>
+                                    <span><strong>Birthdate:</strong> {{ date('M d, Y', strtotime($response->birthdate)) }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="fas fa-heart text-gray-400 w-5 mr-2"></i>
-                                    <span>{{ $response->civil_status }}</span>
+                                    <span><strong>Civil Status:</strong> {{ $response->civil_status }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="fas fa-pray text-gray-400 w-5 mr-2"></i>
-                                    <span>{{ $response->religion }}</span>
+                                    <span><strong>Religion:</strong> {{ $response->religion }}</span>
                                 </div>
                                 <div class="flex items-start">
                                     <i class="fas fa-map-marker-alt text-gray-400 w-5 mr-2 mt-1"></i>
                                     <span class="text-sm">
-                                        {{ $response->address }}, 
+                                        <strong>Address:</strong> {{ $response->address }}, 
                                         {{ App\Helpers\LocationHelper::getBarangayName($response->barangay) }}, 
                                         {{ App\Helpers\LocationHelper::getCityName($response->municipality) }}, 
                                         {{ App\Helpers\LocationHelper::getProvinceName($response->province) }}, 
@@ -161,45 +169,32 @@
                                 @if($response->employment_status === 'Employed')
                                     <div class="flex items-center">
                                         <i class="fas fa-building text-gray-400 w-5 mr-2"></i>
-                                        <span>{{ $response->employer_name }}</span>
+                                        <span><strong>Employer:</strong> {{ $response->employer_name }}</span>
                                     </div>
                                     <div class="flex items-center">
                                         <i class="fas fa-map-marker-alt text-gray-400 w-5 mr-2"></i>
-                                        <span>{{ $response->employer_address }}</span>
+                                        <span><strong>Work Address:</strong> {{ $response->employer_address }}</span>
                                     </div>
                                     <div class="flex items-center">
                                         <i class="fas fa-industry text-gray-400 w-5 mr-2"></i>
-                                        <span>{{ $response->organization_type }}</span>
+                                        <span><strong>Organization Type:</strong> {{ $response->organization_type }}</span>
                                     </div>
                                     <div class="flex items-center">
                                         <i class="fas fa-user-tie text-gray-400 w-5 mr-2"></i>
-                                        <span>{{ $response->occupational_classification }}</span>
+                                        <span><strong>Occupation:</strong> {{ $response->occupational_classification }}</span>
                                     </div>
                                     <div class="flex items-center">
                                         <i class="fas fa-clock text-gray-400 w-5 mr-2"></i>
-                                        <span>{{ $response->job_situation }}</span>
+                                        <span><strong>Employment Type:</strong> {{ $response->job_situation }}</span>
                                     </div>
                                     <div class="flex items-center">
                                         <i class="fas fa-history text-gray-400 w-5 mr-2"></i>
-                                        <span>{{ $response->years_in_company }}</span>
-                                </div>
-                            @elseif($response->employment_status === 'Self-employed')
-                                    <div class="flex items-center">
-                                        <i class="fas fa-store text-gray-400 w-5 mr-2"></i>
-                                        <span>{{ $response->company_name }}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <i class="fas fa-tag text-gray-400 w-5 mr-2"></i>
-                                        <span>{{ $response->nature_of_employment }}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <i class="fas fa-history text-gray-400 w-5 mr-2"></i>
-                                        <span>{{ $response->years_in_business }}</span>
+                                        <span><strong>Years in Company:</strong> {{ $response->years_in_company }}</span>
                                     </div>
                                 @else
                                     <div class="flex items-start">
                                         <i class="fas fa-exclamation-circle text-gray-400 w-5 mr-2 mt-1"></i>
-                                        <span>{{ $response->unemployment_reason ?? 'No reason provided' }}</span>
+                                        <span><strong>Reason for Unemployment:</strong> {{ $response->unemployment_reason ?? 'No reason provided' }}</span>
                                     </div>
                                 @endif
                             </div>
@@ -213,19 +208,19 @@
                             <div class="space-y-3 text-gray-700">
                                 <div class="flex items-center">
                                     <i class="fas fa-phone text-gray-400 w-5 mr-2"></i>
-                                    <span>{{ $response->phone ?? 'N/A' }}</span>
+                                    <span><strong>Phone:</strong> {{ $response->phone ?? 'N/A' }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="fas fa-envelope text-gray-400 w-5 mr-2"></i>
-                                    <span>{{ $response->email ?? 'N/A' }}</span>
+                                    <span><strong>Email:</strong> {{ $response->email ?? 'N/A' }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="fas fa-graduation-cap text-gray-400 w-5 mr-2"></i>
-                                    <span>{{ $response->shs_track }} Track</span>
+                                    <span><strong>Track:</strong> {{ $response->shs_track }} Track</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="fas fa-calendar-check text-gray-400 w-5 mr-2"></i>
-                                    <span>Graduated: {{ $response->year_graduated }}</span>
+                                    <span><strong>Year Graduated:</strong> {{ $response->year_graduated }}</span>
                                 </div>
                             </div>
                         </div>

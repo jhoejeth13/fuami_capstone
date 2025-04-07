@@ -7,6 +7,8 @@ use App\Models\TracerStudyResponse;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\LocationHelper;
 use Illuminate\Support\Facades\Cache;
+use App\Models\JHSTracerResponse;
+use App\Models\Juniorhighschool;
 
 class TracerStudyController extends Controller
 {
@@ -37,7 +39,7 @@ class TracerStudyController extends Controller
         'Professional' => ['Engineer', 'Teacher', 'Nurse/Medical', 'IT Professional'],
         'Technical' => ['Technician', 'Craftsman'],
         'Service' => ['Customer Service', 'Food Service'],
-        'Other' => ['Others (please specify)']
+        'Other' => ['Other']
     ];
 
     // Suffix options
@@ -100,7 +102,17 @@ class TracerStudyController extends Controller
             // Query JHS tracer responses
             $query = \App\Models\JHSTracerResponse::query();
             
-            // Apply filters
+            // Apply search filter
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('first_name', 'LIKE', "%{$search}%")
+                      ->orWhere('middle_name', 'LIKE', "%{$search}%")
+                      ->orWhere('last_name', 'LIKE', "%{$search}%");
+                });
+            }
+            
+            // Apply employment status filter
             if ($request->filled('employment_status')) {
                 $query->where('employment_status', $request->employment_status);
             }
@@ -119,12 +131,22 @@ class TracerStudyController extends Controller
             ]);
         } else {
             // Query SHS tracer responses
-        $query = TracerStudyResponse::query();
+            $query = TracerStudyResponse::query();
 
-            // Apply filters
-        if ($request->filled('employment_status')) {
-            $query->where('employment_status', $request->employment_status);
-        }
+            // Apply search filter
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('first_name', 'LIKE', "%{$search}%")
+                      ->orWhere('middle_name', 'LIKE', "%{$search}%")
+                      ->orWhere('last_name', 'LIKE', "%{$search}%");
+                });
+            }
+
+            // Apply employment status filter
+            if ($request->filled('employment_status')) {
+                $query->where('employment_status', $request->employment_status);
+            }
 
             // Filter by graduate type
             $query->where('graduate_type', 'SHS');
@@ -134,13 +156,13 @@ class TracerStudyController extends Controller
             $responses = $query->paginate($perPage)->appends($request->except('page'));
             
             // Use SHS responses view
-        return view('tracer.responses', [
-            'responses' => $responses,
-            'organizationTypes' => $this->organizationTypes,
-            'occupationClassifications' => $this->occupationClassifications,
+            return view('tracer.responses', [
+                'responses' => $responses,
+                'organizationTypes' => $this->organizationTypes,
+                'occupationClassifications' => $this->occupationClassifications,
                 'suffixOptions' => $this->suffixOptions,
                 'type' => 'shs'
-        ]);
+            ]);
         }
     }
 
@@ -227,7 +249,7 @@ public function update(Request $request, $id)
 
         try {
             $response->update($validated);
-            return redirect()->route('tracer.responses')->with('success', 'Response updated successfully.');
+            return redirect()->route('tracer-responses.index', ['type' => 'shs'])->with('success', 'Response updated successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -240,8 +262,8 @@ public function update(Request $request, $id)
         $response = TracerStudyResponse::findOrFail($id);
         $response->delete();
         
-        return redirect()->route('tracer.responses')->with('success', 'Response deleted successfully.');
-}
+        return redirect()->route('tracer-responses.index', ['type' => 'shs'])->with('success', 'Response deleted successfully.');
+    }
 
     public function showJHSForm()
     {
@@ -250,9 +272,18 @@ public function update(Request $request, $id)
             return LocationHelper::getRegions();
         });
         
-        // Generate years for the graduation year dropdown
-        $currentYear = date('Y');
-        $years = range($currentYear, $currentYear - 10);
+        // Get unique years from juniorhighschool table (including Year Reference records)
+        $years = Juniorhighschool::select('school_year')
+            ->distinct()
+            ->orderBy('school_year', 'desc')
+            ->pluck('school_year')
+            ->toArray();
+        
+        // If no years found, use current year
+        if (empty($years)) {
+            $currentYear = date('Y');
+            $years = range($currentYear, $currentYear - 10);
+        }
         
         return view('tracer.jhs-form', [
             'organizationTypes' => $this->organizationTypes,
@@ -270,9 +301,19 @@ public function update(Request $request, $id)
             return LocationHelper::getRegions();
         });
         
-        // Generate years for the graduation year dropdown
-        $currentYear = date('Y');
-        $years = range($currentYear, $currentYear - 10);
+        // Get unique years from SHS tracer responses
+        $years = TracerStudyResponse::where('graduate_type', 'SHS')
+            ->select('year_graduated')
+            ->distinct()
+            ->orderBy('year_graduated', 'desc')
+            ->pluck('year_graduated')
+            ->toArray();
+        
+        // If no years found, use current year
+        if (empty($years)) {
+            $currentYear = date('Y');
+            $years = range($currentYear, $currentYear - 10);
+        }
         
         return view('tracer.shs-form', [
             'organizationTypes' => $this->organizationTypes,
@@ -502,7 +543,7 @@ public function update(Request $request, $id)
 
         try {
             $response->update($validated);
-            return redirect()->route('tracer.responses', ['type' => 'jhs'])->with('success', 'Response updated successfully.');
+            return redirect()->route('tracer-responses.index', ['type' => 'jhs'])->with('success', 'Response updated successfully.');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -515,6 +556,6 @@ public function update(Request $request, $id)
         $response = \App\Models\JHSTracerResponse::findOrFail($id);
         $response->delete();
         
-        return redirect()->route('tracer.responses', ['type' => 'jhs'])->with('success', 'Response deleted successfully.');
+        return redirect()->route('tracer-responses.index', ['type' => 'jhs'])->with('success', 'Response deleted successfully.');
     }
 }

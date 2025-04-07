@@ -754,6 +754,7 @@
                         <!-- Occupational Classification -->
                         <label>Occupational Classification:
                             <select name="occupational_classification" id="occupational_classification" onchange="toggleOccClassOther()">
+                                <option value="">Select Classification</option>
                                 @foreach($occupationClassifications as $group => $options)
                                     @if(is_array($options))
                                         <optgroup label="{{ $group }}">
@@ -1094,7 +1095,7 @@
             const occClassSelect = document.getElementById('occupational_classification');
             const otherContainer = document.getElementById('occ_class_other_container');
             
-            if (occClassSelect.value === 'Others (please specify)') {
+            if (occClassSelect.value === 'Other') {
                 otherContainer.style.display = 'block';
             } else {
                 otherContainer.style.display = 'none';
