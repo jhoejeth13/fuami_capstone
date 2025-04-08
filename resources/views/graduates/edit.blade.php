@@ -67,7 +67,7 @@
                     <option value="Science, Technology, Engineering, Mathematics(STEM)" {{ old('strand', $graduate->strand) == 'STEM' ? 'selected' : '' }}>STEM</option>
                     <option value="Accountancy, Business, and Management(ABM)" {{ old('strand', $graduate->strand) == 'ABM' ? 'selected' : '' }}>ABM</option>
                     <option value="Humanities and Social Sciences(HUMSS)" {{ old('strand', $graduate->strand) == 'HUMSS' ? 'selected' : '' }}>HUMSS</option>
-                    <option value="General Academic(GA)" {{ old('strand', $graduate->strand) == 'GA' ? 'selected' : '' }}>GA</option>
+                    <option value="General Academic Strand(GAS)" {{ old('strand', $graduate->strand) == 'GAS' ? 'selected' : '' }}>GAS</option>
                 </optgroup>
                 <optgroup label="TVL Strands">
                     <option value="ICT: Computer System Servicing" {{ old('strand', $graduate->strand) == 'ICT' ? 'selected' : '' }}>ICT</option>

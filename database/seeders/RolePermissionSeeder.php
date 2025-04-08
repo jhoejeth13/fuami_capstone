@@ -21,12 +21,10 @@ class RolePermissionSeeder extends Seeder
     
         // Create roles if they don't exist
         $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
-        $editorRole = Role::firstOrCreate(['name' => 'editor', 'guard_name' => 'web']);
         $userRole = Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
     
         // Assign permissions to roles
         $adminRole->givePermissionTo(['view-user', 'create-user', 'edit-user', 'delete-user']);
-        $editorRole->givePermissionTo(['view-user', 'edit-user']);
         $userRole->givePermissionTo(['view-user']);
     }
 }

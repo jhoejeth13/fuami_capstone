@@ -44,12 +44,12 @@
                     <input type="hidden" name="type" value="jhs">
                     
                     <div class="space-y-2">
-                        <label for="search" class="block text-sm font-medium text-gray-700">Search by Name</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <label for="search" class="block text-sm font-medium text-gray-700">Search by Name</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
                             <input type="text" 
                                    name="search" 
                                    id="search" 
-                                   value="{{ request('search') }}"
+                                    value="{{ request('search') }}"
                                    placeholder="Enter student name..."
                                    class="block w-64 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                             <button type="submit" 
@@ -57,27 +57,27 @@
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
-                    </div>
+                        </div>
 
                     <div class="space-y-2">
-                        <label for="employment_status" class="block text-sm font-medium text-gray-700">Employment Status</label>
+                            <label for="employment_status" class="block text-sm font-medium text-gray-700">Employment Status</label>
                         <select id="employment_status" name="employment_status" onchange="this.form.submit()"
                                 class="mt-1 block w-64 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
                             <option value="">All Employment Status</option>
-                            <option value="Employed" {{ request('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
-                            <option value="Unemployed" {{ request('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
-                        </select>
-                    </div>
-                    
+                                <option value="Employed" {{ request('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
+                                <option value="Unemployed" {{ request('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
+                            </select>
+                        </div>
+
                     <div class="space-y-2">
-                        <label for="perPage" class="block text-sm font-medium text-gray-700">Results Per Page</label>
+                            <label for="perPage" class="block text-sm font-medium text-gray-700">Results Per Page</label>
                         <select id="perPage" name="perPage" onchange="this.form.submit()"
                                 class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                            <option value="5" {{ request('perPage') == 5 ? 'selected' : '' }}>5</option>
-                            <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
-                            <option value="15" {{ request('perPage') == 15 ? 'selected' : '' }}>15</option>
-                            <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25</option>
-                        </select>
+                                <option value="5" {{ request('perPage') == 5 ? 'selected' : '' }}>5</option>
+                                <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
+                                <option value="15" {{ request('perPage') == 15 ? 'selected' : '' }}>15</option>
+                                <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25</option>
+                            </select>
                     </div>
 
                     <div class="bg-gray-50 px-4 py-2 rounded-md text-sm text-gray-600 self-end">
@@ -156,8 +156,8 @@
                                             {{ App\Helpers\LocationHelper::getBarangayName($response->barangay) }},<br>
                                             {{ App\Helpers\LocationHelper::getCityName($response->municipality) }},<br>
                                             {{ App\Helpers\LocationHelper::getProvinceName($response->province) }},<br>
-                                            {{ App\Helpers\LocationHelper::getRegionName($response->region) }},
-                                            {{ $response->country ?? 'Philippines' }}
+                                        {{ App\Helpers\LocationHelper::getRegionName($response->region) }},
+                                        {{ $response->country ?? 'Philippines' }}
                                         </div>
                                     </span>
                                 </div>

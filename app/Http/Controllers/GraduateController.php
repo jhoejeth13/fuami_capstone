@@ -49,16 +49,16 @@ class GraduateController extends Controller
             'perPage' => $perPage,
         ]);
     
-        // Fetch years from the Year model
-        $years = Year::pluck('year');
+        // Get unique years from graduates table
+        $years = Graduate::distinct()->orderBy('year_graduated', 'desc')->pluck('year_graduated');
     
         return view('graduates.index', compact('graduates', 'years'));
     }
 
     public function create()
     {
-        // Fetch years from the Year model
-        $years = Year::pluck('year');
+        // Get unique years from graduates table
+        $years = Graduate::distinct()->orderBy('year_graduated', 'desc')->pluck('year_graduated');
 
         return view('graduates.create', compact('years'));
     }
@@ -105,7 +105,8 @@ class GraduateController extends Controller
 
     public function edit(Graduate $graduate)
     {
-        $years = Year::pluck('year');
+        // Get unique years from graduates table
+        $years = Graduate::distinct()->orderBy('year_graduated', 'desc')->pluck('year_graduated');
         return view('graduates.edit', compact('graduate', 'years'));
     }
 

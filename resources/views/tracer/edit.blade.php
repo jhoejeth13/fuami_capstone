@@ -126,31 +126,31 @@
                         <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                             <div class="sm:col-span-6">
                                 <label for="address" class="block text-sm font-medium text-gray-700">Street Address</label>
-                                <input type="text" name="address" id="address" value="{{ old('address', $response->address) }}"
+                        <input type="text" name="address" id="address" value="{{ old('address', $response->address) }}"
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                            </div>
+                    </div>
 
                             <div class="sm:col-span-2">
                                 <label for="barangay" class="block text-sm font-medium text-gray-700">Barangay</label>
-                                <input type="text" name="barangay" id="barangay" value="{{ old('barangay', $response->barangay) }}"
+                        <input type="text" name="barangay" id="barangay" value="{{ old('barangay', $response->barangay) }}"
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                            </div>
+                    </div>
 
                             <div class="sm:col-span-2">
                                 <label for="municipality" class="block text-sm font-medium text-gray-700">Municipality</label>
-                                <input type="text" name="municipality" id="municipality" value="{{ old('municipality', $response->municipality) }}"
+                        <input type="text" name="municipality" id="municipality" value="{{ old('municipality', $response->municipality) }}"
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                            </div>
+                    </div>
 
                             <div class="sm:col-span-2">
                                 <label for="province" class="block text-sm font-medium text-gray-700">Province</label>
-                                <input type="text" name="province" id="province" value="{{ old('province', $response->province) }}"
+                        <input type="text" name="province" id="province" value="{{ old('province', $response->province) }}"
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                            </div>
+                    </div>
 
                             <div class="sm:col-span-3">
                                 <label for="region" class="block text-sm font-medium text-gray-700">Region</label>
-                                <input type="text" name="region" id="region" value="{{ old('region', $response->region) }}"
+                        <input type="text" name="region" id="region" value="{{ old('region', $response->region) }}"
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                             </div>
 
@@ -158,9 +158,9 @@
                                 <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
                                 <input type="text" name="country" id="country" value="{{ old('country', $response->country ?? 'Philippines') }}"
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                            </div>
-                        </div>
                     </div>
+                </div>
+            </div>
 
                     <!-- Education Information Section -->
                     <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
@@ -187,8 +187,8 @@
                                         <option value="Sports" {{ old('shs_track', $response->shs_track) == 'Sports' ? 'selected' : '' }}>Sports Track</option>
                                         <option value="Arts and Design" {{ old('shs_track', $response->shs_track) == 'Arts and Design' ? 'selected' : '' }}>Arts and Design Track</option>
                                     </optgroup>
-                                </select>
-                            </div>
+                        </select>
+                    </div>
 
                             <div class="sm:col-span-3">
                                 <label for="year_graduated" class="block text-sm font-medium text-gray-700">Year Graduated</label>

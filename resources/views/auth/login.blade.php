@@ -93,6 +93,7 @@
         .forgot-password {
             text-align: right;
             margin-top: 10px;
+            display: none; /* Hide the forgot password section */
         }
 
         .forgot-password a {

@@ -200,15 +200,17 @@
                 </div>
                 
                 <!-- User Management Section -->
-                @if(auth()->user()->hasRole('admin'))
-                <div class="px-4 py-3">
-                    <h3 class="sidebar-section uppercase text-xs font-semibold text-blue-300 tracking-wider sidebar-text">User Management</h3>
-                    <a href="{{ route('users.index') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
-                        <i class="fas fa-users text-lg w-6 text-center"></i>
-                        <span class="sidebar-text ml-3">Manage Users</span>
-                    </a>
-                </div>
-                @endif
+                @auth
+                    @if(auth()->user()->hasRole('admin'))
+                    <div class="px-4 py-3">
+                        <h3 class="sidebar-section uppercase text-xs font-semibold text-blue-300 tracking-wider sidebar-text">User Management</h3>
+                        <a href="{{ route('users.index') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
+                            <i class="fas fa-users text-lg w-6 text-center"></i>
+                            <span class="sidebar-text ml-3">Manage Users</span>
+                        </a>
+                    </div>
+                    @endif
+                @endauth
                 
                 <!-- Graduate Management Section -->
                 <div class="px-4 py-3">

@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Storage;
 
 class JuniorhighschoolController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     // Add this property to store suffix options
     protected $suffixOptions = [
         '' => '-- No Suffix --',
