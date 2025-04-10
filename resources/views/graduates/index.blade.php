@@ -17,72 +17,107 @@
     
     .card {
         background: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    
-    .table-container {
-        overflow-x: auto;
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
-    
+
+    .page-header {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .page-header h1 {
+        color: white;
+        font-size: 2rem;
+        margin: 0;
+    }
+
     table {
-        width: 100%;
-        border-collapse: collapse;
+        border-radius: 0.75rem;
+        overflow: hidden;
     }
-    
-    th, td {
-        padding: 0.75rem 1rem;
-        text-align: left;
-        border-bottom: 1px solid #e5e7eb;
-    }
-    
+
     th {
-        background-color: #f9fafb;
-        font-weight: 600;
+        background-color: #f3f4f6;
+        color: #374151;
         text-transform: uppercase;
-        font-size: 0.75rem;
+        font-weight: 700;
         letter-spacing: 0.05em;
-        color: #6b7280;
+        padding: 0.75rem;
+        font-size: 0.75rem;
     }
-    
-    tr:hover {
+
+    td {
+        padding: 0.625rem;
+        vertical-align: middle;
+        font-size: 0.875rem;
+    }
+
+    tr:nth-child(even) {
         background-color: #f9fafb;
     }
-    
+
+    tr:hover {
+        background-color: #f3f4f6;
+        transition: background-color 0.3s ease;
+    }
+
     .action-btn {
-        padding: 0.375rem 0.75rem;
-        font-size: 0.875rem;
-        border-radius: 0.375rem;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 0.25rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        font-size: 0.75rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     }
-    
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
     .btn-view {
         background-color: #3b82f6;
         color: white;
     }
-    
+
     .btn-edit {
-        background-color: #eab308;
+        background-color: #10b981;
         color: white;
     }
-    
+
     .btn-delete {
         background-color: #ef4444;
         color: white;
     }
-    
+
     .btn-add {
-        background-color: #10b981;
+        background-color: #6366f1;
         color: white;
     }
-    
+
     .btn-print {
-        background-color: #3b82f6;
+        background-color: #8b5cf6;
         color: white;
     }
-    
+
     .search-input {
         width: 300px;
         border-radius: 0.375rem;
@@ -93,7 +128,8 @@
     .filter-select {
         border-radius: 0.375rem;
         border: 1px solid #d1d5db;
-        padding: 0.5rem 1rem;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
     }
     
     .pagination {
@@ -152,7 +188,7 @@
 
 <div class="container mx-auto">
     <!-- Page Header -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+    <div class="page-header">
         <h1 class="text-2xl font-bold text-gray-800">List of SHS Graduates</h1>
         
         <div class="flex flex-col sm:flex-row gap-3">

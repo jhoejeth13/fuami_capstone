@@ -117,6 +117,10 @@ class TracerStudyController extends Controller
                 $query->where('employment_status', $request->employment_status);
             }
             
+            // Calculate male and female counts
+            $maleCount = JHSTracerResponse::where('gender', 'Male')->count();
+            $femaleCount = JHSTracerResponse::where('gender', 'Female')->count();
+
             // Paginate the results
             $perPage = $request->input('perPage', 5);
             $responses = $query->paginate($perPage)->appends($request->except('page'));
@@ -127,7 +131,9 @@ class TracerStudyController extends Controller
                 'organizationTypes' => $this->organizationTypes,
                 'occupationClassifications' => $this->occupationClassifications,
                 'suffixOptions' => $this->suffixOptions,
-                'type' => 'jhs'
+                'type' => 'jhs',
+                'maleCount' => $maleCount,
+                'femaleCount' => $femaleCount
             ]);
         } else {
             // Query SHS tracer responses
@@ -166,25 +172,25 @@ class TracerStudyController extends Controller
         }
     }
 
-public function edit($id)
-{
-    $response = TracerStudyResponse::findOrFail($id);
-    
-    // Generate years for the graduation year dropdown
-    $currentYear = date('Y');
-    $years = range($currentYear, $currentYear - 10);
-    
-    return view('tracer.edit', [
-        'response' => $response,
-        'organizationTypes' => $this->organizationTypes,
-        'occupationClassifications' => $this->occupationClassifications,
-        'suffixOptions' => $this->suffixOptions,
-        'years' => $years
-    ]);
-}
+    public function edit($id)
+    {
+        $response = TracerStudyResponse::findOrFail($id);
+        
+        // Generate years for the graduation year dropdown
+        $currentYear = date('Y');
+        $years = range($currentYear, $currentYear - 10);
+        
+        return view('tracer.edit', [
+            'response' => $response,
+            'organizationTypes' => $this->organizationTypes,
+            'occupationClassifications' => $this->occupationClassifications,
+            'suffixOptions' => $this->suffixOptions,
+            'years' => $years
+        ]);
+    }
 
-public function update(Request $request, $id)
-{
+    public function update(Request $request, $id)
+    {
         $response = TracerStudyResponse::findOrFail($id);
 
         $validated = $request->validate([
@@ -380,8 +386,14 @@ public function update(Request $request, $id)
         
         try {
             \App\Models\JHSTracerResponse::create($validated);
+            if ($request->wantsJson()) {
+                return response()->json(['success' => true, 'message' => 'JHS graduate data saved successfully!']);
+            }
             return redirect()->back()->with('success', 'JHS graduate data saved successfully!');
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'error' => 'Failed to save data: ' . $e->getMessage()], 422);
+            }
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['error' => 'Failed to save data: ' . $e->getMessage()]);

@@ -147,22 +147,30 @@ class DashboardController extends Controller
             'Unemployed' => $jhsUnemployed,
         ];
 
-        return view('dashboard', compact(
-            'totalGraduates',
-            'totalJHSStudents',
-            'totalEmployed',
-            'totalAlumni',
-            'totalJHSAlumni',
-            'genderData',
-            'jhsGenderData',
-            'employmentData',
-            'jhsEmploymentData',
-            'lastUpdated',
-            'selectedGraduateYear',
-            'selectedEmploymentYear',
-            'selectedFilterType',
-            'availableGraduateYears',
-            'availableEmploymentYears'
-        ));
+        return view('dashboard', [
+            'totalGraduates' => $totalGraduates,
+            'totalJHSStudents' => $totalJHSStudents,
+            'totalEmployed' => $totalEmployed,
+            'totalAlumni' => $totalAlumni,
+            'totalJHSAlumni' => $totalJHSAlumni,
+            'genderData' => $genderData,
+            'jhsGenderData' => $jhsGenderData,
+            'employmentData' => $employmentData,
+            'jhsEmploymentData' => $jhsEmploymentData,
+            'lastUpdated' => $lastUpdated,
+            'selectedGraduateYear' => $selectedGraduateYear,
+            'selectedEmploymentYear' => $selectedEmploymentYear,
+            'selectedFilterType' => $selectedFilterType,
+            'availableGraduateYears' => $availableGraduateYears,
+            'availableEmploymentYears' => $availableEmploymentYears,
+            'maleGraduates' => $maleGraduates,
+            'femaleGraduates' => $femaleGraduates,
+            'maleJHSStudents' => $maleJHSStudents,
+            'femaleJHSStudents' => $femaleJHSStudents,
+            'shsMaleCount' => $maleGraduates,
+            'shsFemaleCount' => $femaleGraduates,
+            'jhsMaleCount' => $maleJHSStudents,
+            'jhsFemaleCount' => $femaleJHSStudents
+        ]);
     }
 }

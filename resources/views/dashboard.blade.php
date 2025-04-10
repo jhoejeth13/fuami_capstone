@@ -49,13 +49,13 @@
                             <option value="both" {{ $selectedFilterType === 'both' ? 'selected' : '' }}>All Data</option>
                             <option value="jhs_graduates" {{ $selectedFilterType === 'jhs_graduates' ? 'selected' : '' }}>Total Number of JHS Graduates</option>
                             <option value="graduates" {{ $selectedFilterType === 'graduates' ? 'selected' : '' }}>Total Number of SHS Graduates</option>
-                        <option value="alumni" {{ $selectedFilterType === 'alumni' ? 'selected' : '' }}>Alumni Work Status</option>
-                    </select>
-                    <input type="hidden" name="graduate_year" value="{{ $selectedGraduateYear }}">
-                    <input type="hidden" name="employment_year" value="{{ $selectedEmploymentYear }}">
-                </form>
+                            <option value="alumni" {{ $selectedFilterType === 'alumni' ? 'selected' : '' }}>Alumni Work Status</option>
+                        </select>
+                        <input type="hidden" name="graduate_year" value="{{ $selectedGraduateYear }}">
+                        <input type="hidden" name="employment_year" value="{{ $selectedEmploymentYear }}">
+                    </form>
 
-                @if ($selectedFilterType === 'both' || $selectedFilterType === 'graduates')
+                    @if ($selectedFilterType === 'both' || $selectedFilterType === 'graduates')
                         <form action="{{ route('dashboard') }}" method="GET" class="flex-grow max-w-xs">
                             <select name="graduate_year" id="graduate_year" onchange="this.form.submit()" class="w-full px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none">
                                 <option value="all" {{ $selectedGraduateYear === 'all' ? 'selected' : '' }}>All Years</option>
@@ -66,9 +66,9 @@
                             <input type="hidden" name="filter_type" value="{{ $selectedFilterType }}">
                             <input type="hidden" name="employment_year" value="{{ $selectedEmploymentYear }}">
                         </form>
-                @endif
+                    @endif
 
-                @if ($selectedFilterType === 'both' || $selectedFilterType === 'alumni')
+                    @if ($selectedFilterType === 'both' || $selectedFilterType === 'alumni')
                         <form action="{{ route('dashboard') }}" method="GET" class="flex-grow max-w-xs">
                             <select name="employment_year" id="employment_year" onchange="this.form.submit()" class="w-full px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none">
                                 <option value="all" {{ $selectedEmploymentYear === 'all' ? 'selected' : '' }}>All Years</option>
@@ -84,27 +84,27 @@
                     <a href="{{ route('dashboard') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         <i class="fas fa-sync-alt mr-2"></i> Reset
                     </a>
-                    </div>
-            </div>
-            </div>
-
-            <!-- Print Content Container -->
-            <div class="print-content">
-                <div class="print-only">
-                    <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">FUAMI School Repository Analytics Report</h1>
-                    <p class="text-sm text-center text-gray-600 mb-6">Generated on {{ date('F d, Y') }}</p>
                 </div>
+            </div>
+        </div>
 
-                <!-- Cards Section -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Print Content Container -->
+        <div class="print-content">
+            <div class="print-only">
+                <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">FUAMI School Repository Analytics Report</h1>
+                <p class="text-sm text-center text-gray-600 mb-6">Generated on {{ date('F d, Y') }}</p>
+            </div>
+
+            <!-- Cards Section -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <!-- JHS Total Card (Conditional) -->
                 @if ($selectedFilterType === 'both' || $selectedFilterType === 'jhs_graduates')
                     <div class="bg-white overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
                         <div class="border-b border-gray-100 px-6 py-4">
                             <h3 class="font-semibold text-gray-700">Total FUAMI JHS Graduates
-                                            @if ($selectedGraduateYear !== 'all')
+                                @if ($selectedGraduateYear !== 'all')
                                     <span class="text-sm font-normal text-gray-500">({{ $selectedGraduateYear }})</span>
-                                            @endif
+                                @endif
                             </h3>
                         </div>
                         <div class="p-6 flex items-center justify-between">
@@ -119,9 +119,9 @@
                             </div>
                             <div class="hidden md:block">
                                 <i class="fas fa-chart-line text-5xl text-gray-200"></i>
-                                        </div>
-                                        </div>
-                                    </div>
+                            </div>
+                        </div>
+                    </div>
                 @endif
 
                 <!-- Total SHS Graduates Card (Conditional) -->
@@ -138,7 +138,7 @@
                             <div class="flex items-center">
                                 <div class="rounded-full bg-blue-100 p-4 mr-4">
                                     <i class="fas fa-graduation-cap text-blue-600 text-2xl"></i>
-                                    </div>
+                                </div>
                                 <div>
                                     <div class="text-3xl font-bold text-gray-800">{{ $totalGraduates }}</div>
                                     <div class="text-sm text-gray-500">Total Records</div>
@@ -146,26 +146,26 @@
                             </div>
                             <div class="hidden md:block">
                                 <i class="fas fa-chart-line text-5xl text-gray-200"></i>
-                                </div>
                             </div>
                         </div>
-                    @endif
+                    </div>
+                @endif
 
-                    <!-- Total Employment Card (Conditional) -->
-                    @if ($selectedFilterType === 'both' || $selectedFilterType === 'alumni')
+                <!-- Total Employment Card (Conditional) -->
+                @if ($selectedFilterType === 'both' || $selectedFilterType === 'alumni')
                     <div class="bg-white overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
                         <div class="border-b border-gray-100 px-6 py-4">
                             <h3 class="font-semibold text-gray-700">SHS Alumni Work Status
-                                            @if ($selectedEmploymentYear !== 'all')
+                                @if ($selectedEmploymentYear !== 'all')
                                     <span class="text-sm font-normal text-gray-500">({{ $selectedEmploymentYear }})</span>
-                                            @endif
+                                @endif
                             </h3>
-                                        </div>
+                        </div>
                         <div class="p-6 flex items-center justify-between">
                             <div class="flex items-center">
                                 <div class="rounded-full bg-green-100 p-4 mr-4">
                                     <i class="fas fa-briefcase text-green-600 text-2xl"></i>
-                                        </div>
+                                </div>
                                 <div>
                                     <div class="text-3xl font-bold text-gray-800">{{ $totalAlumni }}</div>
                                     <div class="text-sm text-gray-500">Total Responses</div>
@@ -173,9 +173,9 @@
                             </div>
                             <div class="hidden md:block">
                                 <i class="fas fa-chart-bar text-5xl text-gray-200"></i>
-                                </div>
                             </div>
                         </div>
+                    </div>
 
                     <!-- JHS Alumni Work Status Card -->
                     <div class="bg-white overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
@@ -201,10 +201,10 @@
                             </div>
                         </div>
                     </div>
-                    @endif
-                </div>
+                @endif
+            </div>
 
-                <!-- Charts Section -->
+            <!-- Charts Section -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <!-- JHS Gender Distribution Chart (Conditional) -->
                 @if ($selectedFilterType === 'both' || $selectedFilterType === 'jhs_graduates')
@@ -217,13 +217,27 @@
                             </h3>
                         </div>
                         <div class="p-6">
-                            <canvas id="jhsGenderChart" width="400" height="300"></canvas>
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="flex items-center">
+                                    <span class="w-4 h-4 bg-blue-500 mr-2 rounded-full"></span>
+                                    <span class="text-gray-700 font-medium">Male</span>
+                                    <span class="ml-2 text-blue-600 font-bold">({{ $jhsMaleCount }})</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-4 h-4 bg-pink-500 mr-2 rounded-full"></span>
+                                    <span class="text-gray-700 font-medium">Female</span>
+                                    <span class="ml-2 text-pink-600 font-bold">({{ $jhsFemaleCount }})</span>
+                                </div>
+                            </div>
+                            <div class="h-[300px]">
+                                <canvas id="jhsGenderChart" class="w-full h-full"></canvas>
+                            </div>
                         </div>
                     </div>
                 @endif
 
                 <!-- SHS Gender Distribution Chart (Conditional) -->
-                    @if ($selectedFilterType === 'both' || $selectedFilterType === 'graduates')
+                @if ($selectedFilterType === 'both' || $selectedFilterType === 'graduates')
                     <div class="bg-white overflow-hidden rounded-xl shadow-md">
                         <div class="border-b border-gray-100 px-6 py-4">
                             <h3 class="font-semibold text-gray-700">SHS Graduates Gender Distribution
@@ -233,13 +247,27 @@
                             </h3>
                         </div>
                         <div class="p-6">
-                            <canvas id="genderChart" width="400" height="300"></canvas>
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="flex items-center">
+                                    <span class="w-4 h-4 bg-blue-500 mr-2 rounded-full"></span>
+                                    <span class="text-gray-700 font-medium">Male</span>
+                                    <span class="ml-2 text-blue-600 font-bold">({{ $shsMaleCount }})</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-4 h-4 bg-pink-500 mr-2 rounded-full"></span>
+                                    <span class="text-gray-700 font-medium">Female</span>
+                                    <span class="ml-2 text-pink-600 font-bold">({{ $shsFemaleCount }})</span>
+                                </div>
+                            </div>
+                            <div class="h-[300px]">
+                                <canvas id="genderChart" class="w-full h-full"></canvas>
+                            </div>
                         </div>
-                        </div>
-                    @endif
+                    </div>
+                @endif
 
-                    <!-- Employment Status Chart (Conditional) -->
-                    @if ($selectedFilterType === 'both' || $selectedFilterType === 'alumni')
+                <!-- Employment Status Chart (Conditional) -->
+                @if ($selectedFilterType === 'both' || $selectedFilterType === 'alumni')
                     <div class="bg-white overflow-hidden rounded-xl shadow-md">
                         <div class="border-b border-gray-100 px-6 py-4">
                             <h3 class="font-semibold text-gray-700">SHS Alumni Work Status Distribution
@@ -266,7 +294,7 @@
                             <canvas id="jhsEmploymentChart" width="400" height="300"></canvas>
                         </div>
                     </div>
-                    @endif
+                @endif
             </div>
         </div>
     </div>

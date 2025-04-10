@@ -1,24 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="bg-gray-50 min-h-screen py-6">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-indigo-600">
-                <h1 class="text-xl font-bold text-white">Edit SHS Graduate Tracer Response</h1>
-            </div>
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Edit Tracer Study Response</h2>
 
-            <div class="p-6">
     @if(session('success'))
-                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded" role="alert">
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
             {{ session('success') }}
         </div>
     @endif
 
         @if($errors->any())
-                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded" role="alert">
-                        <div class="font-bold">Please fix the following errors:</div>
-                        <ul class="list-disc list-inside">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <ul>
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -26,79 +21,88 @@
             </div>
         @endif
 
-                <form action="{{ route('tracer.update', $response->id) }}" method="POST" class="space-y-6">
+        <form action="{{ route('tracer.update', $response->id) }}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+              x-data="{ employmentStatus: '{{ old('employment_status', $response->employment_status) }}', organizationType: '{{ old('organization_type', $response->organization_type) }}', occupationalClassification: '{{ old('occupational_classification', $response->occupational_classification) }}' }">
         @csrf
         @method('PUT')
         
-                    <!-- Personal Information Section -->
-                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                        <h2 class="text-lg font-medium text-gray-900 mb-4">Personal Information</h2>
-                        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                            <div class="sm:col-span-2">
-                                <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+            <!-- Personal Information -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-4">Personal Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="first_name">
+                            First Name
+                        </label>
                         <input type="text" name="first_name" id="first_name" value="{{ old('first_name', $response->first_name) }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="middle_name" class="block text-sm font-medium text-gray-700">Middle Name</label>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="middle_name">
+                            Middle Name
+                        </label>
                         <input type="text" name="middle_name" id="middle_name" value="{{ old('middle_name', $response->middle_name) }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name</label>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="last_name">
+                            Last Name
+                        </label>
                         <input type="text" name="last_name" id="last_name" value="{{ old('last_name', $response->last_name) }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
-
-                            <div class="sm:col-span-1">
-                                <label for="suffix" class="block text-sm font-medium text-gray-700">Suffix</label>
-                                <select name="suffix" id="suffix" 
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="suffix">
+                            Suffix
+                        </label>
+                        <select name="suffix" id="suffix" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                             @foreach($suffixOptions as $value => $label)
-                                        <option value="{{ $value }}" {{ old('suffix', $response->suffix) == $value ? 'selected' : '' }}>{{ $label }}</option>
+                                <option value="{{ $value }}" {{ old('suffix', $response->suffix) == $value ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
-
-                            <div class="sm:col-span-1">
-                                <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
-                                <select name="gender" id="gender" 
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="age">
+                            Age
+                        </label>
+                        <input type="number" name="age" id="age" value="{{ old('age', $response->age) }}"
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="gender">
+                            Gender
+                        </label>
+                        <select name="gender" id="gender" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                             <option value="Male" {{ old('gender', $response->gender) == 'Male' ? 'selected' : '' }}>Male</option>
                             <option value="Female" {{ old('gender', $response->gender) == 'Female' ? 'selected' : '' }}>Female</option>
                         </select>
                     </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="birthdate" class="block text-sm font-medium text-gray-700">Date of Birth</label>
-                                <input type="date" name="birthdate" id="birthdate" 
-                                    value="{{ old('birthdate', $response->birthdate ? date('Y-m-d', strtotime($response->birthdate)) : '') }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                            </div>
-
-                            <div class="sm:col-span-1">
-                                <label for="age" class="block text-sm font-medium text-gray-700">Age</label>
-                                <input type="number" name="age" id="age" value="{{ old('age', $response->age) }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="birthdate">
+                            Birthdate
+                        </label>
+                        <input type="date" name="birthdate" id="birthdate" value="{{ old('birthdate', $response->birthdate ? $response->birthdate->format('Y-m-d') : '') }}"
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="civil_status" class="block text-sm font-medium text-gray-700">Civil Status</label>
-                                <select name="civil_status" id="civil_status" 
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="civil_status">
+                            Civil Status
+                        </label>
+                        <select name="civil_status" id="civil_status" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                             <option value="Single" {{ old('civil_status', $response->civil_status) == 'Single' ? 'selected' : '' }}>Single</option>
                             <option value="Married" {{ old('civil_status', $response->civil_status) == 'Married' ? 'selected' : '' }}>Married</option>
                             <option value="Widowed" {{ old('civil_status', $response->civil_status) == 'Widowed' ? 'selected' : '' }}>Widowed</option>
                             <option value="Separated" {{ old('civil_status', $response->civil_status) == 'Separated' ? 'selected' : '' }}>Separated</option>
                         </select>
                     </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="religion" class="block text-sm font-medium text-gray-700">Religion</label>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="religion">
+                            Religion
+                        </label>
                         <select name="religion" id="religion" 
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                onchange="handleReligionChange()">
                             <option value="">Select Religion</option>
                             <option value="Roman Catholic" {{ old('religion', $response->religion) == 'Roman Catholic' ? 'selected' : '' }}>Roman Catholic</option>
@@ -113,122 +117,115 @@
                         </select>
                         <input type="text" name="religion_other" id="religion_other"
                                value="{{ !in_array(old('religion', $response->religion), ['Roman Catholic', 'Christian', 'Islam', 'Iglesia ni Cristo', 'Seventh-day Adventist', 'Baptist', 'Born Again', "Jehovah's Witness"]) ? old('religion', $response->religion) : '' }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2"
                                placeholder="Please specify religion"
                                style="display: none;">
                     </div>
                 </div>
             </div>
 
-                    <!-- Address Information Section -->
-                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                        <h2 class="text-lg font-medium text-gray-900 mb-4">Address Information</h2>
-                        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                            <div class="sm:col-span-6">
-                                <label for="address" class="block text-sm font-medium text-gray-700">Street Address</label>
+            <!-- Address Information -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-4">Address Information</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="address">
+                            Address
+                        </label>
                         <input type="text" name="address" id="address" value="{{ old('address', $response->address) }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="barangay" class="block text-sm font-medium text-gray-700">Barangay</label>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="barangay">
+                            Barangay
+                        </label>
                         <input type="text" name="barangay" id="barangay" value="{{ old('barangay', $response->barangay) }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="municipality" class="block text-sm font-medium text-gray-700">Municipality</label>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="municipality">
+                            Municipality
+                        </label>
                         <input type="text" name="municipality" id="municipality" value="{{ old('municipality', $response->municipality) }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
-
-                            <div class="sm:col-span-2">
-                                <label for="province" class="block text-sm font-medium text-gray-700">Province</label>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="province">
+                            Province
+                        </label>
                         <input type="text" name="province" id="province" value="{{ old('province', $response->province) }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
-
-                            <div class="sm:col-span-3">
-                                <label for="region" class="block text-sm font-medium text-gray-700">Region</label>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="region">
+                            Region
+                        </label>
                         <input type="text" name="region" id="region" value="{{ old('region', $response->region) }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                            </div>
-
-                            <div class="sm:col-span-3">
-                                <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
-                                <input type="text" name="country" id="country" value="{{ old('country', $response->country ?? 'Philippines') }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
                 </div>
             </div>
 
-                    <!-- Education Information Section -->
-                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                        <h2 class="text-lg font-medium text-gray-900 mb-4">Education Information</h2>
-                        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                            <div class="sm:col-span-3">
-                                <label for="shs_track" class="block text-sm font-medium text-gray-700">SHS Track</label>
-                                <select name="shs_track" id="shs_track" 
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                    <option value="">Select Program</option>
-                                    <optgroup label="Academic Strand">
-                                        <option value="STEM" {{ old('shs_track', $response->shs_track) == 'STEM' ? 'selected' : '' }}>STEM - Science, Technology, Engineering, and Mathematics</option>
-                                        <option value="ABM" {{ old('shs_track', $response->shs_track) == 'ABM' ? 'selected' : '' }}>ABM - Accountancy, Business, and Management</option>
-                                        <option value="HUMSS" {{ old('shs_track', $response->shs_track) == 'HUMSS' ? 'selected' : '' }}>HUMSS - Humanities and Social Sciences</option>
-                                        <option value="GAS" {{ old('shs_track', $response->shs_track) == 'GAS' ? 'selected' : '' }}>GAS - General Academic Strand</option>
-                                    </optgroup>
-                                    <optgroup label="TVL Strand">
-                                        <option value="ICT" {{ old('shs_track', $response->shs_track) == 'ICT' ? 'selected' : '' }}>ICT - Information and Communications Technology</option>
-                                        <option value="HE" {{ old('shs_track', $response->shs_track) == 'HE' ? 'selected' : '' }}>HE - Home Economics</option>
-                                        <option value="IA" {{ old('shs_track', $response->shs_track) == 'IA' ? 'selected' : '' }}>IA - Industrial Arts</option>
-                                        <option value="AFA" {{ old('shs_track', $response->shs_track) == 'AFA' ? 'selected' : '' }}>AFA - Agri-Fishery Arts</option>
-                                    </optgroup>
-                                    <optgroup label="Other Strands">
-                                        <option value="Sports" {{ old('shs_track', $response->shs_track) == 'Sports' ? 'selected' : '' }}>Sports Track</option>
-                                        <option value="Arts and Design" {{ old('shs_track', $response->shs_track) == 'Arts and Design' ? 'selected' : '' }}>Arts and Design Track</option>
-                                    </optgroup>
+            <!-- Education Information -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-4">Education Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="shs_track">
+                            SHS Track
+                        </label>
+                        <select name="shs_track" id="shs_track" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="Academic" {{ old('shs_track', $response->shs_track) == 'Academic' ? 'selected' : '' }}>Academic</option>
+                            <option value="Technical-Vocational-Livelihood" {{ old('shs_track', $response->shs_track) == 'Technical-Vocational-Livelihood' ? 'selected' : '' }}>Technical-Vocational-Livelihood</option>
                         </select>
                     </div>
-
-                            <div class="sm:col-span-3">
-                                <label for="year_graduated" class="block text-sm font-medium text-gray-700">Year Graduated</label>
-                                <select name="year_graduated" id="year_graduated" 
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="year_graduated">
+                            Year Graduated
+                        </label>
+                        <select name="year_graduated" id="year_graduated" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                             @foreach($years as $year)
-                                        <option value="{{ $year }}" {{ old('year_graduated', $response->year_graduated) == $year ? 'selected' : '' }}>{{ $year }}</option>
+                                <option value="{{ $year }}" {{ old('year_graduated', $response->year_graduated) == $year ? 'selected' : '' }}>
+                                    {{ $year }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
                 </div>
             </div>
 
-                    <!-- Contact Information Section -->
-                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                        <h2 class="text-lg font-medium text-gray-900 mb-4">Contact Information</h2>
-                        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                            <div class="sm:col-span-3">
-                                <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+            <!-- Contact Information -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-4">Contact Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="phone">
+                            Phone Number
+                        </label>
                         <input type="text" name="phone" id="phone" value="{{ old('phone', $response->phone) }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
-
-                            <div class="sm:col-span-3">
-                                <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                            Email
+                        </label>
                         <input type="email" name="email" id="email" value="{{ old('email', $response->email) }}"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
                 </div>
             </div>
             
-                    <!-- Employment Information Section -->
-                    <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                        <h2 class="text-lg font-medium text-gray-900 mb-4">Employment Information</h2>
-                        <div class="space-y-6">
-                            <div>
-                                <label for="employment_status" class="block text-sm font-medium text-gray-700">Employment Status</label>
+            <!-- Employment Information -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-4">Employment Information</h3>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="employment_status">
+                        Employment Status *
+                    </label>
                     <select name="employment_status" id="employment_status" 
                             x-model="employmentStatus"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            required>
                         <option value="">Select Status</option>
                         <option value="Employed" {{ old('employment_status', $response->employment_status) == 'Employed' ? 'selected' : '' }}>Employed</option>
                         <option value="Unemployed" {{ old('employment_status', $response->employment_status) == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
@@ -237,24 +234,22 @@
 
                 <!-- Employed Fields -->
                 <div x-show="employmentStatus === 'Employed'" x-cloak>
-                                <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                                    <div class="sm:col-span-3">
-                                        <label for="employer_name" class="block text-sm font-medium text-gray-700">Employer Name</label>
-                                        <input type="text" name="employer_name" id="employer_name" value="{{ old('employer_name', $response->employer_name) }}"
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="employer_name">
+                                Employer Name *
+                            </label>
+                            <input type="text" name="employer_name" id="employer_name"
+                                   value="{{ old('employer_name', $response->employer_name) }}"
+                                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                         </div>
-
-                                    <div class="sm:col-span-3">
-                                        <label for="employer_address" class="block text-sm font-medium text-gray-700">Employer Address</label>
-                                        <input type="text" name="employer_address" id="employer_address" value="{{ old('employer_address', $response->employer_address) }}"
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                        </div>
-
-                                    <div class="sm:col-span-3">
-                                        <label for="organization_type" class="block text-sm font-medium text-gray-700">Organization Type</label>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="organization_type">
+                                Organization Type *
+                            </label>
                             <select name="organization_type" id="organization_type"
                                     x-model="organizationType"
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                                 <option value="">Select Type</option>
                                 <option value="Government" {{ old('organization_type', $response->organization_type) == 'Government' ? 'selected' : '' }}>Government</option>
                                 <option value="Private Company" {{ old('organization_type', $response->organization_type) == 'Private Company' ? 'selected' : '' }}>Private Company</option>
@@ -271,16 +266,17 @@
                             <div x-show="organizationType === 'Others (please specify)'" x-cloak class="mt-2">
                                 <input type="text" name="organization_type_other" id="organization_type_other"
                                        value="{{ old('organization_type_other', $response->organization_type_other) }}"
-                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                        placeholder="Please specify organization type">
                             </div>
                         </div>
-
-                                    <div class="sm:col-span-3">
-                                        <label for="occupational_classification" class="block text-sm font-medium text-gray-700">Occupational Classification</label>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="occupational_classification">
+                                Occupational Classification *
+                            </label>
                             <select name="occupational_classification" id="occupational_classification"
                                     x-model="occupationalClassification"
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                                 <option value="">Select Classification</option>
                                 @foreach($occupationClassifications as $category => $classifications)
                                     <optgroup label="{{ $category }}">
@@ -295,30 +291,32 @@
                             <div x-show="occupationalClassification === 'Others (please specify)'" x-cloak class="mt-2">
                                 <input type="text" name="occupational_classification_other" id="occupational_classification_other"
                                        value="{{ old('occupational_classification_other', $response->occupational_classification_other) }}"
-                                                class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                        placeholder="Please specify occupational classification">
                             </div>
                         </div>
-
-                                    <div class="sm:col-span-3">
-                                        <label for="job_situation" class="block text-sm font-medium text-gray-700">Employment Type</label>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="job_situation">
+                                Employment Type *
+                            </label>
                             <select name="job_situation" id="job_situation"
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                                 <option value="">Select Type</option>
-                                            <option value="Regular" {{ old('job_situation', $response->job_situation) == 'Regular' ? 'selected' : '' }}>Regular</option>
-                                            <option value="Contractual" {{ old('job_situation', $response->job_situation) == 'Contractual' ? 'selected' : '' }}>Contractual</option>
-                                            <option value="Probationary" {{ old('job_situation', $response->job_situation) == 'Probationary' ? 'selected' : '' }}>Probationary</option>
-                                            <option value="Project-based" {{ old('job_situation', $response->job_situation) == 'Project-based' ? 'selected' : '' }}>Project-based</option>
-                                            <option value="Permanent" {{ old('job_situation', $response->job_situation) == 'Permanent' ? 'selected' : '' }}>Permanent</option>
-                                            <option value="Part-time" {{ old('job_situation', $response->job_situation) == 'Part-time' ? 'selected' : '' }}>Part-time</option>
+                                <option value="Regular" {{ old('employment_type', $response->employment_type) == 'Regular' ? 'selected' : '' }}>Regular</option>
+                                <option value="Contractual" {{ old('employment_type', $response->employment_type) == 'Contractual' ? 'selected' : '' }}>Contractual</option>
+                                <option value="Probationary" {{ old('employment_type', $response->employment_type) == 'Probationary' ? 'selected' : '' }}>Probationary</option>
+                                <option value="Project-based" {{ old('employment_type', $response->employment_type) == 'Project-based' ? 'selected' : '' }}>Project-based</option>
+                                <option value="Permanent" {{ old('employment_type', $response->employment_type) == 'Permanent' ? 'selected' : '' }}>Permanent</option>
+                                <option value="Part-time" {{ old('employment_type', $response->employment_type) == 'Part-time' ? 'selected' : '' }}>Part-time</option>
                             </select>
                         </div>
-
-                                    <div class="sm:col-span-3">
-                                        <label for="years_in_company" class="block text-sm font-medium text-gray-700">Years in Company</label>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="years_in_company">
+                                Years in Company
+                            </label>
                             <input type="text" name="years_in_company" id="years_in_company"
                                    value="{{ old('years_in_company', $response->years_in_company) }}"
-                                            class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                    placeholder="e.g. 2 years">
                         </div>
                     </div>
@@ -327,30 +325,25 @@
                 <!-- Unemployed Fields -->
                 <div x-show="employmentStatus === 'Unemployed'" x-cloak>
                     <div>
-                                    <label for="unemployment_reason" class="block text-sm font-medium text-gray-700">Reason for Unemployment</label>
-                                    <textarea name="unemployment_reason" id="unemployment_reason" rows="4"
-                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">{{ old('unemployment_reason', $response->unemployment_reason) }}</textarea>
-                                </div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="unemployment_reason">
+                            Reason for Unemployment
+                        </label>
+                        <textarea name="unemployment_reason" id="unemployment_reason"
+                                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                  rows="3">{{ old('unemployment_reason', $response->unemployment_reason) }}</textarea>
                     </div>
                 </div>
             </div>
 
-                    <div class="flex justify-between">
-                        <a href="{{ route('tracer-responses.index') }}" 
-                           class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                           title="Back to List">
-                            <i class="fas fa-arrow-left mr-2"></i> Back to List
-                        </a>
-
-                        <button type="submit" 
-                                class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                title="Save Changes">
-                            <i class="fas fa-save mr-2"></i> Save Changes
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Update Response
                 </button>
-                    </div>
-                </form>
+                <a href="{{ route('tracer-responses.index') }}" class="text-gray-600 hover:text-gray-800">
+                    Cancel
+                </a>
             </div>
-        </div>
+        </form>
         </div>
 </div>
 
@@ -360,15 +353,14 @@
 </style>
 @endpush
 
-@push('scripts')
 <script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('formData', () => ({
-        employmentStatus: '{{ old('employment_status', $response->employment_status) }}',
-        organizationType: '{{ old('organization_type', $response->organization_type) }}',
-        occupationalClassification: '{{ old('occupational_classification', $response->occupational_classification) }}',
-    }))
-})
+// document.addEventListener('alpine:init', () => {
+//     Alpine.data('formData', () => ({
+//         employmentStatus: '{{ old('employment_status', $response->employment_status) }}',
+//         organizationType: '{{ old('organization_type', $response->organization_type) }}',
+//         occupationalClassification: '{{ old('occupational_classification', $response->occupational_classification) }}',
+//     }))
+// })
 
 function handleReligionChange() {
     const religionSelect = document.getElementById('religion');
@@ -388,5 +380,4 @@ document.addEventListener('DOMContentLoaded', function() {
     handleReligionChange();
 });
 </script>
-@endpush
 @endsection

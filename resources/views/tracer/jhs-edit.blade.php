@@ -330,27 +330,91 @@
 
 @section('scripts')
 <script>
+    let savedEmployedValues = null;
+
     function toggleEmploymentFields() {
         const status = document.getElementById('employment_status').value;
         const employedFields = document.getElementById('employed_fields');
         const unemployedFields = document.getElementById('unemployed_fields');
         
+        // If we're switching away from employed and haven't saved values yet
+        if (status !== 'Employed' && !employedFields.classList.contains('hidden') && !savedEmployedValues) {
+            // Save all employed field values
+            savedEmployedValues = {};
+            const fields = [
+                'employer_name',
+                'employer_address',
+                'organization_type',
+                'organization_type_other',
+                'occupational_classification',
+                'occupational_classification_other',
+                'job_situation',
+                'years_in_company'
+            ];
+            
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    if (field.tagName === 'SELECT') {
+                        savedEmployedValues[fieldId] = {
+                            value: field.value,
+                            selectedIndex: field.selectedIndex
+                        };
+                    } else {
+                        savedEmployedValues[fieldId] = field.value;
+                    }
+                }
+            });
+        }
+        
+        // Toggle visibility
         if (status === 'Employed') {
             employedFields.classList.remove('hidden');
             unemployedFields.classList.add('hidden');
+            
+            // Restore saved values if they exist
+            if (savedEmployedValues) {
+                Object.keys(savedEmployedValues).forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        if (field.tagName === 'SELECT') {
+                            field.selectedIndex = savedEmployedValues[fieldId].selectedIndex;
+                            field.value = savedEmployedValues[fieldId].value;
+                            // Trigger change events for dependent fields
+                            if (fieldId === 'organization_type') {
+                                toggleOrgTypeOther();
+                            } else if (fieldId === 'occupational_classification') {
+                                toggleOccClassOther();
+                            }
+                        } else {
+                            field.value = savedEmployedValues[fieldId];
+                        }
+                    }
+                });
+            }
         } else if (status === 'Unemployed') {
             employedFields.classList.add('hidden');
             unemployedFields.classList.remove('hidden');
+        } else {
+            employedFields.classList.add('hidden');
+            unemployedFields.classList.add('hidden');
         }
     }
 
     function toggleOrgTypeOther() {
         const orgTypeSelect = document.getElementById('organization_type');
         const otherContainer = document.getElementById('org_type_other_container');
+        const otherInput = document.getElementById('organization_type_other');
         
         if (orgTypeSelect.value === 'Other') {
             otherContainer.classList.remove('hidden');
-    } else {
+            // Don't override the value if it's already set
+            if (!otherInput.value && otherInput._previousValue) {
+                otherInput.value = otherInput._previousValue;
+            }
+        } else {
+            // Store the current value before hiding
+            otherInput._previousValue = otherInput.value;
             otherContainer.classList.add('hidden');
         }
     }
@@ -358,10 +422,17 @@
     function toggleOccClassOther() {
         const occClassSelect = document.getElementById('occupational_classification');
         const otherContainer = document.getElementById('occ_class_other_container');
+        const otherInput = document.getElementById('occupational_classification_other');
         
         if (occClassSelect.value === 'Other') {
             otherContainer.classList.remove('hidden');
+            // Don't override the value if it's already set
+            if (!otherInput.value && otherInput._previousValue) {
+                otherInput.value = otherInput._previousValue;
+            }
         } else {
+            // Store the current value before hiding
+            otherInput._previousValue = otherInput.value;
             otherContainer.classList.add('hidden');
         }
     }

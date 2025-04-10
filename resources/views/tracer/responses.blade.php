@@ -1,13 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
+<div class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 space-y-6">
         <!-- Page Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">SHS Graduate Tracer Study Responses
-            </h1>
-            <p class="text-gray-600">Track and manage alumni graduates information</p>
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">SHS Graduate Tracer Study</h1>
+                    <p class="text-gray-600 mt-2">Track and manage alumni graduates information</p>
+                </div>
+            </div>
         </div>
         
         <!-- Notification Messages -->
@@ -38,21 +41,24 @@
         @endif
 
         <!-- Filter and Control Panel -->
-        <div class="bg-white rounded-lg shadow-md mb-8 overflow-hidden">
-            <div class="p-6 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">Filters & Controls</h2>
-                <form method="GET" action="{{ url()->current() }}" class="flex flex-wrap gap-6 items-end">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-md">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800">Filters & Controls</h2>
+                    <span class="text-sm text-gray-500">{{ $responses->firstItem() ?? 0 }} - {{ $responses->lastItem() ?? 0 }} of {{ $responses->total() }} results</span>
+                </div>
+                <form method="GET" action="{{ url()->current() }}" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     <div class="space-y-2">
                         <label for="search" class="block text-sm font-medium text-gray-700">Search by Name</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
+                        <div class="relative">
                             <input type="text" 
                                    name="search" 
                                    id="search" 
                                    value="{{ request('search') }}"
                                    placeholder="Enter student name..."
-                                   class="block w-64 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                                   class="block w-full rounded-lg border-gray-200 pr-10 pl-4 py-3 text-sm focus:border-blue-500 focus:ring-blue-500 focus:ring-1">
                             <button type="submit" 
-                                    class="absolute inset-y-0 right-0 px-3 flex items-center bg-indigo-500 text-white rounded-r-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
@@ -89,9 +95,20 @@
         <!-- Response Cards -->
         <div class="space-y-6">
             @forelse($responses as $index => $response)
-                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-md hover:border-blue-200">
+                    <div class="relative overflow-hidden">
+                        <div class="absolute top-0 right-0 pt-4 pr-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $response->employment_status === 'Employed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                <i class="fas {{ $response->employment_status === 'Employed' ? 'fa-briefcase' : 'fa-user-graduate' }} mr-1.5"></i>
+                                {{ $response->employment_status }}
+                            </span>
+                        </div>
                     <!-- Card Header -->
-                    <div class="px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 flex justify-between items-center">
+                    <div class="px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 flex justify-between items-center relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-10">
+                            <div class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"></div>
+                            <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full transform translate-x-20 -translate-y-20"></div>
+                        </div>
                         <div>
                             <h3 class="text-xl font-bold text-white">
                                 {{ $response->first_name }} {{ $response->middle_name }} {{ $response->last_name }} {{ $response->suffix }}
@@ -103,19 +120,19 @@
                                 <span class="text-sm">{{ $response->shs_track }} Track, {{ $response->year_graduated }}</span>
                             </p>
                         </div>
-                        <div class="flex space-x-2">
+                        <div class="flex space-x-2 relative z-10">
                             @if(Auth::user() && Auth::user()->hasRole('admin'))
                                 <a href="{{ route('tracer.edit', $response->id) }}" 
-                                   class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md bg-white text-indigo-700 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    <i class="fas fa-edit mr-1.5"></i> Edit
+                                   class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm text-white text-sm font-medium rounded-lg border border-white/30 hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200">
+                                    <i class="fas fa-edit mr-2"></i> Edit
                                 </a>
-                                <form action="{{ route('tracer.destroy', $response->id) }}" method="POST" class="inline">
+                                
+                                <form action="{{ route('tracer.destroy', $response->id) }}" method="POST" class="inline-block">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" 
-                                            class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md bg-white text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                            onclick="return confirm('Are you sure you want to delete this response?')">
-                                        <i class="fas fa-trash mr-1.5"></i> Delete
+                                    <button type="submit" onclick="return confirm('Are you sure you want to delete this response?')"
+                                            class="inline-flex items-center px-4 py-2 bg-red-500/20 backdrop-blur-sm text-white text-sm font-medium rounded-lg border border-red-400/30 hover:bg-red-500/30 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all duration-200">
+                                        <i class="fas fa-trash mr-2"></i> Delete
                                     </button>
                                 </form>
                             @endif
@@ -123,11 +140,14 @@
                             </div>
 
                     <!-- Card Content -->
-                    <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
                         <!-- Personal Details -->
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                                <i class="fas fa-user-circle text-indigo-500 mr-2"></i> Personal Details
+                        <div class="bg-gray-50/50 rounded-xl p-5 border border-gray-100">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <span class="bg-indigo-100 text-indigo-600 p-2 rounded-lg mr-3">
+                                    <i class="fas fa-user-circle"></i>
+                                </span>
+                                Personal Details
                             </h4>
                             <div class="space-y-3 text-gray-700">
                                 <div class="flex items-center">
@@ -160,10 +180,13 @@
                             </div>
                         </div>
 
-                        <!-- Employment Details -->
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                                <i class="fas fa-briefcase text-indigo-500 mr-2"></i> Employment Details
+                        <!-- Employment Information -->
+                        <div class="bg-gray-50/50 rounded-xl p-5 border border-gray-100">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <span class="bg-green-100 text-green-600 p-2 rounded-lg mr-3">
+                                    <i class="fas fa-briefcase"></i>
+                                </span>
+                                Employment Information
                             </h4>
                             <div class="space-y-3 text-gray-700">
                                 @if($response->employment_status === 'Employed')
@@ -201,9 +224,12 @@
                         </div>
 
                         <!-- Contact Information -->
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                                <i class="fas fa-address-card text-indigo-500 mr-2"></i> Contact Information
+                        <div class="bg-gray-50/50 rounded-xl p-5 border border-gray-100">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <span class="bg-blue-100 text-blue-600 p-2 rounded-lg mr-3">
+                                    <i class="fas fa-address-card"></i>
+                                </span>
+                                Contact Information
                             </h4>
                             <div class="space-y-3 text-gray-700">
                                 <div class="flex items-center">
@@ -234,46 +260,93 @@
             @endforelse
     </div>
 
-        <!-- Improved Pagination -->
-        <div class="mt-8 flex justify-center">
-            <div class="inline-flex rounded-md shadow">
-                <nav class="flex items-center rounded-md divide-x divide-gray-200">
-            {{-- Previous Page Link --}}
-            @if ($responses->onFirstPage())
-                        <span class="relative inline-flex items-center px-4 py-2 bg-white text-sm font-medium text-gray-300 cursor-not-allowed rounded-l-md">
-                            <i class="fas fa-chevron-left mr-1.5"></i> Previous
-                </span>
-            @else
-                        <a href="{{ $responses->previousPageUrl() }}" class="relative inline-flex items-center px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-l-md">
-                            <i class="fas fa-chevron-left mr-1.5"></i> Previous
-                </a>
-            @endif
+        <!-- Pagination -->
+        <div class="mt-8">
+            <nav class="flex items-center justify-between" aria-label="Pagination">
+                <div class="flex-1 flex justify-between sm:hidden">
+                    @if ($responses->onFirstPage())
+                        <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-400 bg-white border border-gray-200 cursor-not-allowed rounded-lg">
+                            <i class="fas fa-chevron-left mr-2"></i> Previous
+                        </span>
+                    @else
+                        <a href="{{ $responses->previousPageUrl() }}" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 focus:z-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                            <i class="fas fa-chevron-left mr-2"></i> Previous
+                        </a>
+                    @endif
 
-            {{-- Pagination Elements --}}
-            @php
-                $start = max(1, $responses->currentPage() - 1);
-                $end = min($responses->lastPage(), $responses->currentPage() + 2);
-            @endphp
+                    @if ($responses->hasMorePages())
+                        <a href="{{ $responses->nextPageUrl() }}" class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 focus:z-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                            Next <i class="fas fa-chevron-right ml-2"></i>
+                        </a>
+                    @else
+                        <span class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-400 bg-white border border-gray-200 cursor-not-allowed rounded-lg">
+                            Next <i class="fas fa-chevron-right ml-2"></i>
+                        </span>
+                    @endif
+                </div>
 
-            @for ($i = $start; $i <= $end; $i++)
-                <a href="{{ $responses->url($i) }}" 
-                   class="{{ $responses->currentPage() == $i ? 'bg-indigo-50 text-indigo-600 relative inline-flex items-center px-4 py-2 text-sm font-medium' : 'bg-white text-gray-700 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 text-sm font-medium' }}">
-                    {{ $i }}
-                </a>
-            @endfor
+                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Showing <span class="font-medium">{{ $responses->firstItem() ?? 0 }}</span> to
+                            <span class="font-medium">{{ $responses->lastItem() ?? 0 }}</span> of
+                            <span class="font-medium">{{ $responses->total() }}</span> results
+                        </p>
+                    </div>
 
-            {{-- Next Page Link --}}
-            @if ($responses->hasMorePages())
-                <a href="{{ $responses->nextPageUrl() }}" class="relative inline-flex items-center px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-r-md">
-                    Next <i class="fas fa-chevron-right ml-1.5"></i>
-                </a>
-            @else
-                <span class="relative inline-flex items-center px-4 py-2 bg-white text-sm font-medium text-gray-300 cursor-not-allowed rounded-r-md">
-                    Next <i class="fas fa-chevron-right ml-1.5"></i>
-                </span>
-            @endif
-        </nav>
-            </div>
+                    <div>
+                        <nav class="relative z-0 inline-flex space-x-2" aria-label="Pagination">
+                            {{-- Previous Page Link --}}
+                            @if ($responses->onFirstPage())
+                                <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-400 bg-white border border-gray-200 cursor-not-allowed rounded-lg">
+                                    <i class="fas fa-chevron-left mr-2"></i>
+                                </span>
+                            @else
+                                <a href="{{ $responses->previousPageUrl() }}" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 focus:z-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                                    <i class="fas fa-chevron-left mr-2"></i>
+                                </a>
+                            @endif
+
+                            {{-- Pagination Elements --}}
+                            @php
+                                $start = max(1, $responses->currentPage() - 1);
+                                $end = min($responses->lastPage(), $responses->currentPage() + 2);
+                                
+                                if ($responses->currentPage() <= 2) {
+                                    $end = min(4, $responses->lastPage());
+                                }
+                                
+                                if ($responses->currentPage() >= $responses->lastPage() - 1) {
+                                    $start = max(1, $responses->lastPage() - 3);
+                                }
+                            @endphp
+
+                            @foreach ($responses->getUrlRange($start, $end) as $page => $url)
+                                @if ($page == $responses->currentPage())
+                                    <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg shadow-sm">
+                                        {{ $page }}
+                                    </span>
+                                @else
+                                    <a href="{{ $url }}" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 focus:z-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                                        {{ $page }}
+                                    </a>
+                                @endif
+                            @endforeach
+
+                            {{-- Next Page Link --}}
+                            @if ($responses->hasMorePages())
+                                <a href="{{ $responses->nextPageUrl() }}" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 focus:z-10 focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                                    <i class="fas fa-chevron-right ml-2"></i>
+                                </a>
+                            @else
+                                <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-400 bg-white border border-gray-200 cursor-not-allowed rounded-lg">
+                                    <i class="fas fa-chevron-right ml-2"></i>
+                                </span>
+                            @endif
+                        </nav>
+                    </div>
+                </div>
+            </nav>
         </div>
     </div>
 </div>
