@@ -597,7 +597,6 @@
                     </div>
                     <label>Date of Birth:
                         <input type="date" name="birthdate" id="birthdate" value="{{ old('birthdate') }}" required onchange="calculateAge()" pattern="\d{2}/\d{2}/\d{2}">
-                        <small>Format: MM/DD/YY</small>
                     </label>
                     <label>Age:
                         <input type="number" name="age" id="age" value="{{ old('age') }}" required readonly>
