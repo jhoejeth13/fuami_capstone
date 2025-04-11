@@ -9,6 +9,7 @@ use App\Helpers\LocationHelper;
 use Illuminate\Support\Facades\Cache;
 use App\Models\JHSTracerResponse;
 use App\Models\Juniorhighschool;
+use Illuminate\Support\Facades\Log;
 
 class TracerStudyController extends Controller
 {
@@ -88,8 +89,8 @@ class TracerStudyController extends Controller
         }
         
         // If something is wrong, go back with error
-                return redirect()->back()
-                    ->withInput()
+        return redirect()->back()
+            ->withInput()
             ->withErrors(['error' => 'Invalid graduate type selected.']);
     }
 
@@ -100,7 +101,7 @@ class TracerStudyController extends Controller
         
         if (strtolower($type) === 'jhs') {
             // Query JHS tracer responses
-            $query = \App\Models\JHSTracerResponse::query();
+            $query = JHSTracerResponse::query();
             
             // Apply search filter
             if ($request->filled('search')) {
@@ -274,7 +275,7 @@ class TracerStudyController extends Controller
     public function showJHSForm()
     {
         // Helper function to get regions and provinces
-        $regions = cache()->remember('regions', 60*24*7, function() {
+        $regions = Cache::remember('regions', 60*24*7, function() {
             return LocationHelper::getRegions();
         });
         
@@ -303,7 +304,7 @@ class TracerStudyController extends Controller
     public function showSHSForm()
     {
         // Helper function to get regions and provinces
-        $regions = cache()->remember('regions', 60*24*7, function() {
+        $regions = Cache::remember('regions', 60*24*7, function() {
             return LocationHelper::getRegions();
         });
         
@@ -385,7 +386,7 @@ class TracerStudyController extends Controller
         unset($validated['occupational_classification_other']);
         
         try {
-            \App\Models\JHSTracerResponse::create($validated);
+            JHSTracerResponse::create($validated);
             if ($request->wantsJson()) {
                 return response()->json(['success' => true, 'message' => 'JHS graduate data saved successfully!']);
             }
@@ -478,10 +479,10 @@ class TracerStudyController extends Controller
 
     public function editJHS($id)
     {
-        $response = \App\Models\JHSTracerResponse::findOrFail($id);
+        $response = JHSTracerResponse::findOrFail($id);
         
         // Helper function to get regions and provinces
-        $regions = cache()->remember('regions', 60*24*7, function() {
+        $regions = Cache::remember('regions', 60*24*7, function() {
             return LocationHelper::getRegions();
         });
 
@@ -501,7 +502,7 @@ class TracerStudyController extends Controller
 
     public function updateJHS(Request $request, $id)
     {
-        $response = \App\Models\JHSTracerResponse::findOrFail($id);
+        $response = JHSTracerResponse::findOrFail($id);
         
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
@@ -565,7 +566,7 @@ class TracerStudyController extends Controller
 
     public function destroyJHS($id)
     {
-        $response = \App\Models\JHSTracerResponse::findOrFail($id);
+        $response = JHSTracerResponse::findOrFail($id);
         $response->delete();
         
         return redirect()->route('tracer-responses.index', ['type' => 'jhs'])->with('success', 'Response deleted successfully.');
@@ -583,5 +584,33 @@ class TracerStudyController extends Controller
         // Your business logic here
         $files = scandir($path);
         return view('tracer.responses', ['files' => $files]);
+    }
+
+    public function viewLocationFiles()
+    {
+        try {
+            // Get files using the helper
+            $files = LocationHelper::getLocationFiles();
+            
+            // Filter out system files (., ..) and empty results
+            $filteredFiles = array_filter($files, function($file) {
+                return !in_array($file, ['.', '..']);
+            });
+
+            if (empty($filteredFiles)) {
+                // Log and show user-friendly error
+                Log::warning('No valid files found in locations directory');
+                return back()->with('error', 'No location data files found');
+            }
+
+            // Pass files to view
+            return view('tracer.responses', [
+                'files' => $filteredFiles
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to load location files: ' . $e->getMessage());
+            abort(500, 'Failed to process location data. Please try again later.');
+        }
     }
 }
