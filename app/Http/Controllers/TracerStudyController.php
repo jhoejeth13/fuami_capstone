@@ -570,4 +570,18 @@ class TracerStudyController extends Controller
         
         return redirect()->route('tracer-responses.index', ['type' => 'jhs'])->with('success', 'Response deleted successfully.');
     }
+
+    public function handleLocations()
+    {
+        $path = storage_path('app/locations');
+        
+        if (!file_exists($path)) {
+            Log::error("Directory missing: ".$path);
+            mkdir($path, 0755, true); // Creates if missing
+        }
+
+        // Your business logic here
+        $files = scandir($path);
+        return view('tracer.responses', ['files' => $files]);
+    }
 }
