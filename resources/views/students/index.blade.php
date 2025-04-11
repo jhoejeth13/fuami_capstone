@@ -275,7 +275,7 @@
                     @endif
                 </div>
                 <div>
-                    <div class="print-card-title">{{ $student->first_name }} {{ $student->last_name }}</div>
+                    <div class="print-card-title">{{ $student->first_name }} {{ $student->middle_name }} {{ $student->last_name }}</div>
                     <div style="font-size: 12px;">LRN: {{ $student->lrn_number }}</div>
                 </div>
             </div>
