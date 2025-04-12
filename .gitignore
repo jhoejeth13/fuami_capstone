@@ -22,3 +22,9 @@ yarn-error.log
 /.vscode
 /.zed
 .qodo
+# Block ALL files in /storage/app/locations/
+/storage/app/locations/*
+
+# Exceptions:
+!/storage/app/locations/.gitkeep       # Keep empty dir
+!/storage/app/locations/barangay.json  # Only this file
