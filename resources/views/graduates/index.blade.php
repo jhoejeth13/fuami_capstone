@@ -231,10 +231,11 @@
                 </select>
                 
                 <select id="rowsPerPage" name="perPage" class="filter-select">
-                    <option value="5" {{ request('perPage') == 5 ? 'selected' : '' }}>5 rows</option>
                     <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10 rows</option>
-                    <option value="15" {{ request('perPage') == 15 ? 'selected' : '' }}>15 rows</option>
                     <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25 rows</option>
+                    <option value="50" {{ request('perPage') == 50 ? 'selected' : '' }}>50 rows</option>
+                    <option value="100" {{ request('perPage') == 100 ? 'selected' : '' }}>100 rows</option>
+
                 </select>
             </div>
         </div>

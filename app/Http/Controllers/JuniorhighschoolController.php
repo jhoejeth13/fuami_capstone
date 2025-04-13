@@ -54,7 +54,7 @@ class JuniorhighschoolController extends Controller
             $query->where('grade_level', $grade);
         }
         
-        $perPage = request('perPage') ?? 5;
+        $perPage = request('perPage') ?? 10;
         $students = $query->paginate($perPage);
         
         // Get unique school years for filter dropdown (don't exclude dummy records here)
@@ -83,7 +83,7 @@ class JuniorhighschoolController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'lrn_number' => 'required|max:12|unique:juniorhighschool',          
+            'lrn_number' => 'nullable|max:12|unique:juniorhighschool',          
             'first_name' => 'required|max:50',
             'middle_name' => 'nullable|max:50',
             'last_name' => 'required|max:50',
@@ -95,43 +95,23 @@ class JuniorhighschoolController extends Controller
             'school_year' => 'required|max:20',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
+    
         // Handle suffix
         $validated['suffix'] = $request->suffix === 'Others' ? $request->other_suffix : $request->suffix;
-
+    
         if ($request->hasFile('photo')) {
             $validated['photo_path'] = $request->file('photo')->store('student-photos', 'public');
         }
-
+    
         Juniorhighschool::create($validated);
-
+    
         return redirect()->route('students.index')->with('success', 'Student created successfully.');
     }
-
-    public function show(Juniorhighschool $student)
-    {
-        return view('students.show', compact('student'));
-    }
-
-    public function edit(Juniorhighschool $student)
-    {
-        // Get unique school years for dropdown
-        $schoolYears = Juniorhighschool::select('school_year')
-                        ->distinct()
-                        ->orderBy('school_year', 'desc')
-                        ->pluck('school_year');
-                        
-        return view('students.edit', [
-            'student' => $student,
-            'suffixOptions' => $this->suffixOptions,
-            'schoolYears' => $schoolYears
-        ]);
-    }
-
+    
     public function update(Request $request, Juniorhighschool $student)
     {
         $validated = $request->validate([
-            'lrn_number' => 'required|max:12|unique:juniorhighschool,lrn_number,'.$student->id,
+            'lrn_number' => 'nullable|max:12|unique:juniorhighschool,lrn_number,'.$student->id,
             'first_name' => 'required|max:50',
             'middle_name' => 'nullable|max:50',
             'last_name' => 'required|max:50',
@@ -143,10 +123,10 @@ class JuniorhighschoolController extends Controller
             'school_year' => 'required|max:20',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
+    
         // Handle suffix
         $validated['suffix'] = $request->suffix === 'Others' ? $request->other_suffix : $request->suffix;
-
+    
         if ($request->hasFile('photo')) {
             // Delete old photo if exists
             if ($student->photo_path) {
@@ -154,17 +134,16 @@ class JuniorhighschoolController extends Controller
             }
             $validated['photo_path'] = $request->file('photo')->store('student-photos', 'public');
         }
-
+    
         if ($request->has('remove_photo') && $student->photo_path) {
             Storage::disk('public')->delete($student->photo_path);
             $validated['photo_path'] = null;
         }
-
+    
         $student->update($validated);
-
+    
         return redirect()->route('students.index')->with('success', 'Student updated successfully.');
     }
-
     public function destroy(Juniorhighschool $student)
     {
         if ($student->photo_path) {
@@ -174,7 +153,6 @@ class JuniorhighschoolController extends Controller
 
         return redirect()->route('students.index')->with('success', 'Student deleted successfully.');
     }
-
     public function print()
     {
         $query = Juniorhighschool::query();

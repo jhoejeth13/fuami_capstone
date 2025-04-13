@@ -39,7 +39,7 @@ class GraduateController extends Controller
         }
     
         // Paginate results
-        $perPage = $request->input('perPage', 5); // Default to 5 rows per page
+        $perPage = $request->input('perPage', 10); // Default to 5 rows per page
         $graduates = $query->paginate($perPage);
     
         // Append query parameters to pagination links

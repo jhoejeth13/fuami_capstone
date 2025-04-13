@@ -534,7 +534,7 @@
     <div id="formModal" class="form-modal">
         <div class="form-content">
             <button class="close-btn" onclick="closeForm()">&times;</button>
-            <h1 class="form-title">FUAMI Graduate Tracer Form</h1>
+            <h1 class="form-title">FUAMI Senior Highschool Graduate Tracer Form</h1>
             
             <div class="form-note">
                 <p>
