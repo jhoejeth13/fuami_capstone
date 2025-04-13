@@ -4,224 +4,204 @@ namespace App\Helpers;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Arr;
 
 class LocationHelper
 {
-    private static function ensureDirectoryExists()
+    private const LOCATIONS_DIR = 'app/locations';
+    private const REQUIRED_FILES = [
+        'region.json',
+        'province.json',
+        'city.json',
+        'barangay.json'
+    ];
+
+    /**
+     * Ensure the locations directory exists and is accessible
+     */
+    private static function ensureDirectoryExists(): string
     {
-        $path = storage_path('app/locations');
+        $path = storage_path(self::LOCATIONS_DIR);
         
-        if (!file_exists($path)) {
-            Log::warning('Locations directory missing, attempting creation', ['path' => $path]);
-            
-            if (!mkdir($path, 0755, true) && !is_dir($path)) {
-                $error = error_get_last();
-                Log::error('Directory creation failed', [
-                    'path' => $path,
-                    'error' => $error['message'] ?? 'Unknown error'
-                ]);
-                throw new \RuntimeException("Failed to create directory: {$path}. Error: {$error['message']}");
+        try {
+            if (!file_exists($path)) {
+                if (!Storage::makeDirectory(self::LOCATIONS_DIR)) {
+                    throw new \RuntimeException("Directory creation failed: {$path}");
+                }
             }
-        }
-        
-        if (!is_readable($path)) {
-            Log::error('Directory not readable', [
+
+            if (!is_readable($path)) {
+                throw new \RuntimeException("Directory not readable: {$path}");
+            }
+
+            return $path;
+        } catch (\Exception $e) {
+            Log::error('Location directory error: ' . $e->getMessage(), [
                 'path' => $path,
-                'permissions' => substr(sprintf('%o', fileperms($path)), -4)
+                'permissions' => file_exists($path) ? substr(sprintf('%o', fileperms($path)), -4) : 'none'
             ]);
-            throw new \RuntimeException("Directory not readable: {$path}");
+            throw $e;
         }
-        
-        return $path;
     }
 
-    private static function loadJson($filename)
+    /**
+     * Load JSON file with multiple fallback options
+     */
+    private static function loadJson(string $filename): array
     {
         try {
-            $directory = self::ensureDirectoryExists();
-            $path = "{$directory}/{$filename}";
-            
-            if (!file_exists($path)) {
-                $debugInfo = [
-                    'searched_path' => $path,
-                    'directory_contents' => scandir($directory),
-                    'storage_root' => storage_path(),
-                    'time' => now()->toDateTimeString()
-                ];
+            $path = storage_path(self::LOCATIONS_DIR.'/'.$filename);
+
+            // First try using Laravel's Storage facade
+            if (Storage::exists(self::LOCATIONS_DIR.'/'.$filename)) {
+                $json = Storage::get(self::LOCATIONS_DIR.'/'.$filename);
+                $data = json_decode($json, true);
                 
-                Log::error("JSON file not found: {$filename}", $debugInfo);
-                throw new \Exception("Location data file not found: {$filename}");
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    return $data;
+                }
             }
-            
-            $json = file_get_contents($path);
-            if ($json === false) {
-                throw new \Exception("Failed to read file: {$filename}");
+
+            // Fallback to direct file access
+            if (file_exists($path)) {
+                $json = file_get_contents($path);
+                $data = json_decode($json, true);
+                
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    return $data;
+                }
+                throw new \RuntimeException("Invalid JSON in {$filename}: " . json_last_error_msg());
             }
-            
-            $data = json_decode($json, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new \Exception("Invalid JSON in {$filename}: " . json_last_error_msg());
-            }
-            
-            return $data;
-            
+
+            // Final fallback to empty array
+            Log::warning("Location file not found, returning empty array", ['file' => $filename]);
+            return [];
+
         } catch (\Exception $e) {
-            Log::critical("LocationHelper error: " . $e->getMessage(), [
-                'file' => $filename,
-                'trace' => $e->getTraceAsString()
-            ]);
-            throw $e; // Re-throw after logging
+            Log::error("LocationHelper error loading {$filename}: " . $e->getMessage());
+            return []; // Return empty array instead of throwing exception
         }
     }
 
-    public static function getRegions()
+    /**
+     * Cache frequently accessed location data
+     */
+    private static function cachedLoad(string $filename): array
     {
-        $regions = self::loadJson('region.json');
+        static $cache = [];
+        
+        if (!isset($cache[$filename])) {
+            $cache[$filename] = self::loadJson($filename);
+        }
+        
+        return $cache[$filename];
+    }
+
+    /**
+     * Find item by code in location data
+     */
+    private static function findItem(string $filename, ?string $code, string $codeField, string $nameField): string
+    {
+        if (empty($code)) {
+            return '';
+        }
+
+        $items = self::cachedLoad($filename);
+        $found = Arr::first($items, fn($item) => ($item[$codeField] ?? null) == $code);
+        
+        return $found[$nameField] ?? $code;
+    }
+
+    // Public API Methods
+
+    public static function getRegions(): array
+    {
         return array_map(function($region) {
             return [
-                'region_code' => $region['region_code'],
-                'region_name' => $region['region_name'],
+                'region_code' => $region['region_code'] ?? null,
+                'region_name' => $region['region_name'] ?? null,
                 'psgc_code' => $region['psgc_code'] ?? null
             ];
-        }, $regions);
+        }, self::cachedLoad('region.json'));
     }
 
-    public static function getProvinces()
+    public static function getProvinces(): array
     {
-        return self::loadJson('province.json');
+        return self::cachedLoad('province.json');
     }
 
-    public static function getCities()
+    public static function getCities(): array
     {
-        return self::loadJson('city.json');
+        return self::cachedLoad('city.json');
     }
 
-    public static function getBarangays()
+    public static function getBarangays(?string $cityCode = null): array
     {
-        return self::loadJson('barangay.json');
-    }
-    
-    public static function getRegionName($regionCode)
-    {
-        if (empty($regionCode)) return '';
+        $barangays = self::cachedLoad('barangay.json');
         
-        try {
-            $regions = self::getRegions();
-            foreach ($regions as $region) {
-                if ($region['region_code'] == $regionCode) {
-                    return $region['region_name'];
-                }
-            }
-        } catch (\Exception $e) {
-            Log::error("Failed to get region name", [
-                'code' => $regionCode,
-                'error' => $e->getMessage()
-            ]);
+        if ($cityCode) {
+            return array_filter($barangays, fn($barangay) => ($barangay['city_code'] ?? null) == $cityCode);
         }
         
-        return $regionCode;
+        return $barangays;
     }
-    
-    public static function getProvinceName($provinceCode)
+
+    public static function getRegionName(?string $regionCode): string
     {
-        if (empty($provinceCode)) return '';
-        
-        try {
-            $provinces = self::getProvinces();
-            foreach ($provinces as $province) {
-                if ($province['province_code'] == $provinceCode) {
-                    return $province['province_name'];
-                }
-            }
-        } catch (\Exception $e) {
-            Log::error("Failed to get province name", [
-                'code' => $provinceCode,
-                'error' => $e->getMessage()
-            ]);
-        }
-        
-        return $provinceCode;
+        return self::findItem('region.json', $regionCode, 'region_code', 'region_name');
     }
-    
-    public static function getCityName($cityCode)
+
+    public static function getProvinceName(?string $provinceCode): string
     {
-        if (empty($cityCode)) return '';
-        
-        try {
-            $cities = self::getCities();
-            foreach ($cities as $city) {
-                if ($city['city_code'] == $cityCode) {
-                    return $city['city_name'];
-                }
-            }
-        } catch (\Exception $e) {
-            Log::error("Failed to get city name", [
-                'code' => $cityCode,
-                'error' => $e->getMessage()
-            ]);
-        }
-        
-        return $cityCode;
+        return self::findItem('province.json', $provinceCode, 'province_code', 'province_name');
     }
-    
-    public static function getBarangayName($brgyCode)
+
+    public static function getCityName(?string $cityCode): string
     {
-        if (empty($brgyCode)) return '';
-        
-        try {
-            $barangays = self::getBarangays();
-            foreach ($barangays as $barangay) {
-                if ($barangay['brgy_code'] == $brgyCode) {
-                    return $barangay['brgy_name'];
-                }
-            }
-        } catch (\Exception $e) {
-            Log::error("Failed to get barangay name", [
-                'code' => $brgyCode,
-                'error' => $e->getMessage()
-            ]);
-        }
-        
-        return $brgyCode;
+        return self::findItem('city.json', $cityCode, 'city_code', 'city_name');
+    }
+
+    public static function getBarangayName(?string $brgyCode): string
+    {
+        return self::findItem('barangay.json', $brgyCode, 'brgy_code', 'brgy_name');
     }
 
     /**
      * Verify all required location files exist
      */
-    public static function verifyFiles()
+    public static function verifyFiles(): bool
     {
-        $requiredFiles = ['region.json', 'province.json', 'city.json', 'barangay.json'];
-        $missingFiles = [];
-        
-        foreach ($requiredFiles as $file) {
-            if (!file_exists(storage_path("app/locations/{$file}"))) {
-                $missingFiles[] = $file;
+        foreach (self::REQUIRED_FILES as $file) {
+            if (!Storage::exists(self::LOCATIONS_DIR.'/'.$file) && !file_exists(storage_path(self::LOCATIONS_DIR.'/'.$file))) {
+                Log::error('Missing location file', ['file' => $file]);
+                return false;
             }
         }
-        
-        if (!empty($missingFiles)) {
-            Log::error('Missing location data files', ['files' => $missingFiles]);
-            return false;
-        }
-        
         return true;
     }
 
-    public static function getLocationFiles()
-{
-    try {
-        $path = self::ensureDirectoryExists();
-        
-        $files = scandir($path);
-        if ($files === false) {
-            throw new \RuntimeException("Failed to scan directory: {$path}");
+    /**
+     * Get list of available location files
+     */
+    public static function getLocationFiles(): array
+    {
+        try {
+            $path = self::ensureDirectoryExists();
+            $files = array_diff(scandir($path), ['.', '..']);
+            return array_values($files);
+        } catch (\Exception $e) {
+            Log::error('File listing failed: '.$e->getMessage());
+            return [];
         }
-        
-        return array_values(array_diff($files, ['.', '..'])); // Remove . and ..
-        
-    } catch (\Exception $e) {
-        Log::error('LocationHelper file scan failed: ' . $e->getMessage());
-        return []; // Return empty array on failure
     }
-}
+
+    /**
+     * Preload all location data into cache
+     */
+    public static function warmupCache(): void
+    {
+        foreach (self::REQUIRED_FILES as $file) {
+            self::cachedLoad($file);
+        }
+    }
 }
