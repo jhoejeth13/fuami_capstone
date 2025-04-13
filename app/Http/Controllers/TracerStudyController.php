@@ -123,7 +123,7 @@ class TracerStudyController extends Controller
             $femaleCount = JHSTracerResponse::where('gender', 'Female')->count();
 
             // Paginate the results
-            $perPage = $request->input('perPage', 5);
+            $perPage = $request->input('perPage', 10);
             $responses = $query->paginate($perPage)->appends($request->except('page'));
             
             // Use JHS responses view
@@ -159,7 +159,7 @@ class TracerStudyController extends Controller
             $query->where('graduate_type', 'SHS');
             
             // Paginate the results
-            $perPage = $request->input('perPage', 5);
+            $perPage = $request->input('perPage', 10);
             $responses = $query->paginate($perPage)->appends($request->except('page'));
             
             // Use SHS responses view

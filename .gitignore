@@ -26,5 +26,6 @@ yarn-error.log
 /storage/app/locations/*
 
 # Exceptions:
+!storage/app/locations/*.json
 !/storage/app/locations/.gitkeep       # Keep empty dir
 !/storage/app/locations/barangay.json  # Only this file

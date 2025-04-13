@@ -80,10 +80,10 @@
                             <label for="perPage" class="block text-sm font-medium text-gray-700">Results Per Page</label>
                         <select id="perPage" name="perPage" onchange="this.form.submit()"
                                 class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                                <option value="5" {{ request('perPage') == 5 ? 'selected' : '' }}>5</option>
                                 <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
-                                <option value="15" {{ request('perPage') == 15 ? 'selected' : '' }}>15</option>
                                 <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25</option>
+                                <option value="50" {{ request('perPage') == 50 ? 'selected' : '' }}>50</option>
+                                <option value="100" {{ request('perPage') == 100 ? 'selected' : '' }}>100</option>
                             </select>
                     </div>
 
