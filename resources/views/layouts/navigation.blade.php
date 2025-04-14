@@ -182,7 +182,7 @@
             <div class="flex items-center justify-between p-5 border-b border-blue-700">
                 <div class="flex items-center">
                     <img src="{{ asset('images/icon.jpg') }}" alt="Logo" class="sidebar-logo h-10 w-10 rounded-lg">
-                    <span class="sidebar-header-text ml-3 text-lg font-semibold">FUAMI REPO</span>
+                    <span class="sidebar-header-text ml-3 text-lg font-semibold">FUAMI</span>
                 </div>
                 <button id="toggleSidebar" class="text-blue-200 hover:text-white focus:outline-none">
                     <i class="fas fa-bars text-xl"></i>
@@ -263,7 +263,7 @@
                         <button id="mobileToggle" class="mr-4 text-gray-600 hover:text-blue-600 md:hidden">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
-                        <h1 class="text-lg md:text-xl font-semibold text-gray-800 truncate">@yield('title', 'FUAMI Alumni and Graduate Records Hub')</h1>
+                        <h1 class="text-lg md:text-xl font-semibold text-gray-800 truncate">@yield('title', 'FUAMI Graduates and Alumni Database System')</h1>
                     </div>
                     
                     <!-- User Profile -->

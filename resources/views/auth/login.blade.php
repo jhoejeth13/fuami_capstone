@@ -190,7 +190,7 @@
 
         <!-- Right Side: Login Form Section -->
         <div class="form-section">
-            <h2>FUAMI Alumni and Graduate Records Hub</h2>
+            <h2>FUAMI Graduates and Alumni Database System</h2>
             <form method="POST" action="{{ route('login') }}">
                 @csrf
 
