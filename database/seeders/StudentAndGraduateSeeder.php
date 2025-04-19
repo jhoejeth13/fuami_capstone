@@ -15,7 +15,7 @@ class StudentAndGraduateSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create();
+        $faker = Faker::create('en_PH'); // Use Filipino locale for names
 
         // Create 100 male and 100 female students
         foreach (['Male', 'Female'] as $gender) {
@@ -28,8 +28,8 @@ class StudentAndGraduateSeeder extends Seeder
                     'suffix' => $faker->randomElement(['Jr.', 'Sr.', 'II', 'III', '']),
                     'gender' => $gender,
                     'birthdate' => $faker->date(),
-                    'address' => $faker->address,
-                    'school_year' => $faker->year,
+                    'address' => 'Magallanes, ' . $faker->streetAddress,
+                    'school_year' => $faker->numberBetween(2010, 2024),
                     'photo_path' => null,
                 ]);
             }
@@ -45,7 +45,7 @@ class StudentAndGraduateSeeder extends Seeder
                     'last_name' => $faker->lastName,
                     'gender' => $gender,
                     'strand' => $faker->randomElement(['STEM', 'ABM', 'HUMSS', 'TVL']),
-                    'year_graduated' => $faker->year,
+                    'year_graduated' => $faker->numberBetween(2010, 2024),
                 ]);
             }
         }
