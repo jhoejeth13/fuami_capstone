@@ -508,23 +508,22 @@ document.addEventListener('DOMContentLoaded', function() {
         function updateFilters() {
             const params = new URLSearchParams();
             
-            if (searchInput.value) params.set('search', searchInput.value);
+            if (searchInput.value) {
+                params.set('search', searchInput.value);
+            } else {
+                // If search input is cleared, reset to start page
+                window.location.href = window.location.pathname;
+                return;
+            }
+            
             if (yearFilter.value) params.set('year', yearFilter.value);
             if (rowsPerPage.value) params.set('perPage', rowsPerPage.value);
             
             window.location.href = `${window.location.pathname}?${params.toString()}`;
         }
 
-        // Event listener for search input to trigger on Enter key
-        searchInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                updateFilters();
-            }
-        });
-
-        // Event listeners for filters
-        yearFilter.addEventListener('change', updateFilters);
-        rowsPerPage.addEventListener('change', updateFilters);
+        // Event listener for search input to trigger on input change
+        searchInput.addEventListener('input', updateFilters);
 
         // Delete confirmation with SweetAlert
         document.querySelectorAll('.delete-form').forEach(form => {

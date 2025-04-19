@@ -105,11 +105,11 @@ class TracerStudyController extends Controller
             
             // Apply search filter
             if ($request->filled('search')) {
-                $search = $request->search;
+                $search = strtolower($request->search);
                 $query->where(function($q) use ($search) {
-                    $q->where('first_name', 'LIKE', "%{$search}%")
-                      ->orWhere('middle_name', 'LIKE', "%{$search}%")
-                      ->orWhere('last_name', 'LIKE', "%{$search}%");
+                    $q->whereRaw('LOWER(first_name) LIKE ?', ["%{$search}%"])
+                      ->orWhereRaw('LOWER(middle_name) LIKE ?', ["%{$search}%"])
+                      ->orWhereRaw('LOWER(last_name) LIKE ?', ["%{$search}%"]);
                 });
             }
             
@@ -142,11 +142,11 @@ class TracerStudyController extends Controller
 
             // Apply search filter
             if ($request->filled('search')) {
-                $search = $request->search;
+                $search = strtolower($request->search);
                 $query->where(function($q) use ($search) {
-                    $q->where('first_name', 'LIKE', "%{$search}%")
-                      ->orWhere('middle_name', 'LIKE', "%{$search}%")
-                      ->orWhere('last_name', 'LIKE', "%{$search}%");
+                    $q->whereRaw('LOWER(first_name) LIKE ?', ["%{$search}%"])
+                      ->orWhereRaw('LOWER(middle_name) LIKE ?', ["%{$search}%"])
+                      ->orWhereRaw('LOWER(last_name) LIKE ?', ["%{$search}%"]);
                 });
             }
 

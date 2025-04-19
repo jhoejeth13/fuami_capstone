@@ -35,10 +35,11 @@ class JuniorhighschoolController extends Controller
         });
 
         if ($search = request('search')) {
+            $search = strtolower($search);
             $query->where(function($q) use ($search) {
-                $q->where('lrn_number', 'like', "%{$search}%")
-                  ->orWhere('first_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%");
+                $q->whereRaw('LOWER(lrn_number) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(first_name) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(last_name) LIKE ?', ["%{$search}%"]);
             });
         }
 

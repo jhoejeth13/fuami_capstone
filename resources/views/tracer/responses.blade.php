@@ -401,3 +401,35 @@
     }
 </style>
 @endpush
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // DOM Elements
+    const searchInput = document.getElementById('search');
+    const employmentStatusFilter = document.getElementById('employment_status');
+    const rowsPerPage = document.getElementById('perPage');
+
+    // Update filters function
+    function updateFilters() {
+        const params = new URLSearchParams();
+        
+        if (searchInput.value) {
+            params.set('search', searchInput.value);
+        } else {
+            // If search input is cleared, reset to start page
+            window.location.href = window.location.pathname;
+            return;
+        }
+        
+        if (employmentStatusFilter.value) params.set('employment_status', employmentStatusFilter.value);
+        if (rowsPerPage.value) params.set('perPage', rowsPerPage.value);
+        
+        window.location.href = `${window.location.pathname}?${params.toString()}`;
+    }
+
+    // Event listener for search input to trigger on input change
+    searchInput.addEventListener('input', updateFilters);
+});
+</script>
+@endpush

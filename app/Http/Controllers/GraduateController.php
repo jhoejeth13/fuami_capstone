@@ -15,14 +15,13 @@ class GraduateController extends Controller
     
         // Apply search filter if provided
         if ($request->has('search')) {
-            $search = $request->input('search');
+            $search = strtolower($request->input('search'));
             $query->where(function ($q) use ($search) {
-                $q->where('ID_student', 'like', "%{$search}%")
-                  ->orWhere('first_name', 'like', "%{$search}%")
-                  ->orWhere('middle_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('strand', 'like', "%{$search}%");
-
+                $q->whereRaw('LOWER(ID_student) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(first_name) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(middle_name) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(last_name) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(strand) LIKE ?', ["%{$search}%"]);
             });
         }
     

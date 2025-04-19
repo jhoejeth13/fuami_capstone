@@ -316,15 +316,24 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateFilters() {
         const params = new URLSearchParams();
         
-        if (searchInput.value) params.set('search', searchInput.value);
+        if (searchInput.value) {
+            params.set('search', searchInput.value);
+        } else {
+            // If search input is cleared, reset to start page
+            window.location.href = window.location.pathname;
+            return;
+        }
+        
         if (yearFilter.value) params.set('year', yearFilter.value);
         if (rowsPerPage.value) params.set('perPage', rowsPerPage.value);
         
         window.location.href = `${window.location.pathname}?${params.toString()}`;
     }
 
+    // Event listener for search input to trigger on input change
+    searchInput.addEventListener('input', updateFilters);
+
     // Event listeners for filters
-    searchInput.addEventListener('input', debounce(updateFilters, 300));
     yearFilter.addEventListener('change', updateFilters);
     rowsPerPage.addEventListener('change', updateFilters);
 
@@ -392,16 +401,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
-
-    // Debounce function for search input
-    function debounce(func, wait) {
-        let timeout;
-        return function() {
-            const context = this, args = arguments;
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(context, args), wait);
-        };
-    }
 });
 </script>
 @endsection
