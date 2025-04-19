@@ -220,13 +220,13 @@
                 </button>
 
                 <!-- Forgot Password -->
-                @if (Route::has('password.request'))
+                <!-- @if (Route::has('password.request'))
                     <div class="forgot-password">
                         <a href="{{ route('password.request') }}">
                             <i class="fas fa-key me-1"></i> Forgot your password?
                         </a>
                     </div>
-                @endif
+                @endif -->
             </form>
         </div>
     </div>
