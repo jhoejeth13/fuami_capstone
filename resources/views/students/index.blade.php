@@ -515,8 +515,14 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = `${window.location.pathname}?${params.toString()}`;
         }
 
+        // Event listener for search input to trigger on Enter key
+        searchInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                updateFilters();
+            }
+        });
+
         // Event listeners for filters
-        searchInput.addEventListener('input', debounce(updateFilters, 300));
         yearFilter.addEventListener('change', updateFilters);
         rowsPerPage.addEventListener('change', updateFilters);
 
@@ -540,16 +546,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
         });
-
-        // Debounce function for search input
-        function debounce(func, wait) {
-            let timeout;
-            return function() {
-                const context = this, args = arguments;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(context, args), wait);
-            };
-        }
 
         // Automatically open JHS form modal when JHS is selected
         const tracerTypeSelect = document.getElementById('tracerType');
