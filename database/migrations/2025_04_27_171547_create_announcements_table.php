@@ -1,24 +1,26 @@
 <?php
 
-namespace App\Models;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class Announcement extends Model
+return new class extends Migration
 {
-    use HasFactory;
+    public function up()
+    {
+        Schema::create('announcements', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->text('content');
+            $table->date('expiry_date');
+            $table->string('priority')->default('normal');
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+    }
 
-    protected $fillable = [
-        'title',
-        'content',
-        'expiry_date',
-        'priority',
-        'is_active'
-    ];
-
-    protected $casts = [
-        'expiry_date' => 'date',
-        'is_active' => 'boolean'
-    ];
-}
+    public function down()
+    {
+        Schema::dropIfExists('announcements');
+    }
+};
