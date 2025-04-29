@@ -296,6 +296,72 @@
                     </div>
                 @endif
             </div>
+
+            <!-- Profession Distribution Section -->
+            @if ($selectedFilterType === 'both' || $selectedFilterType === 'alumni')
+                <div class="mb-8">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Alumni Profession Distribution</h2>
+                    <div class="bg-white overflow-hidden rounded-xl shadow-md mb-6">
+                        <div class="border-b border-gray-100 px-6 py-4">
+                            <h3 class="font-semibold text-gray-700">Top 5 Professional Categories
+                                @if ($selectedEmploymentYear !== 'all')
+                                    <span class="text-sm font-normal text-gray-500">({{ $selectedEmploymentYear }})</span>
+                                @endif
+                            </h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <div class="h-[300px]">
+                                    <canvas id="professionChart" class="w-full h-full"></canvas>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profession</th>
+                                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">JHS Alumni</th>
+                                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">SHS Alumni</th>
+                                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        @foreach($combinedProfessionData as $profession)
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                    {{ $profession['occupation'] }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                                                    {{ $profession['jhs'] }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                                                    {{ $profession['shs'] }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-semibold text-gray-900">
+                                                    {{ $profession['total'] }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        
+                                        @if($combinedProfessionData->isEmpty())
+                                            <tr>
+                                                <td colspan="4" class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                                                    No profession data available
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-4 text-right">
+                                <a href="{{ route('reports.profession') }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium no-print">
+                                    View detailed profession reports <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>
@@ -309,7 +375,8 @@
          data-gender='@json($genderData)'
          data-employment='@json($employmentData)'
          data-jhs-gender='@json($jhsGenderData)'
-         data-jhs-employment='@json($jhsEmploymentData)'>
+         data-jhs-employment='@json($jhsEmploymentData)'
+         data-profession='@json($combinedProfessionData)'>
     </div>
 
 <!-- Include dashboard.js script -->

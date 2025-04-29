@@ -50,6 +50,9 @@ return new class extends Migration
             $table->string('years_in_company')->nullable();
             $table->string('unemployment_reason')->nullable();
             
+            // Educational Attainment
+            $table->string('educational_attainment')->nullable();
+            
             $table->timestamps();
         });
     }
@@ -62,29 +65,3 @@ return new class extends Migration
         Schema::dropIfExists('jhs_tracer_responses');
     }
 };
-
-            $table->string('address')->nullable();
-            $table->string('barangay');
-            $table->string('municipality');
-            $table->string('province');
-            $table->string('region');
-            $table->string('postal_code')->nullable();
-            $table->string('country')->nullable()->default('Philippines');
-            
-            // Education Information (JHS specific)
-            $table->year('year_graduated');
-            
-            // Contact Information
-            $table->string('phone')->nullable();
-            $table->string('email')->nullable();
-            
-            // Employment Information
-            $table->string('employment_status');
-            $table->string('employer_name')->nullable();
-            $table->string('organization_type')->nullable();
-            $table->string('occupational_classification')->nullable();
-            $table->string('job_situation')->nullable();
-            $table->string('years_in_company')->nullable();
-            $table->string('unemployment_reason')->nullable();
-            
-            $table->timestamps();

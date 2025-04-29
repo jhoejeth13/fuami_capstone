@@ -200,7 +200,7 @@ class TracerStudyController extends Controller
             'last_name' => 'required|string|max:255',
             'suffix' => 'nullable|string|max:10',
             'suffix_other' => 'nullable|string|max:255|required_if:suffix,Other',
-            'age' => 'required|integer|min:16',
+            'age' => 'required|integer|min:14',
             'gender' => 'required|string',
             'birthdate' => 'required|date',
             'civil_status' => 'required|string',
@@ -340,7 +340,7 @@ class TracerStudyController extends Controller
             'last_name' => 'required|string|max:255',
             'suffix' => 'nullable|string|max:10',
             'suffix_other' => 'nullable|string|max:255|required_if:suffix,Other',
-            'age' => 'required|integer|min:16',
+            'age' => 'required|integer|min:14',
             'gender' => 'required|string',
             'birthdate' => 'required|date',
             'civil_status' => 'required|string',
@@ -365,79 +365,7 @@ class TracerStudyController extends Controller
             'job_situation' => 'nullable|string|required_if:employment_status,Employed',
             'years_in_company' => 'nullable|string|required_if:employment_status,Employed',
             'unemployment_reason' => 'nullable|string',
-        ]);
-
-        // Handle "other" values
-        if ($request->filled('organization_type') && $request->organization_type === 'Other') {
-            $validated['organization_type'] = $request->organization_type_other;
-        }
-        
-        if ($request->filled('occupational_classification') && $request->occupational_classification === 'Other') {
-            $validated['occupational_classification'] = $request->occupational_classification_other;
-        }
-
-        if ($request->filled('suffix') && $request->suffix === 'Other') {
-            $validated['suffix'] = $request->suffix_other;
-        }
-
-        // Remove fields that are not in the database
-        unset($validated['suffix_other']);
-        unset($validated['organization_type_other']);
-        unset($validated['occupational_classification_other']);
-        
-        try {
-            JHSTracerResponse::create($validated);
-            if ($request->wantsJson()) {
-                return response()->json(['success' => true, 'message' => 'JHS graduate data saved successfully!']);
-            }
-            return redirect()->back()->with('success', 'JHS graduate data saved successfully!');
-        } catch (\Exception $e) {
-            if ($request->wantsJson()) {
-                return response()->json(['success' => false, 'error' => 'Failed to save data: ' . $e->getMessage()], 422);
-            }
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['error' => 'Failed to save data: ' . $e->getMessage()]);
-        }
-    }
-
-    public function submitSHSForm(Request $request)
-    {
-        $validated = $request->validate([
-            'graduate_type' => 'required|in:SHS',
-            'first_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'suffix' => 'nullable|string|max:10',
-            'suffix_other' => 'nullable|string|max:255|required_if:suffix,Other',
-            'age' => 'required|integer|min:16',
-            'gender' => 'required|string',
-            'birthdate' => 'required|date',
-            'civil_status' => 'required|string',
-            'religion' => 'required|string',
-            'address' => 'nullable|string',
-            'barangay' => 'required|string',
-            'municipality' => 'required|string',
-            'province' => 'required|string',
-            'region' => 'required|string',
-            'postal_code' => 'nullable|string',
-            'country' => 'nullable|string',
-            'year_graduated' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
-            'phone' => 'nullable|string',
-            'email' => 'nullable|email',
-            'employment_status' => 'required|string',
-            'employer_name' => 'required_if:employment_status,Employed|nullable|string',
-            'employer_address' => 'required_if:employment_status,Employed|nullable|string',
-            'organization_type' => 'nullable|string|required_if:employment_status,Employed',
-            'organization_type_other' => 'nullable|string|required_if:organization_type,Other',
-            'occupational_classification' => 'nullable|string|required_if:employment_status,Employed',
-            'occupational_classification_other' => 'nullable|string|required_if:occupational_classification,Other',
-            'job_situation' => 'nullable|string|required_if:employment_status,Employed',
-            'years_in_company' => 'nullable|string|required_if:employment_status,Employed',
-            'unemployment_reason' => 'nullable|string',
-            'shs_track' => 'required|string',
-            'job_related_to_shs' => 'nullable|string|in:Yes,No',
-            'fuami_factor' => 'nullable|string|in:Yes,No',
+            'educational_attainment' => 'nullable|string',
         ]);
 
         // Handle "other" values
@@ -466,6 +394,93 @@ class TracerStudyController extends Controller
         if ($request->has('fuami_factor')) {
             $validated['fuami_factor'] = $request->fuami_factor === 'Yes';
         }
+
+        $validated['educational_attainment'] = $request->input('educational_attainment');
+
+        try {
+            JHSTracerResponse::create($validated);
+            if ($request->wantsJson()) {
+                return response()->json(['success' => true, 'message' => 'JHS graduate data saved successfully!']);
+            }
+            return redirect()->back()->with('success', 'JHS graduate data saved successfully!');
+        } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'error' => 'Failed to save data: ' . $e->getMessage()], 422);
+            }
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to save data: ' . $e->getMessage()]);
+        }
+    }
+
+    public function submitSHSForm(Request $request)
+    {
+        $validated = $request->validate([
+            'graduate_type' => 'required|in:SHS',
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'suffix' => 'nullable|string|max:10',
+            'suffix_other' => 'nullable|string|max:255|required_if:suffix,Other',
+            'age' => 'required|integer|min:14',
+            'gender' => 'required|string',
+            'birthdate' => 'required|date',
+            'civil_status' => 'required|string',
+            'religion' => 'required|string',
+            'address' => 'nullable|string',
+            'barangay' => 'required|string',
+            'municipality' => 'required|string',
+            'province' => 'required|string',
+            'region' => 'required|string',
+            'postal_code' => 'nullable|string',
+            'country' => 'nullable|string',
+            'year_graduated' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
+            'phone' => 'nullable|string',
+            'email' => 'nullable|email',
+            'employment_status' => 'required|string',
+            'employer_name' => 'required_if:employment_status,Employed|nullable|string',
+            'employer_address' => 'required_if:employment_status,Employed|nullable|string',
+            'organization_type' => 'nullable|string|required_if:employment_status,Employed',
+            'organization_type_other' => 'nullable|string|required_if:organization_type,Other',
+            'occupational_classification' => 'nullable|string|required_if:employment_status,Employed',
+            'occupational_classification_other' => 'nullable|string|required_if:occupational_classification,Other',
+            'job_situation' => 'nullable|string|required_if:employment_status,Employed',
+            'years_in_company' => 'nullable|string|required_if:employment_status,Employed',
+            'unemployment_reason' => 'nullable|string',
+            'shs_track' => 'required|string',
+            'job_related_to_shs' => 'nullable|string|in:Yes,No',
+            'fuami_factor' => 'nullable|string|in:Yes,No',
+            'educational_attainment' => 'nullable|string',
+        ]);
+
+        // Handle "other" values
+        if ($request->filled('organization_type') && $request->organization_type === 'Other') {
+            $validated['organization_type'] = $request->organization_type_other;
+        }
+        
+        if ($request->filled('occupational_classification') && $request->occupational_classification === 'Other') {
+            $validated['occupational_classification'] = $request->occupational_classification_other;
+        }
+
+        if ($request->filled('suffix') && $request->suffix === 'Other') {
+            $validated['suffix'] = $request->suffix_other;
+        }
+
+        // Remove fields that are not in the database
+        unset($validated['suffix_other']);
+        unset($validated['organization_type_other']);
+        unset($validated['occupational_classification_other']);
+        
+        // Convert Yes/No to boolean
+        if ($request->has('job_related_to_shs')) {
+            $validated['job_related_to_shs'] = $request->job_related_to_shs === 'Yes';
+        }
+        
+        if ($request->has('fuami_factor')) {
+            $validated['fuami_factor'] = $request->fuami_factor === 'Yes';
+        }
+
+        $validated['educational_attainment'] = $request->input('educational_attainment');
 
         try {
             TracerStudyResponse::create($validated);
@@ -510,7 +525,7 @@ class TracerStudyController extends Controller
             'last_name' => 'required|string|max:255',
             'suffix' => 'nullable|string|max:10',
             'suffix_other' => 'nullable|string|max:255|required_if:suffix,Other',
-            'age' => 'required|integer|min:16',
+            'age' => 'required|integer|min:14',
             'gender' => 'required|string',
             'birthdate' => 'required|date',
             'civil_status' => 'required|string',

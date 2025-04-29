@@ -52,6 +52,7 @@ class TracerStudyResponse extends Model
         'self_employed_income',
         'unemployment_reason',
         'fuami_factor',
+        'educational_attainment',
     ];
     
     protected $casts = [

@@ -26,6 +26,7 @@ return new class extends Migration {
             // Education Information
             $table->string('shs_track');
             $table->string('year_graduated');
+            $table->string('educational_attainment')->nullable();
             
             // Contact Information
             $table->string('facebook')->nullable();

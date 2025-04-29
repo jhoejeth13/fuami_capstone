@@ -466,11 +466,144 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     
+    // Function to handle Profession Distribution Chart
+    function setupProfessionChart() {
+        const professionChart = document.getElementById('professionChart');
+        if (!professionChart) return;
+        
+        let professionData;
+        
+        try {
+            professionData = JSON.parse(chartData.dataset.profession || '[]');
+        } catch (error) {
+            console.error('Error parsing profession data:', error);
+            professionData = [];
+        }
+        
+        // If no data, show empty chart
+        if (professionData.length === 0) {
+            new Chart(professionChart, {
+                type: 'bar',
+                data: {
+                    labels: ['No Data Available'],
+                    datasets: [{
+                        data: [0],
+                        backgroundColor: ['rgba(203, 213, 225, 0.8)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            return;
+        }
+        
+        // Prepare data for chart
+        const labels = professionData.map(item => item.occupation);
+        const totalValues = professionData.map(item => item.total);
+        const jhsValues = professionData.map(item => item.jhs);
+        const shsValues = professionData.map(item => item.shs);
+        
+        // Generate colors
+        const generateColors = (baseColor, count) => {
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                // Create variations of the base color
+                const opacity = 0.5 + (i * 0.1);
+                colors.push(`rgba(${baseColor}, ${opacity})`);
+            }
+            return colors;
+        };
+        
+        new Chart(professionChart, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'JHS Alumni',
+                        data: jhsValues,
+                        backgroundColor: generateColors('99, 102, 241', labels.length), // Indigo
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'SHS Alumni',
+                        data: shsValues,
+                        backgroundColor: generateColors('37, 99, 235', labels.length), // Blue
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y', // Horizontal bar chart
+                plugins: {
+                    datalabels: {
+                        color: '#1e293b', // Slate-800
+                        font: {
+                            weight: 'bold'
+                        },
+                        formatter: (value) => value > 0 ? value : '',
+                        anchor: 'end',
+                        align: 'end',
+                        offset: 0
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                const value = context.raw || 0;
+                                return `${label}: ${value}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Alumni'
+                        }
+                    },
+                    y: {
+                        stacked: true
+                    }
+                }
+            }
+        });
+    }
+    
     // Initialize all charts
     setupJHSGenderChart();
     setupGenderChart();
     setupEmploymentChart();
     setupJHSEmploymentChart();
+    setupProfessionChart();
     
     // Set up event listener for the print button
     const printButton = document.getElementById('print-dashboard');

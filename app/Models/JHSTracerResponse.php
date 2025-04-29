@@ -40,6 +40,7 @@ class JHSTracerResponse extends Model
         'job_situation',
         'years_in_company',
         'unemployment_reason',
+        'educational_attainment',
     ];
     
     protected $casts = [

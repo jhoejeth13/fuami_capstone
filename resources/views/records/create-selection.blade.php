@@ -6,7 +6,7 @@
         <!-- Page Header -->
         <div class="text-center mb-12">
             <h1 class="text-3xl font-bold text-gray-800 mb-3">Create New Record</h1>
-            <p class="text-gray-600 max-w-2xl mx-auto">Select the type of record you want to create. Your data will be securely stored and can be accessed later through the appropriate dashboard section.</p>
+            <p class="text-gray-600 max-w-2xl mx-auto">Select the type of record you want to create. Your data will be securely stored and can be accessed later through the appropriate Graduate Records' section.</p>
         </div>
         
         <!-- Selection Cards -->
@@ -18,27 +18,23 @@
                     <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4 mx-auto">
                         <i class="fas fa-user-graduate text-blue-600 text-2xl"></i>
                     </div>
-                    <h2 class="text-xl font-bold text-center text-gray-800 mb-2">Junior High School Student</h2>
-                    <p class="text-gray-600 text-center mb-6">Create a new record for a Junior High School student with complete personal and academic information.</p>
+                    <h2 class="text-xl font-bold text-center text-gray-800 mb-2">Junior High School Graduates</h2>
+                    <p class="text-gray-600 text-center mb-6">Create a new record for a Junior High School Graduates with personal information.</p>
                     
                     <ul class="space-y-2 mb-6 text-sm text-gray-600">
                         <li class="flex items-center">
                             <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            Personal and contact information
+                            Personal Information
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            Academic details including LRN
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            Upload student photo
+                            Academic details including LRN and year graduated
                         </li>
                     </ul>
                     
                     <div class="text-center">
                         <a href="{{ route('students.create') }}" class="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-300">
-                            <i class="fas fa-plus-circle mr-2"></i> Create JHS Record
+                            <i class="fas fa-plus-circle mr-2"></i> Create JHS Graduate Record
                         </a>
                     </div>
                 </div>
@@ -51,27 +47,23 @@
                     <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center mb-4 mx-auto">
                         <i class="fas fa-user-tie text-indigo-600 text-2xl"></i>
                     </div>
-                    <h2 class="text-xl font-bold text-center text-gray-800 mb-2">Senior High School Graduate</h2>
-                    <p class="text-gray-600 text-center mb-6">Create a new record for a Senior High School graduate with complete academic and tracking information.</p>
+                    <h2 class="text-xl font-bold text-center text-gray-800 mb-2">Senior High School Graduates</h2>
+                    <p class="text-gray-600 text-center mb-6">Create a new record for a Senior High School graduate with strands and personal information.</p>
                     
                     <ul class="space-y-2 mb-6 text-sm text-gray-600">
                         <li class="flex items-center">
                             <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            Complete graduate profile
+                            Personal Information
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            Academic track and specialization
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                            Employment tracking capabilities
+                            Academic details including LRN, academic strand, and year graduated
                         </li>
                     </ul>
                     
                     <div class="text-center">
                         <a href="{{ route('graduates.create') }}" class="inline-block px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors duration-300">
-                            <i class="fas fa-plus-circle mr-2"></i> Create SHS Record
+                            <i class="fas fa-plus-circle mr-2"></i> Create SHS Graduate Record
                         </a>
                     </div>
                 </div>

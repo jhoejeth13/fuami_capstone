@@ -719,6 +719,9 @@
                             @endforeach
                         </select>
                     </label>
+                    <label>Educational Attainment:
+                        <input type="text" name="educational_attainment" value="{{ old('educational_attainment') }}" required>
+                    </label>
                 </div>
 
                 <!-- Contact Information -->

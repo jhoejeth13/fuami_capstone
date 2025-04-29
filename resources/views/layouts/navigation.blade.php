@@ -198,7 +198,7 @@
                         <span class="sidebar-text ml-3">Dashboard</span>
                     </a>
                 </div>
-                
+
                 <!-- User Management Section -->
                 @auth
                     @if(auth()->user()->hasRole('admin'))
@@ -211,6 +211,14 @@
                     </div>
                     @endif
                 @endauth
+      
+                <div class="px-4 py-3">
+                    <h3 class="sidebar-section uppercase text-xs font-semibold text-blue-300 tracking-wider sidebar-text">Announcements</h3>
+                    <a href="{{ route('announcements.index') }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-plus-circle text-lg w-6 text-center"></i>
+                        <span class="sidebar-text ml-3">Announcements</span>
+                    </a>
+                </div> 
                 
                 <!-- Graduate Management Section -->
                 <div class="px-4 py-3">
@@ -245,6 +253,15 @@
                         <span class="sidebar-text ml-3">Alumni Tracer Form</span>
                     </a> -->
                 </div>
+                
+<!-- Reports Section -->
+<div class="px-4 py-3">
+    <h3 class="sidebar-section uppercase text-xs font-semibold text-blue-300 tracking-wider sidebar-text">Reports</h3>
+    <a href="{{ route('reports.profession', ['graduate_type' => 'SHS']) }}" class="nav-item mt-2 flex items-center px-4 py-3 rounded-lg text-blue-100 hover:bg-blue-700 hover:text-white transition-colors duration-200">
+        <i class="fas fa-user-tie text-lg w-6 text-center"></i>
+        <span class="sidebar-text ml-3">Professional Categories</span>
+    </a>
+</div>
             </nav>
             
             <!-- Sidebar Footer -->

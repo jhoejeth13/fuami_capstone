@@ -7,6 +7,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\JuniorhighschoolController;
 use App\Http\Controllers\RecordSelectionController;
+use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\AnnouncementController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root URL to login page
@@ -69,6 +71,10 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->group(
     Route::get('/jhs-tracer-responses/{id}/edit', [TracerStudyController::class, 'editJHS'])->name('tracer.edit-jhs');
     Route::put('/jhs-tracer-responses/{id}', [TracerStudyController::class, 'updateJHS'])->name('tracer.update-jhs');
     Route::delete('/jhs-tracer-responses/{id}', [TracerStudyController::class, 'destroyJHS'])->name('tracer.destroy-jhs');
+
+    // Reports routes
+    Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
+    Route::get('/reports/profession', [ReportsController::class, 'professionalReport'])->name('reports.profession');
 });
 
 // Add Year route
@@ -89,5 +95,24 @@ Route::middleware('auth')->group(function () {
 
 Route::resource('students', JuniorhighschoolController::class);
 
+// Announcements Routes
+Route::prefix('announcements')->name('announcements.')->group(function() {
+    Route::get('/', [AnnouncementController::class, 'index'])->name('index');
+    Route::get('/create', [AnnouncementController::class, 'create'])->name('create');
+    Route::post('/', [AnnouncementController::class, 'store'])->name('store');
+    Route::get('/{announcement}', [AnnouncementController::class, 'show'])->name('show'); // This is the missing route
+    Route::get('/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('edit');
+    Route::put('/{announcement}', [AnnouncementController::class, 'update'])->name('update');
+    Route::delete('/{announcement}', [AnnouncementController::class, 'destroy'])->name('destroy');
+});
+
+// Tracer Form Route (update this to include announcements)
+Route::get('/tracer/form', function() {
+    $activeAnnouncements = \App\Models\Announcement::where('expiry_date', '>=', now())
+        ->orderBy('created_at', 'desc')
+        ->get();
+        
+    return view('tracer.form', compact('activeAnnouncements'));
+})->name('tracer.form');
 // Authentication routes
 require __DIR__.'/auth.php';

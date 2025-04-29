@@ -112,8 +112,10 @@
                                 <input type="text" name="religion" id="religion" value="{{ old('religion', $response->religion) }}"
                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                     </div>
-                </div>
-            </div>
+
+
+                        </div>
+                    </div>
 
                     <!-- Address Information Section -->
                     <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
@@ -171,6 +173,11 @@
                     <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
                         <h2 class="text-lg font-medium text-gray-900 mb-4">Education Information</h2>
                         <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                        <div class="sm:col-span-2">
+                                <label for="educational_attainment" class="block text-sm font-medium text-gray-700">Educational Attainment</label>
+                                <input type="text" name="educational_attainment" id="educational_attainment" value="{{ old('educational_attainment', $response->educational_attainment) }}"
+                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            </div>
                             <div class="sm:col-span-2">
                                 <label for="year_graduated" class="block text-sm font-medium text-gray-700">Year Graduated</label>
                                 <select name="year_graduated" id="year_graduated" 

@@ -247,7 +247,7 @@
                                 </div>
                                 <div class="flex items-center">
                                     <i class="fas fa-graduation-cap text-gray-400 w-5 mr-2"></i>
-                                    <span><strong>Education Level:</strong> JHS Graduate</span>
+                                    <span><strong>Educational Attainment:</strong> {{ $response->educational_attainment }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="fas fa-calendar-check text-gray-400 w-5 mr-2"></i>

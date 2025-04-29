@@ -7,6 +7,7 @@ use App\Models\Graduate;
 use App\Models\TracerStudyResponse;
 use App\Models\Juniorhighschool;
 use App\Models\JHSTracerResponse;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -92,6 +93,75 @@ class DashboardController extends Controller
         }
         $totalAlumni = $totalAlumniQuery->count();
 
+        // Fetch profession data for SHS graduates
+        $shsProfessionQuery = TracerStudyResponse::where('employment_status', 'Employed')
+            ->whereNotNull('occupational_classification')
+            ->where('graduate_type', 'SHS');
+            
+        if ($selectedEmploymentYear !== 'all') {
+            $shsProfessionQuery->where('year_graduated', $selectedEmploymentYear);
+        }
+        
+        $shsProfessionData = $shsProfessionQuery
+            ->select('occupational_classification', DB::raw('count(*) as total'))
+            ->groupBy('occupational_classification')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+            
+        // Fetch profession data for JHS graduates
+        $jhsProfessionQuery = JHSTracerResponse::where('employment_status', 'Employed')
+            ->whereNotNull('occupational_classification');
+            
+        if ($selectedEmploymentYear !== 'all') {
+            $jhsProfessionQuery->where('year_graduated', $selectedEmploymentYear);
+        }
+        
+        $jhsProfessionData = $jhsProfessionQuery
+            ->select('occupational_classification', DB::raw('count(*) as total'))
+            ->groupBy('occupational_classification')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+        
+        // Combined profession data for both JHS and SHS
+        $combinedProfessionData = collect();
+        
+        // Process SHS data
+        foreach ($shsProfessionData as $profession) {
+            $existing = $combinedProfessionData->firstWhere('occupation', $profession->occupational_classification);
+            if ($existing) {
+                $existing['total'] += $profession->total;
+                $existing['shs'] = $profession->total;
+            } else {
+                $combinedProfessionData->push([
+                    'occupation' => $profession->occupational_classification,
+                    'total' => $profession->total,
+                    'shs' => $profession->total,
+                    'jhs' => 0
+                ]);
+            }
+        }
+        
+        // Process JHS data
+        foreach ($jhsProfessionData as $profession) {
+            $existing = $combinedProfessionData->firstWhere('occupation', $profession->occupational_classification);
+            if ($existing) {
+                $existing['total'] += $profession->total;
+                $existing['jhs'] = $profession->total;
+            } else {
+                $combinedProfessionData->push([
+                    'occupation' => $profession->occupational_classification,
+                    'total' => $profession->total,
+                    'jhs' => $profession->total,
+                    'shs' => 0
+                ]);
+            }
+        }
+        
+        // Sort by total and limit to top 5
+        $combinedProfessionData = $combinedProfessionData->sortByDesc('total')->take(5)->values();
+
         // Fetch the latest created_at timestamp from both tables
         $lastAddedGraduate = Graduate::latest('created_at')->value('created_at');
         $lastAddedTracer = TracerStudyResponse::latest('created_at')->value('created_at');
@@ -170,7 +240,10 @@ class DashboardController extends Controller
             'shsMaleCount' => $maleGraduates,
             'shsFemaleCount' => $femaleGraduates,
             'jhsMaleCount' => $maleJHSStudents,
-            'jhsFemaleCount' => $femaleJHSStudents
+            'jhsFemaleCount' => $femaleJHSStudents,
+            'shsProfessionData' => $shsProfessionData,
+            'jhsProfessionData' => $jhsProfessionData,
+            'combinedProfessionData' => $combinedProfessionData
         ]);
     }
 }
