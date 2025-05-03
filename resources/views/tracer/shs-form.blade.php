@@ -565,9 +565,10 @@
                 </div>
             @endif
 
-            <form action="{{ route('tracer.submit-shs') }}" method="POST">
+            <form action="{{ route('tracer.submit-shs') }}" method="POST" id="tracerForm">
                 @csrf
                 <input type="hidden" name="graduate_type" value="SHS">
+                <input type="hidden" name="employment_status" id="employment_status_hidden" value="Did not respond">
 
                 <!-- Personal Information -->
                 <div class="form-section">
@@ -737,14 +738,15 @@
 
                 <!-- Employment Information -->
                 <div class="form-section">
-                    <h2><i class="fas fa-briefcase mr-2"></i> Employment Information</h2>
-                    <label>Employment Status:
-                        <select name="employment_status" id="employment_status" required onchange="toggleEmploymentFields()">
-                            <option value="">Select Status</option>
-                            <option value="Employed" {{ old('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
-                            <option value="Unemployed" {{ old('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
-                        </select>
-                    </label>
+        <h2><i class="fas fa-briefcase mr-2"></i> Employment Information</h2>
+        <label>Employment Status:
+            <select name="employment_status" id="employment_status" onchange="toggleEmploymentFields()">
+                <option value="">Select Status</option>
+                <option value="Employed" {{ old('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
+            </select>
+        </label>
+        <input type="hidden" name="employment_status_final" id="employment_status_final" value="Did not respond">
+
 
 <!-- Employed Fields -->
 <div id="employed_fields" class="hidden">
@@ -823,14 +825,6 @@
                 </select>
             </label>
         </div>
-
-        <!-- Unemployed Fields -->
-        <div id="unemployed_fields" class="hidden">
-            <h3><i class="fas fa-user-clock mr-2"></i> Unemployment Details</h3>
-            <label>Reasons for Unemployment:
-                <textarea name="unemployment_reason" rows="4">{{ old('unemployment_reason') }}</textarea>
-            </label>
-        </div>
     </div>
 
     <div class="flex justify-between mt-6">
@@ -858,45 +852,99 @@
             });
         }
         
-        // Execute the success message if we returned with a success status
-        document.addEventListener('DOMContentLoaded', function() {
-            @if(session('success'))
-                showSuccessMessage();
-            @endif
+// Execute the success message if we returned with a success status
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        // Show success message if available
+        @if(session('success'))
+            showSuccessMessage();
+        @endif
+        
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // Initialize education section for SHS form
+        const educationSection = document.getElementById('education-section');
+        if (educationSection) {
+            educationSection.style.display = 'block';
+        }
+        
+        // Make SHS track field required
+        const shsTrackField = document.getElementById('shs_track');
+        if (shsTrackField) {
+            shsTrackField.setAttribute('required', 'required');
+        }
+        
+        // Initialize address fields if values exist
+        const region = document.getElementById('region');
+        if (region && region.value) {
+            loadProvinces();
+        }
+        
+        // Initialize religion fields
+        handleReligionChange();
+        
+        // Set up date input handling
+        const birthdateInput = document.getElementById('birthdate');
+        if (birthdateInput) {
+            birthdateInput.addEventListener('focus', function() {
+                this.type = 'date';
+            });
+            birthdateInput.addEventListener('blur', function() {
+                if (!this.value) {
+                    this.type = 'text';
+                }
+            });
+        }
+        
+        // Initialize employment status handling
+    // Modified employment status handling
+    const form = document.getElementById('tracerForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const employmentStatusSelect = document.getElementById('employment_status');
+            const hiddenEmploymentStatus = document.createElement('input');
             
-            toggleEmploymentFields();
-            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            hiddenEmploymentStatus.type = 'hidden';
+            hiddenEmploymentStatus.name = 'employment_status';
+            hiddenEmploymentStatus.value = employmentStatusSelect.value || 'Did not respond';
             
-            // Initialize education section for SHS form
-            const educationSection = document.getElementById('education-section');
-            if (educationSection) {
-                educationSection.style.display = 'block';
-            }
-            
-            const shsTrackField = document.getElementById('shs_track');
-            if (shsTrackField) {
-                shsTrackField.setAttribute('required', 'required');
-            }
-            
-            // Initialize address fields if values exist
-            const region = document.getElementById('region');
-            if (region && region.value) {
-                loadProvinces();
-            }
-            
-            // Initialize religion fields
-            handleReligionChange();
-            
-            // Set date format for date inputs
-            const birthdateInput = document.getElementById('birthdate');
-            if (birthdateInput) {
-                birthdateInput.addEventListener('focus', function() {
-                    this.type = 'date';
-                });
-                birthdateInput.addEventListener('blur', function() {
-                    if (!this.value) {
-                        this.type = 'text';
+            form.appendChild(hiddenEmploymentStatus);
+        });
+    }
+
+        
+        // Initialize employment fields visibility
+        toggleEmploymentFields();
+        
+    } catch (error) {
+        console.error('Initialization error:', error);
+        // Optionally show error to user
+        Swal.fire({
+            title: 'Error',
+            text: 'An error occurred while initializing the form. Please refresh the page.',
+            icon: 'error'
+        });
+    }
+});
+
+            // Set up form submission to handle employment status
+            document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('tracerForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const employmentStatusSelect = document.getElementById('employment_status');
+                    const hiddenEmploymentStatus = document.getElementById('employment_status_final');
+                    
+                    // Set the final employment status
+                    if (employmentStatusSelect.value) {
+                        hiddenEmploymentStatus.value = employmentStatusSelect.value;
+                    } else {
+                        hiddenEmploymentStatus.value = 'Did not respond';
                     }
+                    
+                    // Continue with form submission
+                    return true;
                 });
             }
         });
@@ -1028,47 +1076,37 @@
         }
 
         function toggleEmploymentFields() {
-    const status = document.getElementById('employment_status').value;
-    const employedFields = document.getElementById('employed_fields');
-    const unemployedFields = document.getElementById('unemployed_fields');
-    
-    // List of all employed-related fields
-    const employedFieldsToToggle = [
-        'organization_type',
-        'occupational_classification',
-        'employer_name',
-        'employer_address',
-        'job_situation',
-        'years_in_company'
-    ];
-    
-    if (status === 'Employed') {
-        employedFields.style.display = 'block';
-        unemployedFields.style.display = 'none';
-        
-        // Add required attributes
-        employedFieldsToToggle.forEach(field => {
-            const fieldElement = document.getElementsByName(field)[0];
-            if (fieldElement) fieldElement.required = true;
-        });
-            } else if (status === 'Unemployed') {
-        employedFields.style.display = 'none';
-        unemployedFields.style.display = 'block';
-        
-        // Remove required attributes
-        employedFieldsToToggle.forEach(field => {
-            const fieldElement = document.getElementsByName(field)[0];
-            if (fieldElement) fieldElement.required = false;
-        });
+            const status = document.getElementById('employment_status').value;
+            const employedFields = document.getElementById('employed_fields');
+            
+            // List of all employed-related fields
+            const employedFieldsToToggle = [
+                'organization_type',
+                'occupational_classification',
+                'employer_name',
+                'employer_address',
+                'job_situation',
+                'years_in_company'
+            ];
+            
+            if (status === 'Employed') {
+                employedFields.style.display = 'block';
                 
-                // Ensure unemployment_reason is not required
-                const unemploymentReasonField = document.getElementsByName('unemployment_reason')[0];
-                if (unemploymentReasonField) unemploymentReasonField.removeAttribute('required');
+                // Add required attributes
+                employedFieldsToToggle.forEach(field => {
+                    const fieldElement = document.getElementsByName(field)[0];
+                    if (fieldElement) fieldElement.required = true;
+                });
             } else {
                 employedFields.style.display = 'none';
-                unemployedFields.style.display = 'none';
-    }
-}
+                
+                // Remove required attributes
+                employedFieldsToToggle.forEach(field => {
+                    const fieldElement = document.getElementsByName(field)[0];
+                    if (fieldElement) fieldElement.required = false;
+                });
+            }
+        }
 
         function openForm() {
             document.getElementById('formModal').style.display = 'flex';

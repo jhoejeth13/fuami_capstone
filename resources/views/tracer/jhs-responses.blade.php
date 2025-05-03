@@ -222,7 +222,7 @@
                                 @else
                                     <div class="flex items-start">
                                         <i class="fas fa-exclamation-circle text-gray-400 w-5 mr-2 mt-1"></i>
-                                        <span><strong>Reason for Unemployment:</strong> {{ $response->unemployment_reason ?? 'No reason provided' }}</span>
+                                        <span><strong>Did Not Respond</strong></span>
                                     </div>
                                 @endif
                             </div>

@@ -565,9 +565,10 @@
                 </div>
             @endif
 
-            <form action="{{ route('tracer.submit-jhs') }}" method="POST">
+            <form action="{{ route('tracer.submit-jhs') }}" method="POST" id="tracerForm">
                 @csrf
                 <input type="hidden" name="graduate_type" value="JHS">
+                <input type="hidden" name="employment_status" id="employment_status_hidden" value="Did not respond">
 
                 <!-- Personal Information -->
                 <div class="form-section">
@@ -723,10 +724,9 @@
                 <div class="form-section">
                     <h2><i class="fas fa-briefcase mr-2"></i> Employment Information</h2>
                     <label>Employment Status:
-                        <select name="employment_status" id="employment_status" required onchange="toggleEmploymentFields()">
+                        <select name="employment_status_display" id="employment_status_display" onchange="toggleEmploymentFields()">
                             <option value="">Select Status</option>
                             <option value="Employed" {{ old('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
-                            <option value="Unemployed" {{ old('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
                         </select>
                     </label>
 
@@ -807,14 +807,6 @@
                             </select>
                         </label>
                     </div>
-
-                    <!-- Unemployed Fields -->
-                    <div id="unemployed_fields" class="hidden">
-                        <h3><i class="fas fa-user-clock mr-2"></i> Unemployment Details</h3>
-                        <label>Reasons for Unemployment:
-                            <textarea name="unemployment_reason" rows="4">{{ old('unemployment_reason') }}</textarea>
-                        </label>
-                    </div>
                 </div>
 
                 <div class="flex justify-between mt-6">
@@ -871,6 +863,18 @@
                     }
                 });
             }
+
+            // Set employment status before form submission
+            document.getElementById('tracerForm').addEventListener('submit', function() {
+                const statusDisplay = document.getElementById('employment_status_display').value;
+                const hiddenStatusField = document.getElementById('employment_status_hidden');
+                
+                if (statusDisplay === 'Employed') {
+                    hiddenStatusField.value = 'Employed';
+                } else {
+                    hiddenStatusField.value = 'Did not respond';
+                }
+            });
         });
         
         // Address dropdown functions
@@ -1000,9 +1004,8 @@
         }
 
         function toggleEmploymentFields() {
-            const status = document.getElementById('employment_status').value;
+            const status = document.getElementById('employment_status_display').value;
             const employedFields = document.getElementById('employed_fields');
-            const unemployedFields = document.getElementById('unemployed_fields');
             
             // List of all employed-related fields
             const employedFieldsToToggle = [
@@ -1016,29 +1019,20 @@
             
             if (status === 'Employed') {
                 employedFields.style.display = 'block';
-                unemployedFields.style.display = 'none';
                 
                 // Add required attributes
                 employedFieldsToToggle.forEach(field => {
                     const fieldElement = document.getElementsByName(field)[0];
                     if (fieldElement) fieldElement.required = true;
                 });
-            } else if (status === 'Unemployed') {
+            } else {
                 employedFields.style.display = 'none';
-                unemployedFields.style.display = 'block';
                 
                 // Remove required attributes
                 employedFieldsToToggle.forEach(field => {
                     const fieldElement = document.getElementsByName(field)[0];
                     if (fieldElement) fieldElement.required = false;
                 });
-                
-                // Ensure unemployment_reason is not required
-                const unemploymentReasonField = document.getElementsByName('unemployment_reason')[0];
-                if (unemploymentReasonField) unemploymentReasonField.removeAttribute('required');
-            } else {
-                employedFields.style.display = 'none';
-                unemployedFields.style.display = 'none';
             }
         }
 
