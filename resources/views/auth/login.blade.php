@@ -82,8 +82,8 @@
 
         .form-section h2 {
             color: var(--primary-color);
-            font-size: 1.8rem;
-            font-weight: 700;
+            font-size: 1.5rem;
+            font-weight: 600;
             margin-bottom: 30px;
             text-align: center;
             line-height: 1.4;
@@ -190,7 +190,7 @@
 
         <!-- Right Side: Login Form Section -->
         <div class="form-section">
-            <h2>FUAMI Graduates and Alumni Database System</h2>
+            <h2>Graduates and Alumni Database System for Father Urios Academy of Magallanes, Inc. Using K-Means Clustering Algorithm</h2>
             <form method="POST" action="{{ route('login') }}">
                 @csrf
 

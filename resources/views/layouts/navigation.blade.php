@@ -280,7 +280,7 @@
                         <button id="mobileToggle" class="mr-4 text-gray-600 hover:text-blue-600 md:hidden">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
-                        <h1 class="text-lg md:text-xl font-semibold text-gray-800 truncate">@yield('title', 'FUAMI Graduates and Alumni Database System')</h1>
+                        <h1 class="text-lg md:text-sm font-semibold text-gray-800 truncate">@yield('title', 'Graduates and Alumni Database System for FUAMI Using K-Means Clustering Algorithm')</h1>
                     </div>
                     
                     <!-- User Profile -->

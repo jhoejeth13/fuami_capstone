@@ -739,6 +739,7 @@
                 <!-- Employment Information -->
                 <div class="form-section">
         <h2><i class="fas fa-briefcase mr-2"></i> Employment Information</h2>
+            <p class="text-sm text-gray-600 mb-4">This section is optional - only fill it out if you're currently employed. Otherwise, you may submit the form without completing this section.</p>
         <label>Employment Status:
             <select name="employment_status" id="employment_status" onchange="toggleEmploymentFields()">
                 <option value="">Select Status</option>
