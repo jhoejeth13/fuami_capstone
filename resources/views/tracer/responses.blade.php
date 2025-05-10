@@ -234,11 +234,11 @@
                             <div class="space-y-3 text-gray-700">
                                 <div class="flex items-center">
                                     <i class="fas fa-phone text-gray-400 w-5 mr-2"></i>
-                                    <span><strong>Phone:</strong> {{ $response->phone ?? 'N/A' }}</span>
+                                    <span><strong>Phone:</strong> {{ $response->phone ?? 'Did Not Respond' }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="fas fa-envelope text-gray-400 w-5 mr-2"></i>
-                                    <span><strong>Email:</strong> {{ $response->email ?? 'N/A' }}</span>
+                                    <span><strong>Email:</strong> {{ $response->email ?? 'Did Not Respond' }}</span>
                                 </div>
                                 <div class="flex items-center">
                                     <i class="fas fa-graduation-cap text-gray-400 w-5 mr-2"></i>
