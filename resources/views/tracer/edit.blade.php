@@ -309,12 +309,12 @@
                             <select name="job_situation" id="job_situation"
                                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                                 <option value="">Select Type</option>
-                                <option value="Regular" {{ old('employment_type', $response->employment_type) == 'Regular' ? 'selected' : '' }}>Regular</option>
-                                <option value="Contractual" {{ old('employment_type', $response->employment_type) == 'Contractual' ? 'selected' : '' }}>Contractual</option>
-                                <option value="Probationary" {{ old('employment_type', $response->employment_type) == 'Probationary' ? 'selected' : '' }}>Probationary</option>
-                                <option value="Project-based" {{ old('employment_type', $response->employment_type) == 'Project-based' ? 'selected' : '' }}>Project-based</option>
-                                <option value="Permanent" {{ old('employment_type', $response->employment_type) == 'Permanent' ? 'selected' : '' }}>Permanent</option>
-                                <option value="Part-time" {{ old('employment_type', $response->employment_type) == 'Part-time' ? 'selected' : '' }}>Part-time</option>
+                                <option value="Regular" {{ old('employment_type', $response->job_situation) == 'Regular' ? 'selected' : '' }}>Regular</option>
+                                <option value="Contractual" {{ old('employment_type', $response->job_situation) == 'Contractual' ? 'selected' : '' }}>Contractual</option>
+                                <option value="Probationary" {{ old('employment_type', $response->job_situation) == 'Probationary' ? 'selected' : '' }}>Probationary</option>
+                                <option value="Project-based" {{ old('employment_type', $response->job_situation) == 'Project-based' ? 'selected' : '' }}>Project-based</option>
+                                <option value="Permanent" {{ old('employment_type', $response->job_situation) == 'Permanent' ? 'selected' : '' }}>Permanent</option>
+                                <option value="Part-time" {{ old('employment_type', $response->job_situation) == 'Part-time' ? 'selected' : '' }}>Part-time</option>
                             </select>
                         </div>
                         <div>

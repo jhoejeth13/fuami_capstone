@@ -329,35 +329,34 @@ public function index(Request $request)
         ]);
     }
 
-    public function showSHSForm()
-    {
-        // Helper function to get regions and provinces
-        $regions = Cache::remember('regions', 60*24*7, function() {
-            return LocationHelper::getRegions();
-        });
-        
-        // Get unique years from SHS tracer responses
-        $years = TracerStudyResponse::where('graduate_type', 'SHS')
-            ->select('year_graduated')
-            ->distinct()
-            ->orderBy('year_graduated', 'desc')
-            ->pluck('year_graduated')
-            ->toArray();
-        
-            // If no years found, use current year
-        if (empty($years)) {
-            $currentYear = date('Y');
-            $years = range($currentYear, $currentYear - 10);
-        }
-        
-        return view('tracer.shs-form', [
-            'organizationTypes' => $this->organizationTypes,
-            'occupationClassifications' => $this->occupationClassifications,
-            'suffixOptions' => $this->suffixOptions,
-            'regions' => $regions,
-            'years' => $years,
-        ]);
+public function showSHSForm()
+{
+    // Helper function to get regions and provinces
+    $regions = Cache::remember('regions', 60*24*7, function() {
+        return LocationHelper::getRegions();
+    });
+    
+    // Get unique years from juniorhighschool table (same as JHS form)
+    $years = Juniorhighschool::select('school_year')
+        ->distinct()
+        ->orderBy('school_year', 'desc')
+        ->pluck('school_year')
+        ->toArray();
+    
+    // If no years found, use current year
+    if (empty($years)) {
+        $currentYear = date('Y');
+        $years = range($currentYear, $currentYear - 10);
     }
+    
+    return view('tracer.shs-form', [
+        'organizationTypes' => $this->organizationTypes,
+        'occupationClassifications' => $this->occupationClassifications,
+        'suffixOptions' => $this->suffixOptions,
+        'regions' => $regions,
+        'years' => $years,
+    ]);
+}
 
     public function submitJHSForm(Request $request)
     {
