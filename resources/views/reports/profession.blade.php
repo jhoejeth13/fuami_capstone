@@ -209,6 +209,7 @@
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profession</th>
                                         <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Alumni</th>
                                         <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">%</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
@@ -226,6 +227,13 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 {{ number_format(($profession->total / $totalGraduates) * 100, 1) }}%
                                             </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <button class="text-indigo-600 hover:text-indigo-900 view-alumni-btn" 
+                                                        data-profession="{{ $profession->occupational_classification }}"
+                                                        data-count="{{ $profession->total }}">
+                                                    <i class="fas fa-eye mr-1"></i> View Alumni
+                                                </button>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -241,6 +249,51 @@
     </div>
 </div>
 
+<!-- Alumni Modal -->
+<div class="fixed inset-0 overflow-y-auto z-50 hidden" id="alumniModal">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle">
+                            Alumni List
+                        </h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500 mb-4">
+                                Showing <span id="alumniCount">0</span> alumni working as <span id="modalProfession" class="font-semibold"></span>
+                            </p>
+                            <div class="overflow-auto max-h-96">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Year Graduated</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200" id="alumniList">
+                                        <!-- Alumni will be inserted here dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm close-modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @if(!$professionData->isEmpty())
 <!-- Include Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -250,6 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const professionLabels = @json($professionData->pluck('occupational_classification'));
     const professionCounts = @json($professionData->pluck('total'));
     const totalGraduates = {{ $totalGraduates }};
+    const allAlumni = @json($allAlumni ?? []);
     
     // Color generator
     function getProfessionalColor(index) {
@@ -260,8 +314,47 @@ document.addEventListener('DOMContentLoaded', function() {
         ];
         return colors[index % colors.length];
     }
-    
-    // Create the chart
+
+    // Common chart options
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'right',
+                labels: {
+                    boxWidth: 12,
+                    padding: 15,
+                    font: {
+                        size: 11
+                    },
+                    usePointStyle: true,
+                    pointStyle: 'circle'
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const label = context.label || '';
+                        const value = context.raw || 0;
+                        const percentage = ((value / totalGraduates) * 100).toFixed(1);
+                        return `${label}: ${value} alumni (${percentage}%)`;
+                    }
+                },
+                displayColors: true,
+                usePointStyle: true,
+                padding: 12,
+                backgroundColor: 'rgba(0,0,0,0.85)'
+            }
+        },
+        animation: {
+            animateScale: true,
+            animateRotate: true,
+            duration: 1500
+        }
+    };
+
+    // Create the initial chart
     const ctx = document.getElementById('professionChart').getContext('2d');
     let professionChart = new Chart(ctx, {
         type: 'doughnut',
@@ -277,42 +370,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
-                    labels: {
-                        boxWidth: 12,
-                        padding: 15,
-                        font: {
-                            size: 11
-                        },
-                        usePointStyle: true,
-                        pointStyle: 'circle'
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const label = context.label || '';
-                            const value = context.raw || 0;
-                            const percentage = ((value / totalGraduates) * 100).toFixed(1);
-                            return `${label}: ${value} alumni (${percentage}%)`;
-                        }
-                    },
-                    displayColors: true,
-                    usePointStyle: true,
-                    padding: 12,
-                    backgroundColor: 'rgba(0,0,0,0.85)'
-                }
-            },
-            cutout: '60%',
-            animation: {
-                animateScale: true,
-                animateRotate: true,
-                duration: 1500
-            }
+            ...commonOptions,
+            cutout: '60%'
         }
     });
     
@@ -322,11 +381,36 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.chart-type-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             
+            // Destroy the current chart
             professionChart.destroy();
+            
+            // Create new chart with selected type
+            const newOptions = {...commonOptions};
+            
+            // Special options for bar chart
+            if (this.dataset.type === 'bar') {
+                newOptions.indexAxis = 'y'; // Horizontal bar chart
+                newOptions.scales = {
+                    x: {
+                        beginAtZero: true
+                    }
+                };
+            }
+            
             professionChart = new Chart(ctx, {
                 type: this.dataset.type,
-                data: professionChart.data,
-                options: professionChart.options
+                data: {
+                    labels: professionLabels,
+                    datasets: [{
+                        label: 'Alumni Count',
+                        data: professionCounts,
+                        backgroundColor: professionLabels.map((_, index) => getProfessionalColor(index)),
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                        hoverOffset: 15
+                    }]
+                },
+                options: newOptions
             });
         });
     });
@@ -342,6 +426,69 @@ document.addEventListener('DOMContentLoaded', function() {
                 row.style.display = 'none';
             }
         });
+    });
+
+    // Alumni modal functionality
+    const modal = document.getElementById('alumniModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalProfession = document.getElementById('modalProfession');
+    const alumniCount = document.getElementById('alumniCount');
+    const alumniList = document.getElementById('alumniList');
+    
+    document.querySelectorAll('.view-alumni-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const profession = this.dataset.profession;
+            const count = this.dataset.count;
+            
+            // Filter alumni by selected profession
+            const filteredAlumni = allAlumni.filter(alumni => 
+                alumni.occupational_classification === profession
+            );
+            
+            // Update modal content
+            modalProfession.textContent = profession;
+            alumniCount.textContent = count;
+            
+            // Clear previous alumni list
+            alumniList.innerHTML = '';
+            
+            // Populate alumni list
+            filteredAlumni.forEach(alumni => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                const fullName = `${alumni.first_name} ${alumni.middle_name ? alumni.middle_name + ' ' : ''}${alumni.last_name}${alumni.suffix ? ' ' + alumni.suffix : ''}`;
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${fullName}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">${alumni.year_graduated}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">${alumni.gender}</div>
+                    </td>
+                `;
+                
+                alumniList.appendChild(row);
+            });
+            
+            // Show modal
+            modal.classList.remove('hidden');
+        });
+    });
+    
+    // Close modal
+    document.querySelector('.close-modal').addEventListener('click', function() {
+        modal.classList.add('hidden');
+    });
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
+        }
     });
 });
 </script>
@@ -385,6 +532,34 @@ function getProfessionalColor($index) {
         top: 0;
         z-index: 10;
         background-color: #f9fafb;
+    }
+    
+    /* Modal transition */
+    #alumniModal {
+        transition: opacity 0.3s ease;
+    }
+
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 8px;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+    
+    .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
     }
 </style>
 @endsection

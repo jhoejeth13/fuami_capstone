@@ -77,6 +77,19 @@
                         </div>
 
                     <div class="space-y-2">
+                        <label for="occupational_classification" class="block text-sm font-medium text-gray-700">Occupation</label>
+                        <select id="occupational_classification" name="occupational_classification" onchange="this.form.submit()"
+                                class="mt-1 block w-64 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                            <option value="">All Occupations</option>
+                            @foreach($occupations as $occupation)
+                                <option value="{{ $occupation }}" {{ request('occupational_classification') == $occupation ? 'selected' : '' }}>
+                                    {{ $occupation }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
                             <label for="perPage" class="block text-sm font-medium text-gray-700">Results Per Page</label>
                         <select id="perPage" name="perPage" onchange="this.form.submit()"
                                 class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
@@ -222,7 +235,7 @@
                                 @else
                                     <div class="flex items-start">
                                         <i class="fas fa-exclamation-circle text-gray-400 w-5 mr-2 mt-1"></i>
-                                        <span><strong>Did Not Respond</strong></span>
+                                        <span><strong>Unemployed</strong></span>
                                     </div>
                                 @endif
                             </div>

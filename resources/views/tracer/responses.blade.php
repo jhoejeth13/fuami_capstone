@@ -68,29 +68,42 @@
                         <label for="employment_status" class="block text-sm font-medium text-gray-700">Employment Status</label>
                         <select id="employment_status" name="employment_status" onchange="this.form.submit()"
                                 class="mt-1 block w-64 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                <option value="">All Employment Status</option>
-                <option value="Employed" {{ request('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
-                <option value="Unemployed" {{ request('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
-            </select>
+                            <option value="">All Employment Status</option>
+                            <option value="Employed" {{ request('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
+                            <option value="Unemployed" {{ request('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
+                        </select>
                     </div>
                     
+                    <div class="space-y-2">
+                        <label for="occupational_classification" class="block text-sm font-medium text-gray-700">Occupation</label>
+                        <select id="occupational_classification" name="occupational_classification" onchange="this.form.submit()"
+                                class="mt-1 block w-64 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
+                            <option value="">All Occupations</option>
+                            @foreach($occupations as $occupation)
+                                <option value="{{ $occupation }}" {{ request('occupational_classification') == $occupation ? 'selected' : '' }}>
+                                    {{ $occupation }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div class="space-y-2">
                         <label for="perPage" class="block text-sm font-medium text-gray-700">Results Per Page</label>
                         <select id="perPage" name="perPage" onchange="this.form.submit()"
                                 class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
-                <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25</option>
-                <option value="50" {{ request('perPage') == 50 ? 'selected' : '' }}>50</option>
-                <option value="100" {{ request('perPage') == 100 ? 'selected' : '' }}>100</option>
-            </select>
+                            <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ request('perPage') == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('perPage') == 100 ? 'selected' : '' }}>100</option>
+                        </select>
                     </div>
 
                     <div class="bg-gray-50 px-4 py-2 rounded-md text-sm text-gray-600 self-end">
                         Showing {{ $responses->firstItem() ?? 0 }} - {{ $responses->lastItem() ?? 0 }} of {{ $responses->total() }} results
+                    </div>
+                </form>
             </div>
-        </form>
-    </div>
-                            </div>
+        </div>
 
         <!-- Response Cards -->
         <div class="space-y-6">
@@ -103,166 +116,166 @@
                                 {{ $response->employment_status }}
                             </span>
                         </div>
-                    <!-- Card Header -->
-                    <div class="px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 flex justify-between items-center relative overflow-hidden">
-                        <div class="absolute inset-0 opacity-10">
-                            <div class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"></div>
-                            <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full transform translate-x-20 -translate-y-20"></div>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold text-white">
-                                {{ $response->first_name }} {{ $response->middle_name }} {{ $response->last_name }} {{ $response->suffix }}
-                            </h3>
-                            <p class="text-blue-100">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $response->employment_status === 'Employed' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800' }} mr-2">
-                                    {{ $response->employment_status }}
-                                </span>
-                                <span class="text-sm">{{ $response->shs_track }} Track, {{ $response->year_graduated }}</span>
-                            </p>
-                        </div>
-                        <div class="flex space-x-2 relative z-10">
-                            @if(Auth::user() && Auth::user()->hasRole('admin'))
-                                <a href="{{ route('tracer.edit', $response->id) }}" 
-                                   class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm text-white text-sm font-medium rounded-lg border border-white/30 hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200">
-                                    <i class="fas fa-edit mr-2"></i> Edit
-                                </a>
-                                
-                                <form action="{{ route('tracer.destroy', $response->id) }}" method="POST" class="inline-block">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" onclick="return confirm('Are you sure you want to delete this response?')"
-                                            class="inline-flex items-center px-4 py-2 bg-red-500/20 backdrop-blur-sm text-white text-sm font-medium rounded-lg border border-red-400/30 hover:bg-red-500/30 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all duration-200">
-                                        <i class="fas fa-trash mr-2"></i> Delete
-                                    </button>
-                                </form>
-                            @endif
-                        </div>
+                        <!-- Card Header -->
+                        <div class="px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 flex justify-between items-center relative overflow-hidden">
+                            <div class="absolute inset-0 opacity-10">
+                                <div class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"></div>
+                                <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full transform translate-x-20 -translate-y-20"></div>
                             </div>
-
-                    <!-- Card Content -->
-                    <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <!-- Personal Details -->
-                        <div class="bg-gray-50/50 rounded-xl p-5 border border-gray-100">
-                            <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                                <span class="bg-indigo-100 text-indigo-600 p-2 rounded-lg mr-3">
-                                    <i class="fas fa-user-circle"></i>
-                                </span>
-                                Personal Details
-                            </h4>
-                            <div class="space-y-3 text-gray-700">
-                                <div class="flex items-center">
-                                    <i class="fas fa-venus-mars text-gray-400 w-5 mr-2"></i>
-                                    <span>{{ $response->gender }}, {{ $response->age }} years old</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-calendar-alt text-gray-400 w-5 mr-2"></i>
-                                    <span><strong>Birthdate:</strong> {{ date('M d, Y', strtotime($response->birthdate)) }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-heart text-gray-400 w-5 mr-2"></i>
-                                    <span><strong>Civil Status:</strong> {{ $response->civil_status }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-pray text-gray-400 w-5 mr-2"></i>
-                                    <span><strong>Religion:</strong> {{ $response->religion }}</span>
-                                </div>
-                                <div class="flex items-start">
-                                    <i class="fas fa-map-marker-alt text-gray-400 w-5 mr-2 mt-1"></i>
-                                    <span class="text-sm">
-                                        <strong>Address:</strong> {{ $response->address }}, 
-                                        {{ App\Helpers\LocationHelper::getBarangayName($response->barangay) }}, 
-                                        {{ App\Helpers\LocationHelper::getCityName($response->municipality) }}, 
-                                        {{ App\Helpers\LocationHelper::getProvinceName($response->province) }}, 
-                                        {{ App\Helpers\LocationHelper::getRegionName($response->region) }},
-                                        {{ $response->country ?? 'Philippines' }}
+                            <div>
+                                <h3 class="text-xl font-bold text-white">
+                                    {{ $response->first_name }} {{ $response->middle_name }} {{ $response->last_name }} {{ $response->suffix }}
+                                </h3>
+                                <p class="text-blue-100">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $response->employment_status === 'Employed' ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800' }} mr-2">
+                                        {{ $response->employment_status }}
                                     </span>
-                                </div>
+                                    <span class="text-sm">{{ $response->shs_track }} Track, {{ $response->year_graduated }}</span>
+                                </p>
                             </div>
-                        </div>
-
-                        <!-- Employment Information -->
-                        <div class="bg-gray-50/50 rounded-xl p-5 border border-gray-100">
-                            <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                                <span class="bg-green-100 text-green-600 p-2 rounded-lg mr-3">
-                                    <i class="fas fa-briefcase"></i>
-                                </span>
-                                Employment Information
-                            </h4>
-                            <div class="space-y-3 text-gray-700">
-                                @if($response->employment_status === 'Employed')
-                                    <div class="flex items-center">
-                                        <i class="fas fa-building text-gray-400 w-5 mr-2"></i>
-                                        <span><strong>Employer:</strong> {{ $response->employer_name }}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <i class="fas fa-map-marker-alt text-gray-400 w-5 mr-2"></i>
-                                        <span><strong>Work Address:</strong> {{ $response->employer_address }}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <i class="fas fa-industry text-gray-400 w-5 mr-2"></i>
-                                        <span><strong>Organization Type:</strong> {{ $response->organization_type }}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <i class="fas fa-user-tie text-gray-400 w-5 mr-2"></i>
-                                        <span><strong>Occupation:</strong> {{ $response->occupational_classification }}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <i class="fas fa-clock text-gray-400 w-5 mr-2"></i>
-                                        <span><strong>Employment Type:</strong> {{ $response->job_situation }}</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <i class="fas fa-history text-gray-400 w-5 mr-2"></i>
-                                        <span><strong>Years in Company:</strong> {{ $response->years_in_company }}</span>
-                                    </div>
-                                @else
-                                    <div class="flex items-start">
-                                        <i class="fas fa-exclamation-circle text-gray-400 w-5 mr-2 mt-1"></i>
-                                        <span><strong>Did Not Respond</strong></span>
-                                    </div>
+                            <div class="flex space-x-2 relative z-10">
+                                @if(Auth::user() && Auth::user()->hasRole('admin'))
+                                    <a href="{{ route('tracer.edit', $response->id) }}" 
+                                       class="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm text-white text-sm font-medium rounded-lg border border-white/30 hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-200">
+                                        <i class="fas fa-edit mr-2"></i> Edit
+                                    </a>
+                                    
+                                    <form action="{{ route('tracer.destroy', $response->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" onclick="return confirm('Are you sure you want to delete this response?')"
+                                                class="inline-flex items-center px-4 py-2 bg-red-500/20 backdrop-blur-sm text-white text-sm font-medium rounded-lg border border-red-400/30 hover:bg-red-500/30 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all duration-200">
+                                            <i class="fas fa-trash mr-2"></i> Delete
+                                        </button>
+                                    </form>
                                 @endif
                             </div>
                         </div>
 
-                        <!-- Contact Information -->
-                        <div class="bg-gray-50/50 rounded-xl p-5 border border-gray-100">
-                            <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                                <span class="bg-blue-100 text-blue-600 p-2 rounded-lg mr-3">
-                                    <i class="fas fa-address-card"></i>
-                                </span>
-                                Contact Information
-                            </h4>
-                            <div class="space-y-3 text-gray-700">
-                                <div class="flex items-center">
-                                    <i class="fas fa-phone text-gray-400 w-5 mr-2"></i>
-                                    <span><strong>Phone:</strong> {{ $response->phone ?? 'Did Not Respond' }}</span>
+                        <!-- Card Content -->
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <!-- Personal Details -->
+                            <div class="bg-gray-50/50 rounded-xl p-5 border border-gray-100">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <span class="bg-indigo-100 text-indigo-600 p-2 rounded-lg mr-3">
+                                        <i class="fas fa-user-circle"></i>
+                                    </span>
+                                    Personal Details
+                                </h4>
+                                <div class="space-y-3 text-gray-700">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-venus-mars text-gray-400 w-5 mr-2"></i>
+                                        <span>{{ $response->gender }}, {{ $response->age }} years old</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-calendar-alt text-gray-400 w-5 mr-2"></i>
+                                        <span><strong>Birthdate:</strong> {{ date('M d, Y', strtotime($response->birthdate)) }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-heart text-gray-400 w-5 mr-2"></i>
+                                        <span><strong>Civil Status:</strong> {{ $response->civil_status }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-pray text-gray-400 w-5 mr-2"></i>
+                                        <span><strong>Religion:</strong> {{ $response->religion }}</span>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <i class="fas fa-map-marker-alt text-gray-400 w-5 mr-2 mt-1"></i>
+                                        <span class="text-sm">
+                                            <strong>Address:</strong> {{ $response->address }}, 
+                                            {{ App\Helpers\LocationHelper::getBarangayName($response->barangay) }}, 
+                                            {{ App\Helpers\LocationHelper::getCityName($response->municipality) }}, 
+                                            {{ App\Helpers\LocationHelper::getProvinceName($response->province) }}, 
+                                            {{ App\Helpers\LocationHelper::getRegionName($response->region) }},
+                                            {{ $response->country ?? 'Philippines' }}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-envelope text-gray-400 w-5 mr-2"></i>
-                                    <span><strong>Email:</strong> {{ $response->email ?? 'Did Not Respond' }}</span>
+                            </div>
+
+                            <!-- Employment Information -->
+                            <div class="bg-gray-50/50 rounded-xl p-5 border border-gray-100">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <span class="bg-green-100 text-green-600 p-2 rounded-lg mr-3">
+                                        <i class="fas fa-briefcase"></i>
+                                    </span>
+                                    Employment Information
+                                </h4>
+                                <div class="space-y-3 text-gray-700">
+                                    @if($response->employment_status === 'Employed')
+                                        <div class="flex items-center">
+                                            <i class="fas fa-building text-gray-400 w-5 mr-2"></i>
+                                            <span><strong>Employer:</strong> {{ $response->employer_name }}</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-map-marker-alt text-gray-400 w-5 mr-2"></i>
+                                            <span><strong>Work Address:</strong> {{ $response->employer_address }}</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-industry text-gray-400 w-5 mr-2"></i>
+                                            <span><strong>Organization Type:</strong> {{ $response->organization_type }}</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-user-tie text-gray-400 w-5 mr-2"></i>
+                                            <span><strong>Occupation:</strong> {{ $response->occupational_classification }}</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-clock text-gray-400 w-5 mr-2"></i>
+                                            <span><strong>Employment Type:</strong> {{ $response->job_situation }}</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-history text-gray-400 w-5 mr-2"></i>
+                                            <span><strong>Years in Company:</strong> {{ $response->years_in_company }}</span>
+                                        </div>
+                                    @else
+                                        <div class="flex items-start">
+                                            <i class="fas fa-exclamation-circle text-gray-400 w-5 mr-2 mt-1"></i>
+                                            <span><strong>Unemployed</strong></span>
+                                        </div>
+                                    @endif
                                 </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-graduation-cap text-gray-400 w-5 mr-2"></i>
-                                    <span><strong>Track:</strong> {{ $response->shs_track }} Track</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-calendar-check text-gray-400 w-5 mr-2"></i>
-                                    <span><strong>Year Graduated:</strong> {{ $response->year_graduated }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-graduation-cap text-gray-400 w-5 mr-2"></i>
-                                    <span><strong>Educational Attainment:</strong> {{ $response->educational_attainment }}</span>
+                            </div>
+
+                            <!-- Contact Information -->
+                            <div class="bg-gray-50/50 rounded-xl p-5 border border-gray-100">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <span class="bg-blue-100 text-blue-600 p-2 rounded-lg mr-3">
+                                        <i class="fas fa-address-card"></i>
+                                    </span>
+                                    Contact Information
+                                </h4>
+                                <div class="space-y-3 text-gray-700">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-phone text-gray-400 w-5 mr-2"></i>
+                                        <span><strong>Phone:</strong> {{ $response->phone ?? 'Did Not Respond' }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-envelope text-gray-400 w-5 mr-2"></i>
+                                        <span><strong>Email:</strong> {{ $response->email ?? 'Did Not Respond' }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-graduation-cap text-gray-400 w-5 mr-2"></i>
+                                        <span><strong>Track:</strong> {{ $response->shs_track }} Track</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-calendar-check text-gray-400 w-5 mr-2"></i>
+                                        <span><strong>Year Graduated:</strong> {{ $response->year_graduated }}</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-graduation-cap text-gray-400 w-5 mr-2"></i>
+                                        <span><strong>Educational Attainment:</strong> {{ $response->educational_attainment }}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-</div>
-                        </div>
+                    </div>
             @empty
                 <div class="bg-white rounded-lg shadow p-6 text-center">
                     <i class="fas fa-search text-gray-400 text-4xl mb-3"></i>
                     <p class="text-gray-600">No responses found. Try adjusting your filters.</p>
                 </div>
             @endforelse
-    </div>
+        </div>
 
         <!-- Pagination -->
         <div class="mt-8">

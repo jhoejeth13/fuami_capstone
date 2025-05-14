@@ -94,84 +94,112 @@ class TracerStudyController extends Controller
             ->withErrors(['error' => 'Invalid graduate type selected.']);
     }
 
-    public function index(Request $request)
-    {
-        // Get the graduate type from request or default to SHS
-        $type = $request->input('type', 'shs');
+public function index(Request $request)
+{
+    // Get the graduate type from request or default to SHS
+    $type = $request->input('type', 'shs');
+    
+    if (strtolower($type) === 'jhs') {
+        // Query JHS tracer responses
+        $query = JHSTracerResponse::query();
         
-        if (strtolower($type) === 'jhs') {
-            // Query JHS tracer responses
-            $query = JHSTracerResponse::query();
-            
-            // Apply search filter
-            if ($request->filled('search')) {
-                $search = strtolower($request->search);
-                $query->where(function($q) use ($search) {
-                    $q->whereRaw('LOWER(first_name) LIKE ?', ["%{$search}%"])
-                      ->orWhereRaw('LOWER(middle_name) LIKE ?', ["%{$search}%"])
-                      ->orWhereRaw('LOWER(last_name) LIKE ?', ["%{$search}%"]);
-                });
-            }
-            
-            // Apply employment status filter
-            if ($request->filled('employment_status')) {
-                $query->where('employment_status', $request->employment_status);
-            }
-            
-            // Calculate male and female counts
-            $maleCount = JHSTracerResponse::where('gender', 'Male')->count();
-            $femaleCount = JHSTracerResponse::where('gender', 'Female')->count();
+        // Get unique occupational classifications for JHS
+        $occupations = JHSTracerResponse::select('occupational_classification')
+            ->whereNotNull('occupational_classification')
+            ->where('occupational_classification', '!=', '')
+            ->distinct()
+            ->orderBy('occupational_classification')
+            ->pluck('occupational_classification');
 
-            // Paginate the results
-            $perPage = $request->input('perPage', 10);
-            $responses = $query->paginate($perPage)->appends($request->except('page'));
-            
-            // Use JHS responses view
-            return view('tracer.jhs-responses', [
-                'responses' => $responses,
-                'organizationTypes' => $this->organizationTypes,
-                'occupationClassifications' => $this->occupationClassifications,
-                'suffixOptions' => $this->suffixOptions,
-                'type' => 'jhs',
-                'maleCount' => $maleCount,
-                'femaleCount' => $femaleCount
-            ]);
-        } else {
-            // Query SHS tracer responses
-            $query = TracerStudyResponse::query();
-
-            // Apply search filter
-            if ($request->filled('search')) {
-                $search = strtolower($request->search);
-                $query->where(function($q) use ($search) {
-                    $q->whereRaw('LOWER(first_name) LIKE ?', ["%{$search}%"])
-                      ->orWhereRaw('LOWER(middle_name) LIKE ?', ["%{$search}%"])
-                      ->orWhereRaw('LOWER(last_name) LIKE ?', ["%{$search}%"]);
-                });
-            }
-
-            // Apply employment status filter
-            if ($request->filled('employment_status')) {
-                $query->where('employment_status', $request->employment_status);
-            }
-
-            // Filter by graduate type
-            $query->where('graduate_type', 'SHS');
-            
-            // Paginate the results
-            $perPage = $request->input('perPage', 10);
-            $responses = $query->paginate($perPage)->appends($request->except('page'));
-            
-            // Use SHS responses view
-            return view('tracer.responses', [
-                'responses' => $responses,
-                'organizationTypes' => $this->organizationTypes,
-                'occupationClassifications' => $this->occupationClassifications,
-                'suffixOptions' => $this->suffixOptions,
-                'type' => 'shs'
-            ]);
+        // Apply search filter
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+            $query->where(function($q) use ($search) {
+                $q->whereRaw('LOWER(first_name) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(middle_name) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(last_name) LIKE ?', ["%{$search}%"]);
+            });
         }
+        
+        // Apply employment status filter
+        if ($request->filled('employment_status')) {
+            $query->where('employment_status', $request->employment_status);
+        }
+        
+        // Add occupational classification filter
+        if ($request->filled('occupational_classification')) {
+            $query->where('occupational_classification', $request->occupational_classification);
+        }
+
+        // Calculate male and female counts
+        $maleCount = JHSTracerResponse::where('gender', 'Male')->count();
+        $femaleCount = JHSTracerResponse::where('gender', 'Female')->count();
+
+        // Paginate the results
+        $perPage = $request->input('perPage', 10);
+        $responses = $query->paginate($perPage)->appends($request->except('page'));
+        
+        // Use JHS responses view
+        return view('tracer.jhs-responses', [
+            'responses' => $responses,
+            'organizationTypes' => $this->organizationTypes,
+            'occupationClassifications' => $this->occupationClassifications,
+            'suffixOptions' => $this->suffixOptions,
+            'type' => 'jhs',
+            'maleCount' => $maleCount,
+            'femaleCount' => $femaleCount,
+            'occupations' => $occupations
+        ]);
+    } else {
+        // Query SHS tracer responses
+        $query = TracerStudyResponse::query();
+
+        // Get unique occupational classifications for SHS
+        $occupations = TracerStudyResponse::select('occupational_classification')
+            ->whereNotNull('occupational_classification')
+            ->where('occupational_classification', '!=', '')
+            ->distinct()
+            ->orderBy('occupational_classification')
+            ->pluck('occupational_classification');
+
+        // Apply search filter
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+            $query->where(function($q) use ($search) {
+                $q->whereRaw('LOWER(first_name) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(middle_name) LIKE ?', ["%{$search}%"])
+                  ->orWhereRaw('LOWER(last_name) LIKE ?', ["%{$search}%"]);
+            });
+        }
+
+        // Apply employment status filter
+        if ($request->filled('employment_status')) {
+            $query->where('employment_status', $request->employment_status);
+        }
+
+        // Add occupational classification filter
+        if ($request->filled('occupational_classification')) {
+            $query->where('occupational_classification', $request->occupational_classification);
+        }
+
+        // Filter by graduate type
+        $query->where('graduate_type', 'SHS');
+        
+        // Paginate the results
+        $perPage = $request->input('perPage', 10);
+        $responses = $query->paginate($perPage)->appends($request->except('page'));
+        
+        // Use SHS responses view
+        return view('tracer.responses', [
+            'responses' => $responses,
+            'organizationTypes' => $this->organizationTypes,
+            'occupationClassifications' => $this->occupationClassifications,
+            'suffixOptions' => $this->suffixOptions,
+            'type' => 'shs',
+            'occupations' => $occupations
+        ]);
     }
+}
 
     public function edit($id)
     {
@@ -316,7 +344,7 @@ class TracerStudyController extends Controller
             ->pluck('year_graduated')
             ->toArray();
         
-        // If no years found, use current year
+            // If no years found, use current year
         if (empty($years)) {
             $currentYear = date('Y');
             $years = range($currentYear, $currentYear - 10);

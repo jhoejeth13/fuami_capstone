@@ -27,104 +27,64 @@ class ReportsController extends Controller
     }
 
     /**
-     * Generate profession-based reports for SHS graduates
-     */
-    public function professionReportSHS(Request $request)
-    {
-        // Get filters
-        $year = $request->input('year', null);
-        $gender = $request->input('gender', null);
-        
-        // Base query
-        $query = TracerStudyResponse::where('employment_status', 'Employed')
-            ->where('graduate_type', 'SHS')
-            ->whereNotNull('occupational_classification');
-        
-        // Apply filters
-        if ($year) {
-            $query->where('year_graduated', $year);
-        }
-        
-        if ($gender) {
-            $query->where('gender', $gender);
-        }
-        
-        // Group by occupational classification and count
-        $professionData = $query->select('occupational_classification', DB::raw('count(*) as total'))
-            ->groupBy('occupational_classification')
-            ->orderByDesc('total')
-            ->get();
-        
-        // Get years for filter dropdown
-        $years = TracerStudyResponse::where('graduate_type', 'SHS')
-            ->distinct()
-            ->orderBy('year_graduated', 'desc')
-            ->pluck('year_graduated');
-            
-        return view('reports.profession', [
-            'professionData' => $professionData,
-            'years' => $years,
-            'selectedYear' => $year,
-            'selectedGender' => $gender,
-            'graduateType' => 'SHS',
-            'totalGraduates' => $professionData->sum('total')
-        ]);
-    }
-    
-    /**
-     * Generate profession-based reports for JHS graduates
-     */
-    public function professionReportJHS(Request $request)
-    {
-        // Get filters
-        $year = $request->input('year', null);
-        $gender = $request->input('gender', null);
-        
-        // Base query
-        $query = JHSTracerResponse::where('employment_status', 'Employed')
-            ->whereNotNull('occupational_classification');
-        
-        // Apply filters
-        if ($year) {
-            $query->where('year_graduated', $year);
-        }
-        
-        if ($gender) {
-            $query->where('gender', $gender);
-        }
-        
-        // Group by occupational classification and count
-        $professionData = $query->select('occupational_classification', DB::raw('count(*) as total'))
-            ->groupBy('occupational_classification')
-            ->orderByDesc('total')
-            ->get();
-        
-        // Get years for filter dropdown
-        $years = JHSTracerResponse::distinct()
-            ->orderBy('year_graduated', 'desc')
-            ->pluck('year_graduated');
-            
-        return view('reports.profession', [
-            'professionData' => $professionData,
-            'years' => $years,
-            'selectedYear' => $year,
-            'selectedGender' => $gender,
-            'graduateType' => 'JHS',
-            'totalGraduates' => $professionData->sum('total')
-        ]);
-    }
-    
-    /**
      * Generic professional report that can be filtered by graduate type
      */
     public function professionalReport(Request $request)
     {
         $graduateType = $request->input('graduate_type', 'SHS');
+        $year = $request->input('year', null);
+        $gender = $request->input('gender', null);
         
         if ($graduateType === 'JHS') {
-            return $this->professionReportJHS($request);
+            $model = JHSTracerResponse::class;
+            $years = JHSTracerResponse::distinct()
+                ->orderBy('year_graduated', 'desc')
+                ->pluck('year_graduated');
         } else {
-            return $this->professionReportSHS($request);
+            $model = TracerStudyResponse::class;
+            $years = TracerStudyResponse::where('graduate_type', 'SHS')
+                ->distinct()
+                ->orderBy('year_graduated', 'desc')
+                ->pluck('year_graduated');
         }
+        
+        // Base query for profession counts
+        $professionQuery = $model::where('employment_status', 'Employed')
+            ->whereNotNull('occupational_classification');
+            
+        // Base query for alumni list
+        $alumniQuery = $model::where('employment_status', 'Employed')
+            ->whereNotNull('occupational_classification')
+            ->select('id', 'first_name', 'middle_name', 'last_name', 'suffix', 'occupational_classification', 'year_graduated', 'gender');
+        
+        // Apply filters
+        if ($year) {
+            $professionQuery->where('year_graduated', $year);
+            $alumniQuery->where('year_graduated', $year);
+        }
+        
+        if ($gender) {
+            $professionQuery->where('gender', $gender);
+            $alumniQuery->where('gender', $gender);
+        }
+        
+        // Get profession data with counts
+        $professionData = $professionQuery->select('occupational_classification', DB::raw('count(*) as total'))
+            ->groupBy('occupational_classification')
+            ->orderByDesc('total')
+            ->get();
+        
+        // Get all alumni data for the modal
+        $allAlumni = $alumniQuery->get();
+        
+        return view('reports.profession', [
+            'professionData' => $professionData,
+            'allAlumni' => $allAlumni,
+            'years' => $years,
+            'selectedYear' => $year,
+            'selectedGender' => $gender,
+            'graduateType' => $graduateType,
+            'totalGraduates' => $professionData->sum('total')
+        ]);
     }
-} 
+}

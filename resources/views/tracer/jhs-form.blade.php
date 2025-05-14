@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FUAMI SHS Tracer System</title>
+    <title>FUAMI JHS Tracer System</title>
     <!-- Font Awesome (Local) -->
     @include('includes.fontawesome')
     <!-- Google Fonts -->
@@ -341,6 +341,15 @@
             font-size: 0.875rem;
             margin-top: -0.75rem;
             margin-bottom: 0.5rem;
+            display: none;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        .input-error {
+            border-color: var(--danger) !important;
         }
 
         .success-message {
@@ -565,7 +574,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('tracer.submit-jhs') }}" method="POST" id="tracerForm">
+            <form action="{{ route('tracer.submit-jhs') }}" method="POST" id="tracerForm" novalidate>
                 @csrf
                 <input type="hidden" name="graduate_type" value="JHS">
                 <input type="hidden" name="employment_status" id="employment_status_hidden" value="Did not respond">
@@ -574,13 +583,15 @@
                 <div class="form-section">
                     <h2><i class="fas fa-user mr-2"></i> Personal Information</h2>
                     <label>First Name:
-                        <input type="text" name="first_name" value="{{ old('first_name') }}" required>
+                        <input type="text" name="first_name" id="first_name" value="{{ old('first_name') }}" required>
+                        <span class="error" id="first_name_error">First name is required</span>
                     </label>                    
                     <label>Middle Name:
-                        <input type="text" name="middle_name" value="{{ old('middle_name') }}">
+                        <input type="text" name="middle_name" id="middle_name" value="{{ old('middle_name') }}">
                     </label>
                     <label>Last Name:
-                        <input type="text" name="last_name" value="{{ old('last_name') }}" required>
+                        <input type="text" name="last_name" id="last_name" value="{{ old('last_name') }}" required>
+                        <span class="error" id="last_name_error">Last name is required</span>
                     </label>         
                     <label>Suffix:
                         <select name="suffix" id="suffix" onchange="toggleOtherSuffix()">
@@ -593,24 +604,28 @@
                     </label>
                     <div id="otherSuffixContainer" style="display: none;">
                         <label>Specify Suffix:
-                            <input type="text" name="suffix_other" value="{{ old('suffix_other') }}" maxlength="10">
+                            <input type="text" name="suffix_other" id="suffix_other" value="{{ old('suffix_other') }}" maxlength="10">
+                            <span class="error" id="suffix_other_error">Please specify your suffix</span>
                         </label>
                     </div>
                     <label>Date of Birth:
                         <input type="date" name="birthdate" id="birthdate" value="{{ old('birthdate') }}" required onchange="calculateAge()" pattern="\d{2}/\d{2}/\d{2}">
+                        <span class="error" id="birthdate_error">Date of birth is required</span>
                     </label>
                     <label>Age:
                         <input type="number" name="age" id="age" value="{{ old('age') }}" required readonly>
+                        <span class="error" id="age_error">Age is required</span>
                     </label>
                     <label>Sex:
-                        <select name="gender" required>
+                        <select name="gender" id="gender" required>
                             <option value="">Select Sex</option>
                             <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
                             <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
                         </select>
+                        <span class="error" id="gender_error">Please select your sex</span>
                     </label>
                     <label>Civil Status:
-                        <select name="civil_status" required>
+                        <select name="civil_status" id="civil_status" required>
                             <option value="">Select Civil Status</option>
                             <option value="Single" {{ old('civil_status') == 'Single' ? 'selected' : '' }}>Single</option>
                             <option value="Married" {{ old('civil_status') == 'Married' ? 'selected' : '' }}>Married</option>
@@ -618,6 +633,7 @@
                             <option value="Widowed" {{ old('civil_status') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
                             <option value="Separated" {{ old('civil_status') == 'Separated' ? 'selected' : '' }}>Separated</option>
                         </select>
+                        <span class="error" id="civil_status_error">Please select your civil status</span>
                     </label>
                     <label>Religion:
                         <select name="religion" id="religion" required onchange="handleReligionChange()">
@@ -632,10 +648,12 @@
                             <option value="Jehovah's Witness" {{ old('religion') == 'Jehovah\'s Witness' ? 'selected' : '' }}>Jehovah's Witness</option>
                             <option value="Others">Others (please specify)</option>
                         </select>
+                        <span class="error" id="religion_error">Please select your religion</span>
                         <input type="text" name="religion_other" id="religion_other" 
                               value="{{ old('religion_other') }}" 
                               style="display: none; margin-top: 0.5rem;"
                               placeholder="Please specify religion">
+                        <span class="error" id="religion_other_error" style="display: none;">Please specify your religion</span>
                     </label>
                     <h2><i class="fas fa-map-marker-alt mr-2"></i>Present Address</h2>
                     
@@ -650,6 +668,7 @@
                                     </option>
                                 @endforeach
                             </select>
+                            <span class="error" id="region_error">Please select your region</span>
                         </div>
 
                         <div class="form-group">
@@ -660,6 +679,7 @@
                                     <option value="{{ old('province') }}" selected>{{ old('province_name') }}</option>
                                 @endif
                             </select>
+                            <span class="error" id="province_error">Please select your province</span>
                         </div>
 
                         <div class="form-group">
@@ -670,6 +690,7 @@
                                     <option value="{{ old('city') }}" selected>{{ old('city_name') }}</option>
                                 @endif
                             </select>
+                            <span class="error" id="city_error">Please select your city/municipality</span>
                         </div>
 
                         <div class="form-group">
@@ -680,10 +701,11 @@
                                     <option value="{{ old('barangay') }}" selected>{{ old('brgy_name') }}</option>
                                 @endif
                             </select>
+                            <span class="error" id="barangay_error">Please select your barangay</span>
                             <input type="hidden" name="postal_code" value="0000">
                             <input type="hidden" name="country" value="{{ old('country', 'Philippines') }}">
                             <label>Purok/Street:
-                                <input type="text" name="address" value="{{ old('address') }}">
+                                <input type="text" name="address" id="address" value="{{ old('address') }}">
                             </label>
                             <div class="form-group">
                                 <label for="country">Country:</label>
@@ -697,15 +719,17 @@
                 <div class="form-section">
                     <h2><i class="fas fa-graduation-cap mr-2"></i> Education Information</h2>
                     <label>Year Graduated:
-                        <select name="year_graduated" required>
+                        <select name="year_graduated" id="year_graduated" required>
                             <option value="">Select Year</option>
                             @foreach ($years as $year)
                                 <option value="{{ $year }}" {{ old('year_graduated') == $year ? 'selected' : '' }}>{{ $year }}</option>
                             @endforeach
                         </select>
+                        <span class="error" id="year_graduated_error">Please select your year of graduation</span>
                     </label>
                     <label>Educational Attainment:
-                        <input type="text" name="educational_attainment" value="{{ old('educational_attainment') }}" required>
+                        <input type="text" name="educational_attainment" id="educational_attainment" value="{{ old('educational_attainment') }}" required>
+                        <span class="error" id="educational_attainment_error">Educational attainment is required</span>
                     </label>
                 </div>
 
@@ -713,22 +737,25 @@
                 <div class="form-section">
                     <h2><i class="fas fa-address-book mr-2"></i> Contact Information (Optional)</h2>
                     <label>Phone Number:
-                        <input type="text" name="phone" value="{{ old('phone') }}">
+                        <input type="text" name="phone" id="phone" value="{{ old('phone') }}" pattern="[0-9]{10,15}">
+                        <span class="error" id="phone_error">Please enter a valid phone number (10-15 digits)</span>
                     </label>
                     <label>Email Address:
-                        <input type="email" name="email" value="{{ old('email') }}">
+                        <input type="email" name="email" id="email" value="{{ old('email') }}">
+                        <span class="error" id="email_error">Please enter a valid email address</span>
                     </label>
                 </div>
 
                 <!-- Employment Information -->
                 <div class="form-section">
                     <h2><i class="fas fa-briefcase mr-2"></i> Employment Information</h2>
-                        <p class="text-sm text-gray-600 mb-4">This section is optional - only fill it out if you're currently employed. Otherwise, you may submit the form without completing this section.</p>
                     <label>Employment Status:
                         <select name="employment_status_display" id="employment_status_display" onchange="toggleEmploymentFields()">
                             <option value="">Select Status</option>
                             <option value="Employed" {{ old('employment_status') == 'Employed' ? 'selected' : '' }}>Employed</option>
+                            <option value="Unemployed" {{ old('employment_status') == 'Unemployed' ? 'selected' : '' }}>Unemployed</option>
                         </select>
+                        <span class="error" id="employment_status_error">Please select your employment status</span>
                     </label>
 
                     <!-- Employed Fields -->
@@ -745,12 +772,14 @@
                                     </option>
                                 @endforeach
                             </select>
+                            <span class="error" id="organization_type_error">Please select organization type</span>
                         </label>
                         <div id="org_type_other_container" style="display: none; margin-top: 0.5rem;">
                             <label>Please specify organization type:
                                 <input type="text" name="organization_type_other" id="organization_type_other" 
                                     value="{{ old('organization_type_other') }}"
                                     placeholder="Enter organization type">
+                                <span class="error" id="organization_type_other_error">Please specify organization type</span>
                             </label>
                         </div>
 
@@ -774,30 +803,35 @@
                                     @endif
                                 @endforeach
                             </select>
+                            <span class="error" id="occupational_classification_error">Please select occupational classification</span>
                         </label>
                         <div id="occ_class_other_container" style="display: none;">
                             <label>Specify Occupational Classification:
-                                <input type="text" name="occupational_classification_other" value="{{ old('occupational_classification_other') }}" maxlength="255">
+                                <input type="text" name="occupational_classification_other" id="occupational_classification_other" value="{{ old('occupational_classification_other') }}" maxlength="255">
+                                <span class="error" id="occupational_classification_other_error">Please specify occupational classification</span>
                             </label>
                         </div>
                         
                         <label>Employer Name:
-                            <input type="text" name="employer_name" value="{{ old('employer_name') }}">
+                            <input type="text" name="employer_name" id="employer_name" value="{{ old('employer_name') }}">
+                            <span class="error" id="employer_name_error">Employer name is required</span>
                         </label>
                         <label>Employer Address:
-                            <input type="text" name="employer_address" value="{{ old('employer_address') }}">
+                            <input type="text" name="employer_address" id="employer_address" value="{{ old('employer_address') }}">
+                            <span class="error" id="employer_address_error">Employer address is required</span>
                         </label>
                         <label>Employment Type:
-                            <select name="job_situation">
+                            <select name="job_situation" id="job_situation">
                                 <option value="">Select Situation</option>
                                 <option value="Permanent" {{ old('job_situation') == 'Permanent' ? 'selected' : '' }}>Permanent</option>
                                 <option value="Contractual" {{ old('job_situation') == 'Contractual' ? 'selected' : '' }}>Contractual</option>
                                 <option value="Casual" {{ old('job_situation') == 'Casual' ? 'selected' : '' }}>Not Permanent</option>
                                 <option value="Others" {{ old('job_situation') == 'Others' ? 'selected' : '' }}>Others</option>
                             </select>
+                            <span class="error" id="job_situation_error">Please select employment type</span>
                         </label>
                         <label>Years in Company:
-                            <select name="years_in_company">
+                            <select name="years_in_company" id="years_in_company">
                                 <option value="">Select Years</option>
                                 <option value="0-5" {{ old('years_in_company') == '0-5' ? 'selected' : '' }}>0-5 years</option>
                                 <option value="6-10" {{ old('years_in_company') == '6-10' ? 'selected' : '' }}>6-10 years</option>
@@ -806,6 +840,7 @@
                                 <option value="20-25" {{ old('years_in_company') == '20-25' ? 'selected' : '' }}>20-25 years</option>
                                 <option value="25 above" {{ old('years_in_company') == '25 above' ? 'selected' : '' }}>25+ years</option>
                             </select>
+                            <span class="error" id="years_in_company_error">Please select years in company</span>
                         </label>
                     </div>
                 </div>
@@ -814,7 +849,7 @@
                     <button type="button" class="btn border border-gray-300 text-gray-800 hover:bg-gray-100" onclick="closeForm()">
                         <i class="fas fa-times mr-2"></i> Cancel
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
                         <i class="fas fa-paper-plane mr-2"></i> Submit JHS Form
                     </button>
                 </div>
@@ -866,18 +901,29 @@
             }
 
             // Set employment status before form submission
-            document.getElementById('tracerForm').addEventListener('submit', function() {
+            document.getElementById('tracerForm').addEventListener('submit', function(e) {
+                // First validate the form
+                if (!validateForm()) {
+                    e.preventDefault();
+                    return false;
+                }
+                
                 const statusDisplay = document.getElementById('employment_status_display').value;
                 const hiddenStatusField = document.getElementById('employment_status_hidden');
                 
                 if (statusDisplay === 'Employed') {
                     hiddenStatusField.value = 'Employed';
+                } else if (statusDisplay === 'Unemployed') {
+                    hiddenStatusField.value = 'Unemployed';
                 } else {
                     hiddenStatusField.value = 'Did not respond';
                 }
             });
+
+            // Add real-time validation for all fields
+            setupRealTimeValidation();
         });
-        
+
         // Address dropdown functions
         function loadProvinces() {
             const region = document.getElementById('region').value;
@@ -1065,50 +1111,62 @@
         function handleReligionChange() {
             const religionSelect = document.getElementById('religion');
             const religionOtherInput = document.getElementById('religion_other');
+            const religionOtherError = document.getElementById('religion_other_error');
             
             if (religionSelect.value === 'Others') {
                 religionOtherInput.style.display = 'block';
                 religionOtherInput.setAttribute('required', 'required');
+                religionOtherError.style.display = 'block';
             } else {
                 religionOtherInput.style.display = 'none';
                 religionOtherInput.removeAttribute('required');
+                religionOtherError.style.display = 'none';
             }
         }
 
         function toggleOrgTypeOther() {
             const orgTypeSelect = document.getElementById('organization_type');
             const otherContainer = document.getElementById('org_type_other_container');
+            const otherError = document.getElementById('organization_type_other_error');
             
             if (orgTypeSelect.value === 'Other') {
                 otherContainer.style.display = 'block';
                 document.getElementById('organization_type_other').setAttribute('required', 'required');
+                otherError.style.display = 'block';
             } else {
                 otherContainer.style.display = 'none';
                 document.getElementById('organization_type_other').removeAttribute('required');
+                otherError.style.display = 'none';
             }
         }
 
         function toggleOccClassOther() {
             const occClassSelect = document.getElementById('occupational_classification');
             const otherContainer = document.getElementById('occ_class_other_container');
+            const otherError = document.getElementById('occupational_classification_other_error');
             
             if (occClassSelect.value === 'Other') {
                 otherContainer.style.display = 'block';
+                otherError.style.display = 'block';
             } else {
                 otherContainer.style.display = 'none';
+                otherError.style.display = 'none';
             }
         }
 
         function toggleOtherSuffix() {
             const suffixSelect = document.getElementById('suffix');
             const otherSuffixContainer = document.getElementById('otherSuffixContainer');
+            const otherError = document.getElementById('suffix_other_error');
             
             if (suffixSelect.value === 'Other') {
                 otherSuffixContainer.style.display = 'block';
                 document.getElementById('suffix_other').setAttribute('required', 'required');
+                otherError.style.display = 'block';
             } else {
                 otherSuffixContainer.style.display = 'none';
                 document.getElementById('suffix_other').removeAttribute('required');
+                otherError.style.display = 'none';
             }
         }
 
@@ -1118,6 +1176,408 @@
             if (event.target == modal) {
                 closeForm();
             }
+        }
+
+        // Setup real-time validation for all fields
+        function setupRealTimeValidation() {
+            // Personal Information
+            document.getElementById('first_name').addEventListener('input', validateFirstName);
+            document.getElementById('last_name').addEventListener('input', validateLastName);
+            document.getElementById('birthdate').addEventListener('change', validateBirthdate);
+            document.getElementById('gender').addEventListener('change', validateGender);
+            document.getElementById('civil_status').addEventListener('change', validateCivilStatus);
+            document.getElementById('religion').addEventListener('change', validateReligion);
+            document.getElementById('religion_other').addEventListener('input', validateReligionOther);
+            document.getElementById('region').addEventListener('change', validateRegion);
+            document.getElementById('province').addEventListener('change', validateProvince);
+            document.getElementById('city').addEventListener('change', validateCity);
+            document.getElementById('barangay').addEventListener('change', validateBarangay);
+            
+            // Education Information
+            document.getElementById('year_graduated').addEventListener('change', validateYearGraduated);
+            document.getElementById('educational_attainment').addEventListener('input', validateEducationalAttainment);
+            
+            // Contact Information
+            document.getElementById('phone').addEventListener('input', validatePhone);
+            document.getElementById('email').addEventListener('input', validateEmail);
+            
+            // Employment Information
+            document.getElementById('employment_status_display').addEventListener('change', validateEmploymentStatus);
+            document.getElementById('organization_type').addEventListener('change', validateOrganizationType);
+            document.getElementById('organization_type_other').addEventListener('input', validateOrganizationTypeOther);
+            document.getElementById('occupational_classification').addEventListener('change', validateOccupationalClassification);
+            document.getElementById('occupational_classification_other').addEventListener('input', validateOccupationalClassificationOther);
+            document.getElementById('employer_name').addEventListener('input', validateEmployerName);
+            document.getElementById('employer_address').addEventListener('input', validateEmployerAddress);
+            document.getElementById('job_situation').addEventListener('change', validateJobSituation);
+            document.getElementById('years_in_company').addEventListener('change', validateYearsInCompany);
+        }
+
+        // Validation functions
+        function validateFirstName() {
+            const firstName = document.getElementById('first_name');
+            const error = document.getElementById('first_name_error');
+            if (!firstName.value.trim()) {
+                showError(firstName, error, 'First name is required');
+                return false;
+            }
+            hideError(firstName, error);
+            return true;
+        }
+
+        function validateLastName() {
+            const lastName = document.getElementById('last_name');
+            const error = document.getElementById('last_name_error');
+            if (!lastName.value.trim()) {
+                showError(lastName, error, 'Last name is required');
+                return false;
+            }
+            hideError(lastName, error);
+            return true;
+        }
+
+        function validateBirthdate() {
+            const birthdate = document.getElementById('birthdate');
+            const error = document.getElementById('birthdate_error');
+            if (!birthdate.value) {
+                showError(birthdate, error, 'Date of birth is required');
+                return false;
+            }
+            
+            // Validate age range (5-100 years old)
+            const today = new Date();
+            const birthDate = new Date(birthdate.value);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            if (age < 5 || age > 100) {
+                showError(birthdate, error, 'Please enter a valid date of birth (age)');
+                return false;
+            }
+            
+            hideError(birthdate, error);
+            return true;
+        }
+
+        function validateGender() {
+            const gender = document.getElementById('gender');
+            const error = document.getElementById('gender_error');
+            if (!gender.value) {
+                showError(gender, error, 'Please select your sex');
+                return false;
+            }
+            hideError(gender, error);
+            return true;
+        }
+
+        function validateCivilStatus() {
+            const civilStatus = document.getElementById('civil_status');
+            const error = document.getElementById('civil_status_error');
+            if (!civilStatus.value) {
+                showError(civilStatus, error, 'Please select your civil status');
+                return false;
+            }
+            hideError(civilStatus, error);
+            return true;
+        }
+
+        function validateReligion() {
+            const religion = document.getElementById('religion');
+            const error = document.getElementById('religion_error');
+            if (!religion.value) {
+                showError(religion, error, 'Please select your religion');
+                return false;
+            }
+            hideError(religion, error);
+            return true;
+        }
+
+        function validateReligionOther() {
+            const religionOther = document.getElementById('religion_other');
+            const error = document.getElementById('religion_other_error');
+            if (document.getElementById('religion').value === 'Others' && !religionOther.value.trim()) {
+                showError(religionOther, error, 'Please specify your religion');
+                return false;
+            }
+            hideError(religionOther, error);
+            return true;
+        }
+
+        function validateRegion() {
+            const region = document.getElementById('region');
+            const error = document.getElementById('region_error');
+            if (!region.value) {
+                showError(region, error, 'Please select your region');
+                return false;
+            }
+            hideError(region, error);
+            return true;
+        }
+
+        function validateProvince() {
+            const province = document.getElementById('province');
+            const error = document.getElementById('province_error');
+            if (!province.value) {
+                showError(province, error, 'Please select your province');
+                return false;
+            }
+            hideError(province, error);
+            return true;
+        }
+
+        function validateCity() {
+            const city = document.getElementById('city');
+            const error = document.getElementById('city_error');
+            if (!city.value) {
+                showError(city, error, 'Please select your city/municipality');
+                return false;
+            }
+            hideError(city, error);
+            return true;
+        }
+
+        function validateBarangay() {
+            const barangay = document.getElementById('barangay');
+            const error = document.getElementById('barangay_error');
+            if (!barangay.value) {
+                showError(barangay, error, 'Please select your barangay');
+                return false;
+            }
+            hideError(barangay, error);
+            return true;
+        }
+
+        function validateYearGraduated() {
+            const yearGraduated = document.getElementById('year_graduated');
+            const error = document.getElementById('year_graduated_error');
+            if (!yearGraduated.value) {
+                showError(yearGraduated, error, 'Please select your year of graduation');
+                return false;
+            }
+            hideError(yearGraduated, error);
+            return true;
+        }
+
+        function validateEducationalAttainment() {
+            const educationalAttainment = document.getElementById('educational_attainment');
+            const error = document.getElementById('educational_attainment_error');
+            if (!educationalAttainment.value.trim()) {
+                showError(educationalAttainment, error, 'Educational attainment is required');
+                return false;
+            }
+            hideError(educationalAttainment, error);
+            return true;
+        }
+
+        function validatePhone() {
+            const phone = document.getElementById('phone');
+            const error = document.getElementById('phone_error');
+            
+            if (phone.value && !/^[0-9]{10,15}$/.test(phone.value)) {
+                showError(phone, error, 'Please enter a valid phone number (10-15 digits)');
+                return false;
+            }
+            hideError(phone, error);
+            return true;
+        }
+
+        function validateEmail() {
+            const email = document.getElementById('email');
+            const error = document.getElementById('email_error');
+            
+            if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+                showError(email, error, 'Please enter a valid email address');
+                return false;
+            }
+            hideError(email, error);
+            return true;
+        }
+
+        function validateEmploymentStatus() {
+            const employmentStatus = document.getElementById('employment_status_display');
+            const error = document.getElementById('employment_status_error');
+            if (!employmentStatus.value) {
+                showError(employmentStatus, error, 'Please select your employment status');
+                return false;
+            }
+            hideError(employmentStatus, error);
+            return true;
+        }
+
+        function validateOrganizationType() {
+            const organizationType = document.getElementById('organization_type');
+            const error = document.getElementById('organization_type_error');
+            
+            // Only validate if employment status is Employed
+            if (document.getElementById('employment_status_display').value === 'Employed' && !organizationType.value) {
+                showError(organizationType, error, 'Please select organization type');
+                return false;
+            }
+            hideError(organizationType, error);
+            return true;
+        }
+
+        function validateOrganizationTypeOther() {
+            const organizationTypeOther = document.getElementById('organization_type_other');
+            const error = document.getElementById('organization_type_other_error');
+            
+            if (document.getElementById('organization_type').value === 'Other' && !organizationTypeOther.value.trim()) {
+                showError(organizationTypeOther, error, 'Please specify organization type');
+                return false;
+            }
+            hideError(organizationTypeOther, error);
+            return true;
+        }
+
+        function validateOccupationalClassification() {
+            const occupationalClassification = document.getElementById('occupational_classification');
+            const error = document.getElementById('occupational_classification_error');
+            
+            // Only validate if employment status is Employed
+            if (document.getElementById('employment_status_display').value === 'Employed' && !occupationalClassification.value) {
+                showError(occupationalClassification, error, 'Please select occupational classification');
+                return false;
+            }
+            hideError(occupationalClassification, error);
+            return true;
+        }
+
+        function validateOccupationalClassificationOther() {
+            const occupationalClassificationOther = document.getElementById('occupational_classification_other');
+            const error = document.getElementById('occupational_classification_other_error');
+            
+            if (document.getElementById('occupational_classification').value === 'Other' && !occupationalClassificationOther.value.trim()) {
+                showError(occupationalClassificationOther, error, 'Please specify occupational classification');
+                return false;
+            }
+            hideError(occupationalClassificationOther, error);
+            return true;
+        }
+
+        function validateEmployerName() {
+            const employerName = document.getElementById('employer_name');
+            const error = document.getElementById('employer_name_error');
+            
+            // Only validate if employment status is Employed
+            if (document.getElementById('employment_status_display').value === 'Employed' && !employerName.value.trim()) {
+                showError(employerName, error, 'Employer name is required');
+                return false;
+            }
+            hideError(employerName, error);
+            return true;
+        }
+
+        function validateEmployerAddress() {
+            const employerAddress = document.getElementById('employer_address');
+            const error = document.getElementById('employer_address_error');
+            
+            // Only validate if employment status is Employed
+            if (document.getElementById('employment_status_display').value === 'Employed' && !employerAddress.value.trim()) {
+                showError(employerAddress, error, 'Employer address is required');
+                return false;
+            }
+            hideError(employerAddress, error);
+            return true;
+        }
+
+        function validateJobSituation() {
+            const jobSituation = document.getElementById('job_situation');
+            const error = document.getElementById('job_situation_error');
+            
+            // Only validate if employment status is Employed
+            if (document.getElementById('employment_status_display').value === 'Employed' && !jobSituation.value) {
+                showError(jobSituation, error, 'Please select employment type');
+                return false;
+            }
+            hideError(jobSituation, error);
+            return true;
+        }
+
+        function validateYearsInCompany() {
+            const yearsInCompany = document.getElementById('years_in_company');
+            const error = document.getElementById('years_in_company_error');
+            
+            // Only validate if employment status is Employed
+            if (document.getElementById('employment_status_display').value === 'Employed' && !yearsInCompany.value) {
+                showError(yearsInCompany, error, 'Please select years in company');
+                return false;
+            }
+            hideError(yearsInCompany, error);
+            return true;
+        }
+
+        // Helper functions for validation
+        function showError(inputElement, errorElement, message) {
+            inputElement.classList.add('input-error');
+            errorElement.textContent = message;
+            errorElement.classList.add('active');
+        }
+
+        function hideError(inputElement, errorElement) {
+            inputElement.classList.remove('input-error');
+            errorElement.classList.remove('active');
+        }
+
+        // Main form validation function
+        function validateForm() {
+            let isValid = true;
+            
+            // Personal Information
+            isValid = validateFirstName() && isValid;
+            isValid = validateLastName() && isValid;
+            isValid = validateBirthdate() && isValid;
+            isValid = validateGender() && isValid;
+            isValid = validateCivilStatus() && isValid;
+            isValid = validateReligion() && isValid;
+            isValid = validateReligionOther() && isValid;
+            isValid = validateRegion() && isValid;
+            isValid = validateProvince() && isValid;
+            isValid = validateCity() && isValid;
+            isValid = validateBarangay() && isValid;
+            
+            // Education Information
+            isValid = validateYearGraduated() && isValid;
+            isValid = validateEducationalAttainment() && isValid;
+            
+            // Contact Information
+            isValid = validatePhone() && isValid;
+            isValid = validateEmail() && isValid;
+            
+            // Employment Information
+            isValid = validateEmploymentStatus() && isValid;
+            
+            // Only validate employment details if employed
+            if (document.getElementById('employment_status_display').value === 'Employed') {
+                isValid = validateOrganizationType() && isValid;
+                isValid = validateOrganizationTypeOther() && isValid;
+                isValid = validateOccupationalClassification() && isValid;
+                isValid = validateOccupationalClassificationOther() && isValid;
+                isValid = validateEmployerName() && isValid;
+                isValid = validateEmployerAddress() && isValid;
+                isValid = validateJobSituation() && isValid;
+                isValid = validateYearsInCompany() && isValid;
+            }
+            
+            // Scroll to first error if form is invalid
+            if (!isValid) {
+                const firstError = document.querySelector('.error.active');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                
+                Swal.fire({
+                    title: 'Form Validation Error',
+                    text: 'Please correct the highlighted fields before submitting.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#ef4444'
+                });
+            }
+            
+            return isValid;
         }
     </script>
     
