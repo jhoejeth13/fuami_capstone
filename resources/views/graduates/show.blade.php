@@ -51,6 +51,8 @@
                         {{ $graduate->first_name }} 
                         {{ $graduate->middle_name }} 
                         {{ $graduate->last_name }}
+                        {{ $graduate->suffix ? ' '.$graduate->suffix : '' }}
+
                     </h2>
                 </div>
 

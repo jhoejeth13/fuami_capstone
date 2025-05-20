@@ -4,7 +4,20 @@
 <!-- Include SweetAlert2 CSS and JS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+@if(session('success'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: '{{ session('success') }}',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false
+        });
+    });
+</script>
+@endif
 <style>
     /* Regular view styles */
     @media screen {
@@ -497,30 +510,40 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Print filtered results
-        printFilteredBtn.addEventListener('click', function() {
-            const params = new URLSearchParams(window.location.search);
-            params.set('print', '1');
-            window.open(`${window.location.pathname}?${params.toString()}`, '_blank');
-        });
+// Print filtered results - update this to include perPage
+printFilteredBtn.addEventListener('click', function() {
+    const params = new URLSearchParams();
+    
+    if (searchInput.value) params.set('search', searchInput.value);
+    if (yearFilter.value) params.set('year', yearFilter.value);
+    if (rowsPerPage.value) params.set('perPage', rowsPerPage.value);
+    params.set('print', '1');
+    
+    window.open(`${window.location.pathname}?${params.toString()}`, '_blank');
+});
 
-        // Update filters function
-        function updateFilters() {
-            const params = new URLSearchParams();
-            
-            if (searchInput.value) {
-                params.set('search', searchInput.value);
-            } else {
-                // If search input is cleared, reset to start page
-                window.location.href = window.location.pathname;
-                return;
-            }
-            
-            if (yearFilter.value) params.set('year', yearFilter.value);
-            if (rowsPerPage.value) params.set('perPage', rowsPerPage.value);
-            
-            window.location.href = `${window.location.pathname}?${params.toString()}`;
-        }
+// Update filters function
+function updateFilters() {
+    const params = new URLSearchParams();
+    
+    if (searchInput.value) {
+        params.set('search', searchInput.value);
+    }
+    
+    if (yearFilter.value) {
+        params.set('year', yearFilter.value);
+    }
+    
+    // Always include rows per page in the params
+    params.set('perPage', rowsPerPage.value);
+    
+    // Reset to page 1 when changing filters
+    params.set('page', '1');
+    
+    window.location.href = `${window.location.pathname}?${params.toString()}`;
+}
+yearFilter.addEventListener('change', updateFilters);
+rowsPerPage.addEventListener('change', updateFilters);
 
         // Event listener for search input to trigger on input change
         searchInput.addEventListener('input', updateFilters);

@@ -70,6 +70,58 @@
             @enderror
         </div>
 
+<!-- Suffix -->
+<div class="mb-4">
+    <label for="suffix" class="block text-sm font-medium text-gray-700">Suffix</label>
+    <select name="suffix" id="suffix" 
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            onchange="toggleOtherSuffix(this.value)">
+        @foreach($suffixOptions as $value => $label)
+            <option value="{{ $value }}" 
+                @if(old('suffix', isset($graduate) ? $graduate->suffix : '') == $value) selected @endif>
+                {{ $label }}
+            </option>
+        @endforeach
+    </select>
+    
+    <div id="otherSuffixContainer" 
+         class="mt-2 transition-all duration-200 ease-in-out overflow-hidden 
+                @if(old('suffix', isset($graduate) && $graduate->suffix === 'Others') === 'Others') max-h-20 @else max-h-0 @endif">
+        <label for="other_suffix" class="block text-sm font-medium text-gray-700 mt-2">Custom Suffix</label>
+        <input type="text" name="other_suffix" id="other_suffix" 
+               placeholder="Enter your custom suffix" 
+               maxlength="10" 
+               value="{{ old('other_suffix', isset($graduate) && $graduate->suffix === 'Others' ? $graduate->other_suffix : '') }}"
+               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+    </div>
+    
+    @error('suffix')
+        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+    @enderror
+    @error('other_suffix')
+        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+    @enderror
+</div>
+
+<script>
+function toggleOtherSuffix(selectedValue) {
+    const container = document.getElementById('otherSuffixContainer');
+    if (selectedValue === 'Others') {
+        container.classList.remove('max-h-0');
+        container.classList.add('max-h-20');
+    } else {
+        container.classList.remove('max-h-20');
+        container.classList.add('max-h-0');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const initialValue = document.getElementById('suffix').value;
+    toggleOtherSuffix(initialValue);
+});
+</script>
+
         <!-- Birthdate -->
         <div class="mb-4">
             <label for="birthdate" class="block text-sm font-medium text-gray-700">Birthdate *</label>

@@ -8,15 +8,15 @@
         @method('PUT')
         
         <div class="mb-4">
-    <label for="ID_student" class="block text-sm font-medium text-gray-700">LRN Number</label>
-    <input type="text" name="ID_student" id="ID_student" 
-           class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
-           value="{{ old('ID_student', $graduate->ID_student ?? '') }}">
-    @error('ID_student')
-        <div class="text-sm text-red-600">{{ $message }}</div>
-    @enderror
-    <p class="mt-1 text-sm text-gray-500">Optional field</p>
-</div>
+            <label for="ID_student" class="block text-sm font-medium text-gray-700">LRN Number</label>
+            <input type="text" name="ID_student" id="ID_student" 
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" 
+                   value="{{ old('ID_student', $graduate->ID_student ?? '') }}">
+            @error('ID_student')
+                <div class="text-sm text-red-600">{{ $message }}</div>
+            @enderror
+            <p class="mt-1 text-sm text-gray-500">Optional field</p>
+        </div>
 
         <div class="mb-4">
             <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
@@ -34,6 +34,39 @@
             <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name</label>
             <input type="text" name="last_name" id="last_name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value="{{ old('last_name', $graduate->last_name) }}" required>
             @error('last_name')<div class="text-sm text-red-600">{{ $message }}</div>@enderror
+        </div>
+
+        <!-- Suffix Field -->
+        <div class="mb-4">
+            <label for="suffix" class="block text-sm font-medium text-gray-700">Suffix</label>
+            <select name="suffix" id="suffix" 
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    onchange="toggleOtherSuffix(this.value)">
+                @foreach($suffixOptions as $value => $label)
+                    <option value="{{ $value }}" 
+                        @if(old('suffix', $graduate->suffix) == $value) selected @endif>
+                        {{ $label }}
+                    </option>
+                @endforeach
+            </select>
+            
+            <div id="otherSuffixContainer" 
+                 class="mt-2 transition-all duration-200 ease-in-out overflow-hidden 
+                        @if(old('suffix', $graduate->suffix) === 'Others') max-h-20 @else max-h-0 @endif">
+                <label for="other_suffix" class="block text-sm font-medium text-gray-700 mt-2">Custom Suffix</label>
+                <input type="text" name="other_suffix" id="other_suffix" 
+                       placeholder="Enter your custom suffix" 
+                       maxlength="10" 
+                       value="{{ old('other_suffix', $graduate->suffix === 'Others' ? $graduate->other_suffix : '') }}"
+                       class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            
+            @error('suffix')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+            @error('other_suffix')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         <div class="mb-4">
@@ -103,4 +136,23 @@
         </div>
     </form>
 </div>
+
+<script>
+function toggleOtherSuffix(selectedValue) {
+    const container = document.getElementById('otherSuffixContainer');
+    if (selectedValue === 'Others') {
+        container.classList.remove('max-h-0');
+        container.classList.add('max-h-20');
+    } else {
+        container.classList.remove('max-h-20');
+        container.classList.add('max-h-0');
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const initialValue = document.getElementById('suffix').value;
+    toggleOtherSuffix(initialValue);
+});
+</script>
 @endsection

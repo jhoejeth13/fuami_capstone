@@ -7,7 +7,20 @@
 
 <!-- Include Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+@if(session('success'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: '{{ session('success') }}',
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false
+        });
+    });
+</script>
+@endif
 <style>
     /* Custom styles */
     .container {
@@ -132,39 +145,41 @@
         font-size: 0.875rem;
     }
     
-    .pagination {
-        display: flex;
-        gap: 0.25rem;
-    }
-    
-    .pagination .page-item {
-        list-style: none;
-    }
-    
-    .pagination .page-link {
+    /* Improved Pagination Styles */
+/* Replace the existing pagination styles with these: */
+.pagination {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.pagination .page-item {
+    list-style: none;
+}
+
+.pagination .page-link {
     padding: 0.5rem 0.75rem;
     border: 1px solid #d1d5db;
     border-radius: 0.25rem;
     background-color: white;
-    color:rgb(0, 0, 0); /* Black text */
+    color: #000;
     text-decoration: none;
     font-size: 0.875rem;
     transition: all 0.2s ease;
 }
 
 .pagination .page-item.active .page-link {
-    background-color:rgb(255, 255, 255);
-    border-color:rgb(255, 255, 255);
-    color: black; /* White text for active button */
+    background-color: #fff;
+    border-color: #fff;
+    color: #000;
 }
 
 .pagination .page-link:hover {
-    background-color:rgb(0, 77, 230);
-    color:rgb(250, 247, 247); /* Keep black text on hover */
+    background-color: #004de6;
+    color: #fff;
 }
 
 .pagination .page-item.disabled .page-link {
-    color:rgb(0, 0, 0);
+    color: #000;
     background-color: white;
     pointer-events: none;
 }
@@ -230,12 +245,11 @@
                     @endforeach
                 </select>
                 
-                <select id="rowsPerPage" name="perPage" class="filter-select">
-                    <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10 rows</option>
-                    <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }}>25 rows</option>
-                    <option value="50" {{ request('perPage') == 50 ? 'selected' : '' }}>50 rows</option>
-                    <option value="100" {{ request('perPage') == 100 ? 'selected' : '' }}>100 rows</option>
-
+          <select id="rowsPerPage" name="perPage" class="filter-select">
+                    <option value="10" {{ request('perPage', 10) == 10 ? 'selected' : '' }}>10 rows</option>
+                    <option value="25" {{ request('perPage', 10) == 25 ? 'selected' : '' }}>25 rows</option>
+                    <option value="50" {{ request('perPage', 10) == 50 ? 'selected' : '' }}>50 rows</option>
+                    <option value="100" {{ request('perPage', 10) == 100 ? 'selected' : '' }}>100 rows</option>
                 </select>
             </div>
         </div>
@@ -260,7 +274,7 @@
                     @foreach ($graduates as $graduate)
                     <tr>
                         <td>{{ $graduate->ID_student }}</td>
-                        <td>{{ $graduate->first_name }} {{ $graduate->middle_name }} {{ $graduate->last_name }}</td>
+                        <td>{{ $graduate->first_name }} {{ $graduate->middle_name }} {{ $graduate->last_name }} {{ $graduate->suffix }}</td>
                         <td>{{ $graduate->gender ?? 'N/A' }}</td>
                         <td>{{ $graduate->strand }}</td>
                         <td>{{ $graduate->year_graduated }}</td>
@@ -288,18 +302,19 @@
         </div>
     </div>
 
-<!-- Updated Pagination -->
+    <!-- Pagination -->
 <div class="mt-6 flex items-center justify-between">
     <div class="text-sm text-gray-700">
-        Showing {{ $graduates->firstItem() }} to {{ $graduates->lastItem() }} of {{ $graduates->total() }} results
+        Showing {{ $graduates->firstItem() }} to {{ $graduates->lastItem() }} of {{ $graduates->total() }} graduates
     </div>
     <div class="flex gap-1">
         {{ $graduates->appends([
             'search' => request('search'),
-            'year' => request('year'), 
+            'year' => request('year'),
             'perPage' => request('perPage')
         ])->onEachSide(1)->links('vendor.pagination.tailwind-custom') }}
     </div>
+</div>
 </div>
 
 <script>
@@ -318,14 +333,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (searchInput.value) {
             params.set('search', searchInput.value);
-        } else {
-            // If search input is cleared, reset to start page
-            window.location.href = window.location.pathname;
-            return;
         }
         
-        if (yearFilter.value) params.set('year', yearFilter.value);
-        if (rowsPerPage.value) params.set('perPage', rowsPerPage.value);
+        if (yearFilter.value) {
+            params.set('year', yearFilter.value);
+        }
+        
+        // Always include rows per page in the params
+        params.set('perPage', rowsPerPage.value);
+        
+        // Reset to page 1 when changing filters
+        params.set('page', '1');
         
         window.location.href = `${window.location.pathname}?${params.toString()}`;
     }
@@ -369,17 +387,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Print filtered results
-    printFilteredBtn.addEventListener('click', function() {
-        const params = new URLSearchParams();
-        
-        if (searchInput.value) params.set('search', searchInput.value);
-        if (yearFilter.value) params.set('year', yearFilter.value);
-        if (rowsPerPage.value) params.set('perPage', rowsPerPage.value);
-        params.set('print', '1');
-        
-        window.open(`${window.location.pathname}?${params.toString()}`, '_blank');
-    });
+// Print filtered results - update this to include perPage
+printFilteredBtn.addEventListener('click', function() {
+    const params = new URLSearchParams();
+    
+    if (searchInput.value) params.set('search', searchInput.value);
+    if (yearFilter.value) params.set('year', yearFilter.value);
+    if (rowsPerPage.value) params.set('perPage', rowsPerPage.value);
+    params.set('print', '1');
+    
+    window.open(`${window.location.pathname}?${params.toString()}`, '_blank');
+});
 
     // Delete confirmation with SweetAlert
     document.querySelectorAll('.delete-form').forEach(form => {
